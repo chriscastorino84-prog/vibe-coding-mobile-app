@@ -36,15 +36,14 @@ export function ProgramGarageScreen({ programs, summary, onSelectProgram, onBack
         <View style={styles.emptyCard}><Text style={styles.emptyText}>Completed programs will appear here as preserved stat cards.</Text></View>
       ) : (
         closedPrograms.map((program) => {
-          const points = summary.metricPoints.filter((point) => point.sessionId && summary.points.some((session) => session.sessionId === point.sessionId && session.programId === program.id));
-          const programPoints = summary.points.filter((point) => point.programId === program.id);
+          const points = summary.metricPoints.filter((point) => point.sessionId && summary.sessionPoints.some((session) => session.sessionId === point.sessionId && session.programId === program.id));
+          const programSessions = summary.sessionPoints.filter((point) => point.programId === program.id);
           return (
             <ProgramStatCard
               key={program.id}
               program={program}
               points={points}
-              sessionCount={programPoints.length}
-              totalTonnage={programPoints.reduce((total, point) => total + point.tonnage, 0)}
+              sessionCount={programSessions.length}
               onPress={() => onSelectProgram(program)}
             />
           );

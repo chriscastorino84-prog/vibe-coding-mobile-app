@@ -16,7 +16,7 @@ export type Program = {
   startingPhotoUri?: string;
   endingPhotoUri?: string;
   sections?: ProgramSection[];
-  workoutDays?: WorkoutDay[];
+  workoutWeeks?: WorkoutWeek[];
 };
 
 export type ProgramExercise = {
@@ -65,6 +65,7 @@ export type WorkoutDayExercise = {
   id: string;
   name: string;
   sets: number;
+  setLabel?: string;
   reps: string;
   rpePrescription?: string;
 };
@@ -75,6 +76,19 @@ export type WorkoutDay = {
   title: string;
   focus: string;
   exercises: WorkoutDayExercise[];
+};
+
+export type WorkoutWeek = {
+  weekNumber: number;
+  workoutDays: WorkoutDay[];
+};
+
+export type ProgressPhotoCheckpoint = {
+  id: string;
+  programId: string;
+  weekNumber: number;
+  recordedAt: string;
+  photoUri?: string;
 };
 
 export type MeasurementObservation = {
@@ -95,8 +109,6 @@ export type WorkoutSession = {
   completedAt: string;
   exercises?: WorkoutExercise[];
   measurements?: MeasurementObservation[];
-  sets?: WorkoutSet[];
-  tonnage: number;
   rpeQuality?: RpeQuality;
   notes?: string;
 };
@@ -114,7 +126,6 @@ export type Trophy = {
 };
 
 export type TrophyStatsSnapshot = {
-  tonnage: number;
   exercises: Array<{
     name: string;
     tonnage: number;

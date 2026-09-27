@@ -28,7 +28,7 @@ export function WorkoutCard({ workout, onPress }: WorkoutCardProps) {
         <View key={exercise.id} style={styles.exerciseGroup}>
           <View style={styles.exerciseTitleRow}>
             <Text style={styles.exerciseName}>{exercise.name}</Text>
-            <Text style={styles.prescription}>{exercise.rpePrescription ?? `${exercise.sets} sets`}</Text>
+            <Text style={styles.prescription}>{exercise.rpePrescription ?? `${exercise.sets} ${exercise.setLabel ?? 'sets'}`}</Text>
           </View>
           {Array.from({ length: exercise.sets }, (_, setIndex) => (
             <View key={`${exercise.id}-${setIndex}`} style={styles.exerciseRow}>

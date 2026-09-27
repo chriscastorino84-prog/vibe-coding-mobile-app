@@ -26,7 +26,7 @@
         "expo-image-picker",
         {
           "photosPermission": "Allow this app to save your progress photos.",
-          "cameraPermission": "Allow this app to take progress photos when you earn a trophy."
+          "cameraPermission": "Allow this app to take progress photos."
         }
       ]
     ]

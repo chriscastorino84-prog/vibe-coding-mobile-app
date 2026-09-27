@@ -38,7 +38,7 @@ export function WorkoutScreen({ program, workoutDay, onComplete, onBack }: Worko
         const sets = exercise.sets.map((set, index) => ({
           id: `${exercise.id}-set-${index + 1}`,
           weight: Number(set.weight || 0),
-          reps: Number(set.reps || 0),
+            reps: Number.isFinite(Number(set.reps)) ? Number(set.reps) : 0,
         }));
 
         return {
@@ -50,11 +50,6 @@ export function WorkoutScreen({ program, workoutDay, onComplete, onBack }: Worko
       }),
     [exerciseValues],
   );
-  const total = useMemo(
-    () => exercises.reduce((sum, exercise) => sum + exercise.tonnage, 0),
-    [exercises],
-  );
-
   const handleComplete = () => {
     const sessionId = `${program.id}-${Date.now()}`;
     const completedAt = new Date().toISOString();
@@ -83,7 +78,6 @@ export function WorkoutScreen({ program, workoutDay, onComplete, onBack }: Worko
       completedAt,
       exercises,
       measurements,
-      tonnage: total,
       rpeQuality,
       notes: notes.trim() || undefined,
     });
@@ -203,11 +197,6 @@ export function WorkoutScreen({ program, workoutDay, onComplete, onBack }: Worko
           multiline
           textAlignVertical="top"
         />
-
-        <View style={styles.summaryBox}>
-          <Text style={styles.summaryLabel}>Session total</Text>
-          <Text style={styles.summaryValue}>{total}</Text>
-        </View>
 
         <TouchableOpacity style={styles.completeButton} onPress={handleComplete}>
           <Text style={styles.completeText}>Finish session</Text>

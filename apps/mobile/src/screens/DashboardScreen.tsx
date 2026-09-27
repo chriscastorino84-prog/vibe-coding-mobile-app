@@ -35,32 +35,18 @@ export function DashboardScreen({ program, summary, onBackToLocker }: DashboardS
       </View>
 
       <View style={styles.card}>
-        <Text style={styles.label}>Session tonnage</Text>
-        <Text style={styles.value}>{summary.latestTonnage.toLocaleString()}</Text>
-        <Text style={styles.delta}>{summary.points.length} real session point{summary.points.length === 1 ? '' : 's'}</Text>
+        <Text style={styles.label}>Training sessions</Text>
+        <Text style={styles.value}>{summary.completedSessionCount}</Text>
+        <Text style={styles.delta}>{summary.completedSessionCount === 1 ? 'session recorded' : 'sessions recorded'}</Text>
       </View>
 
       <View style={styles.cardSecondary}>
         <Text style={styles.label}>Current trophy</Text>
         <Text style={styles.badge}>
-          {summary.points.some((point) => point.programId === program.id)
+          {summary.sessionPoints.some((point) => point.programId === program.id)
             ? 'First workout complete'
             : 'Locked until first workout'}
         </Text>
-      </View>
-
-      <View style={styles.history}>
-        <Text style={styles.label}>Tonnage history</Text>
-        {summary.points.length === 0 ? (
-          <Text style={styles.empty}>Complete a session to plot your first point.</Text>
-        ) : (
-          summary.points.map((point, index) => (
-            <View key={point.sessionId} style={styles.historyRow}>
-              <Text style={styles.historyIndex}>Session {index + 1}</Text>
-              <Text style={styles.historyValue}>{point.tonnage.toLocaleString()}</Text>
-            </View>
-          ))
-        )}
       </View>
 
       <Text style={styles.sectionTitle}>Exercise performance</Text>

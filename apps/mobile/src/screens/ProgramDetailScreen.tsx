@@ -6,11 +6,16 @@ import type { Program, WorkoutDay } from '../types';
 
 type ProgramDetailScreenProps = {
   program: Program;
+  workoutDay?: WorkoutDay;
   onStart: (workoutDay?: WorkoutDay) => void;
   onBack: () => void;
 };
 
-export function ProgramDetailScreen({ program, onStart, onBack }: ProgramDetailScreenProps) {
+export function ProgramDetailScreen({ program, workoutDay, onStart, onBack }: ProgramDetailScreenProps) {
+  const workoutWeekNumber = program.workoutWeeks?.find((week) =>
+    week.workoutDays.some((day) => day.id === workoutDay?.id),
+  )?.weekNumber;
+
   return (
     <View style={styles.screen}>
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
@@ -63,29 +68,36 @@ export function ProgramDetailScreen({ program, onStart, onBack }: ProgramDetailS
           </View>
         ))}
 
-        {!program.sections?.length && (
+        {!program.sections?.length && !program.workoutWeeks?.length && (
           <View style={styles.emptyContent}>
             <Text style={styles.emptyTitle}>Program content loading</Text>
             <Text style={styles.emptyText}>This program is ready to start while its detailed blocks are being prepared.</Text>
           </View>
         )}
 
-        {program.workoutDays && program.workoutDays.length > 0 && (
+        {workoutDay && (
           <View style={styles.workoutPlan}>
-            <Text style={styles.workoutPlanKicker}>Week 1</Text>
+            <Text style={styles.workoutPlanKicker}>Week {workoutWeekNumber}</Text>
             <Text style={styles.workoutPlanTitle}>Conditioning Ramp-Up</Text>
-            <Text style={styles.workoutPlanHint}>Choose a training day to log weights, reps, RPE quality, and notes.</Text>
-            {program.workoutDays.map((workoutDay) => (
-              <WorkoutCard key={workoutDay.id} workout={workoutDay} onPress={() => onStart(workoutDay)} />
-            ))}
+            <Text style={styles.workoutPlanHint}>Next workout · Day {workoutDay.dayNumber}. Complete this session to move to the next day.</Text>
+            <WorkoutCard workout={workoutDay} onPress={() => onStart(workoutDay)} />
+          </View>
+        )}
+
+        {program.workoutWeeks && !workoutDay && (
+          <View style={styles.emptyContent}>
+            <Text style={styles.emptyTitle}>Program complete</Text>
+            <Text style={styles.emptyText}>All scheduled workouts have been completed and saved.</Text>
           </View>
         )}
       </ScrollView>
       <View style={styles.footer}>
-        <TouchableOpacity style={styles.startButton} onPress={() => onStart(program.workoutDays?.[0])}>
-          <Text style={styles.startText}>Start program</Text>
-          <Text style={styles.startArrow}>→</Text>
-        </TouchableOpacity>
+        {(!program.workoutWeeks?.length || workoutDay) && (
+          <TouchableOpacity style={styles.startButton} onPress={() => onStart(workoutDay)}>
+            <Text style={styles.startText}>{workoutDay ? `Start Day ${workoutDay.dayNumber}` : 'Start program'}</Text>
+            <Text style={styles.startArrow}>→</Text>
+          </TouchableOpacity>
+        )}
       </View>
     </View>
   );

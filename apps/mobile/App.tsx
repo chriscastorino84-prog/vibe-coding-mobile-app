@@ -6,6 +6,7 @@ import { View } from 'react-native';
 import { ProgramDetailScreen } from './src/screens/ProgramDetailScreen';
 import { HomeScreen } from './src/screens/HomeScreen';
 import { ProgramGarageScreen } from './src/screens/ProgramGarageScreen';
+import { ProgressPhotoPromptScreen } from './src/screens/ProgressPhotoPromptScreen';
 import { TrophyDashboardScreen } from './src/screens/TrophyDashboardScreen';
 import { TrophyDetailScreen } from './src/screens/TrophyDetailScreen';
 import { TrophyPhotoPromptScreen } from './src/screens/TrophyPhotoPromptScreen';
@@ -13,19 +14,24 @@ import { WorkoutScreen } from './src/screens/WorkoutScreen';
 import { seedPrograms } from './src/data/seedPrograms';
 import { buildDashboardSummary } from './src/analytics';
 import { buildEarnedTrophies } from './src/trophies';
-import type { Program, Trophy, WorkoutDay, WorkoutSession } from './src/types';
+import type { Program, ProgressPhotoCheckpoint, Trophy, WorkoutDay, WorkoutSession } from './src/types';
 
 const SESSIONS_STORAGE_KEY = 'workout.completed-sessions.v1';
 const TROPHIES_STORAGE_KEY = 'workout.trophies.v1';
+const PROGRESS_PHOTOS_STORAGE_KEY = 'workout.progress-photo-checkpoints.v1';
+const PROGRESS_PHOTO_WEEKS = new Set([1, 3, 6]);
 
 export default function App() {
-  const [screen, setScreen] = useState<'home' | 'detail' | 'workout' | 'program-garage' | 'trophy-garage' | 'trophy-detail' | 'photo-prompt'>('home');
+  const [screen, setScreen] = useState<'home' | 'detail' | 'workout' | 'program-garage' | 'trophy-garage' | 'trophy-detail' | 'photo-prompt' | 'progress-photo-prompt'>('home');
   const [selectedProgram, setSelectedProgram] = useState<Program>(seedPrograms[1]);
   const [selectedWorkoutDay, setSelectedWorkoutDay] = useState<WorkoutDay>();
   const [sessions, setSessions] = useState<WorkoutSession[]>([]);
   const [trophyRecords, setTrophyRecords] = useState<Trophy[]>([]);
   const [selectedTrophy, setSelectedTrophy] = useState<Trophy>();
   const [pendingTrophies, setPendingTrophies] = useState<Trophy[]>([]);
+  const [progressPhotoCheckpoints, setProgressPhotoCheckpoints] = useState<ProgressPhotoCheckpoint[]>([]);
+  const [pendingWorkoutDay, setPendingWorkoutDay] = useState<WorkoutDay>();
+  const [pendingProgressPhotoWeek, setPendingProgressPhotoWeek] = useState<number>();
   const [isHydrated, setIsHydrated] = useState(false);
 
   useEffect(() => {
@@ -33,6 +39,7 @@ export default function App() {
       try {
         const storedSessions = await AsyncStorage.getItem(SESSIONS_STORAGE_KEY);
         const storedTrophies = await AsyncStorage.getItem(TROPHIES_STORAGE_KEY);
+        const storedProgressPhotos = await AsyncStorage.getItem(PROGRESS_PHOTOS_STORAGE_KEY);
         if (storedSessions) {
           const parsedSessions: unknown = JSON.parse(storedSessions);
           if (Array.isArray(parsedSessions)) {
@@ -43,6 +50,12 @@ export default function App() {
           const parsedTrophies: unknown = JSON.parse(storedTrophies);
           if (Array.isArray(parsedTrophies)) {
             setTrophyRecords(parsedTrophies as Trophy[]);
+          }
+        }
+        if (storedProgressPhotos) {
+          const parsedCheckpoints: unknown = JSON.parse(storedProgressPhotos);
+          if (Array.isArray(parsedCheckpoints)) {
+            setProgressPhotoCheckpoints(parsedCheckpoints as ProgressPhotoCheckpoint[]);
           }
         }
       } finally {
@@ -65,6 +78,12 @@ export default function App() {
     }
   }, [isHydrated, trophyRecords]);
 
+  useEffect(() => {
+    if (isHydrated) {
+      void AsyncStorage.setItem(PROGRESS_PHOTOS_STORAGE_KEY, JSON.stringify(progressPhotoCheckpoints));
+    }
+  }, [isHydrated, progressPhotoCheckpoints]);
+
   const activeProgram = useMemo(() => {
     return seedPrograms.find((program) => program.id === selectedProgram.id) ?? seedPrograms[1];
   }, [selectedProgram]);
@@ -76,6 +95,14 @@ export default function App() {
       photoUri: savedPhotos.get(trophy.id),
     }));
   }, [sessions, trophyRecords]);
+  const completedWorkoutDayIds = new Set(
+    sessions.flatMap((session) =>
+      session.programId === activeProgram.id && session.workoutDayId ? [session.workoutDayId] : [],
+    ),
+  );
+  const nextWorkoutDay = activeProgram.workoutWeeks
+    ?.flatMap((week) => week.workoutDays)
+    .find((workoutDay) => !completedWorkoutDayIds.has(workoutDay.id));
 
   if (!isHydrated) {
     return <View style={{ flex: 1 }} />;
@@ -89,6 +116,52 @@ export default function App() {
   const handleSelectTrophy = (trophy: Trophy) => {
     setSelectedTrophy(trophy);
     setScreen('trophy-detail');
+  };
+
+  const handleStartWorkout = (workoutDay?: WorkoutDay) => {
+    const workoutWeek = activeProgram.workoutWeeks?.find((week) =>
+      week.workoutDays.some((day) => day.id === workoutDay?.id),
+    );
+    const weekNumber = workoutWeek?.weekNumber;
+    const checkpointId = weekNumber === undefined ? undefined : `${activeProgram.id}-week-${weekNumber}`;
+    const shouldPrompt = weekNumber !== undefined
+      && PROGRESS_PHOTO_WEEKS.has(weekNumber)
+      && !progressPhotoCheckpoints.some((checkpoint) => checkpoint.id === checkpointId);
+
+    setSelectedWorkoutDay(workoutDay);
+    if (shouldPrompt && weekNumber !== undefined) {
+      setPendingWorkoutDay(workoutDay);
+      setPendingProgressPhotoWeek(weekNumber);
+      setScreen('progress-photo-prompt');
+      return;
+    }
+
+    setScreen('workout');
+  };
+
+  const handleCompleteProgressPhotoCheckpoint = (photoUri?: string) => {
+    const workoutDay = pendingWorkoutDay;
+    const weekNumber = pendingProgressPhotoWeek;
+    if (!workoutDay || weekNumber === undefined) {
+      setScreen('home');
+      return;
+    }
+
+    const checkpointId = `${activeProgram.id}-week-${weekNumber}`;
+    setProgressPhotoCheckpoints((current) => [
+      ...current.filter((checkpoint) => checkpoint.id !== checkpointId),
+      {
+        id: checkpointId,
+        programId: activeProgram.id,
+        weekNumber,
+        recordedAt: new Date().toISOString(),
+        photoUri,
+      },
+    ]);
+    setPendingWorkoutDay(undefined);
+    setPendingProgressPhotoWeek(undefined);
+    setSelectedWorkoutDay(workoutDay);
+    setScreen('workout');
   };
 
   const handleSaveTrophyPhoto = (photoUri?: string) => {
@@ -135,10 +208,8 @@ export default function App() {
         <StatusBar style="light" />
         <ProgramDetailScreen
           program={activeProgram}
-          onStart={(workoutDay) => {
-            setSelectedWorkoutDay(workoutDay);
-            setScreen('workout');
-          }}
+          workoutDay={nextWorkoutDay}
+          onStart={handleStartWorkout}
           onBack={() => setScreen('home')}
         />
       </View>
@@ -172,6 +243,15 @@ export default function App() {
     );
   }
 
+  if (screen === 'progress-photo-prompt' && pendingProgressPhotoWeek !== undefined) {
+    return (
+      <View style={{ flex: 1 }}>
+        <StatusBar style="light" />
+        <ProgressPhotoPromptScreen weekNumber={pendingProgressPhotoWeek} onContinue={handleCompleteProgressPhotoCheckpoint} />
+      </View>
+    );
+  }
+
   if (screen === 'photo-prompt' && selectedTrophy) {
     return (
       <View style={{ flex: 1 }}>
@@ -189,8 +269,9 @@ export default function App() {
           program={activeProgram}
           workoutDay={selectedWorkoutDay}
           onBack={() => setScreen('detail')}
-          onComplete={(session) => {
+          onComplete={async (session) => {
             const updatedSessions = [...sessions, session];
+            await AsyncStorage.setItem(SESSIONS_STORAGE_KEY, JSON.stringify(updatedSessions));
             const previousTrophyIds = new Set(earnedTrophies.map((trophy) => trophy.id));
             const newTrophies = buildEarnedTrophies(updatedSessions).filter((trophy) => !previousTrophyIds.has(trophy.id));
             setSessions(updatedSessions);

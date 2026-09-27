@@ -9,11 +9,10 @@ type ProgramStatCardProps = {
   program: Program;
   points: MetricPoint[];
   sessionCount: number;
-  totalTonnage: number;
   onPress: () => void;
 };
 
-export function ProgramStatCard({ program, points, sessionCount, totalTonnage, onPress }: ProgramStatCardProps) {
+export function ProgramStatCard({ program, points, sessionCount, onPress }: ProgramStatCardProps) {
   return (
     <TouchableOpacity style={styles.card} onPress={onPress} activeOpacity={0.88}>
       <View style={[styles.accentBar, { backgroundColor: program.accent }]} />
@@ -34,10 +33,6 @@ export function ProgramStatCard({ program, points, sessionCount, totalTonnage, o
           <View>
             <Text style={styles.statLabel}>Sessions</Text>
             <Text style={styles.statValue}>{sessionCount}</Text>
-          </View>
-          <View>
-            <Text style={styles.statLabel}>Total tonnage</Text>
-            <Text style={styles.statValue}>{totalTonnage.toLocaleString()}</Text>
           </View>
         </View>
         <MetricLineGraph points={points} />

@@ -1,10 +1,9 @@
-import type { MeasurementCategory, WorkoutExercise, WorkoutSession } from './types';
+import type { MeasurementCategory, WorkoutExercise, WorkoutSet, WorkoutSession } from './types';
 
-export type DashboardPoint = {
+export type SessionPoint = {
   sessionId: string;
   programId: string;
   completedAt: string;
-  tonnage: number;
 };
 
 export type MetricPoint = {
@@ -19,16 +18,14 @@ export type MetricPoint = {
 };
 
 export type DashboardSummary = {
-  points: DashboardPoint[];
-  totalTonnage: number;
-  latestTonnage: number;
+  sessionPoints: SessionPoint[];
   completedSessionCount: number;
   metricPoints: MetricPoint[];
   performancePoints: MetricPoint[];
   anthropometricPoints: MetricPoint[];
 };
 
-export function calculateTonnage(sets: NonNullable<WorkoutSession['sets']>): number {
+export function calculateTonnage(sets: WorkoutSet[]): number {
   return sets.reduce((total, set) => total + set.weight * set.reps, 0);
 }
 
@@ -37,14 +34,10 @@ export function calculateExerciseTonnage(exercise: WorkoutExercise): number {
 }
 
 export function buildDashboardSummary(sessions: WorkoutSession[]): DashboardSummary {
-  const points = sessions.map((session) => ({
+  const sessionPoints = sessions.map((session) => ({
     sessionId: session.id,
     programId: session.programId,
     completedAt: session.completedAt,
-    tonnage:
-      session.tonnage ??
-      (session.exercises ?? []).reduce((total, exercise) => total + exercise.tonnage, 0) ??
-      calculateTonnage(session.sets ?? []),
   }));
   const metricPoints = sessions.flatMap((session) => {
     const exercisePoints = (session.exercises ?? []).map((exercise) => ({
@@ -84,10 +77,8 @@ export function buildDashboardSummary(sessions: WorkoutSession[]): DashboardSumm
   });
 
   return {
-    points,
-    totalTonnage: points.reduce((total, point) => total + point.tonnage, 0),
-    latestTonnage: points.at(-1)?.tonnage ?? 0,
-    completedSessionCount: points.length,
+    sessionPoints,
+    completedSessionCount: sessionPoints.length,
     metricPoints,
     performancePoints: metricPoints.filter((point) => point.category === 'performance'),
     anthropometricPoints: metricPoints.filter((point) => point.category === 'anthropometric'),

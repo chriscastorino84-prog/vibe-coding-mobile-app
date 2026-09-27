@@ -21,11 +21,14 @@ export function TrophyDetailScreen({ trophy, onBack }: TrophyDetailScreenProps) 
       </View>
       <Text style={styles.sectionTitle}>Attainment dashboard</Text>
       <View style={styles.statsCard}>
-        <Text style={styles.label}>Session tonnage</Text>
-        <Text style={styles.value}>{trophy.statsSnapshot.tonnage.toLocaleString()}</Text>
-        {trophy.statsSnapshot.exercises.map((exercise) => (
-          <View key={exercise.name} style={styles.row}><Text style={styles.rowLabel}>{exercise.name}</Text><Text style={styles.rowValue}>{exercise.tonnage.toLocaleString()}</Text></View>
-        ))}
+        <Text style={styles.label}>Exercise tonnage</Text>
+        {trophy.statsSnapshot.exercises.length === 0 ? (
+          <Text style={styles.photoText}>No exercise tonnage recorded for this session.</Text>
+        ) : (
+          trophy.statsSnapshot.exercises.map((exercise) => (
+            <View key={exercise.name} style={styles.row}><Text style={styles.rowLabel}>{exercise.name}</Text><Text style={styles.rowValue}>{exercise.tonnage.toLocaleString()}</Text></View>
+          ))
+        )}
       </View>
       <View style={styles.statsCard}>
         <Text style={styles.label}>Progress photo</Text>

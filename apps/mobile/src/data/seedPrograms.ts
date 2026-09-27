@@ -36,7 +36,10 @@ const dynamicWarmUpSections: NonNullable<Program['sections']> = [
   },
 ];
 
-const conditioningRampUpWeekOne = [
+const conditioningRampUpWeeks = [
+  {
+    weekNumber: 1,
+    workoutDays: [
   {
     id: 'conditioning-ramp-up-day-1',
     dayNumber: 1 as const,
@@ -78,6 +81,238 @@ const conditioningRampUpWeekOne = [
       { id: 'steady-state-cardio-day-3', name: 'Steady-State Cardio', sets: 1, reps: '15 min', rpePrescription: 'Conversational pace' },
     ],
   },
+    ],
+  },
+  {
+    weekNumber: 2,
+    workoutDays: [
+      {
+        id: 'conditioning-ramp-up-week-2-day-1',
+        dayNumber: 1 as const,
+        title: 'Strength + steady-state',
+        focus: 'Full-body strength at RPE 6, then aerobic base work.',
+        exercises: [
+          { id: 'week-2-goblet-squat', name: 'Goblet Squat', sets: 4, reps: '12', rpePrescription: 'RPE 6' },
+          { id: 'week-2-db-chest-press', name: 'DB Chest Press', sets: 4, reps: '12', rpePrescription: 'RPE 6' },
+          { id: 'week-2-bent-db-row', name: 'Bent DB Row', sets: 4, reps: '12', rpePrescription: 'RPE 6' },
+          { id: 'week-2-single-leg-rdl', name: 'Single-Leg Romanian Deadlift', sets: 4, reps: '12', rpePrescription: 'RPE 6' },
+          { id: 'week-2-plank', name: 'Plank', sets: 4, reps: '30-45 sec' },
+          { id: 'week-2-steady-state-cardio-day-1', name: 'Steady-State Cardio', sets: 1, reps: '15 min', rpePrescription: 'Conversational pace' },
+        ],
+      },
+      {
+        id: 'conditioning-ramp-up-week-2-day-2',
+        dayNumber: 2 as const,
+        title: 'Conditioning circuit',
+        focus: 'Five movements performed for time across four rounds.',
+        exercises: [
+          { id: 'week-2-kettlebell-swings', name: 'Kettlebell Swings', sets: 4, setLabel: 'rounds', reps: '40 sec work / 20 sec rest' },
+          { id: 'week-2-box-step-ups', name: 'Box Step-Ups', sets: 4, setLabel: 'rounds', reps: '40 sec work / 20 sec rest' },
+          { id: 'week-2-medicine-ball-slams', name: 'Medicine Ball Slams', sets: 4, setLabel: 'rounds', reps: '40 sec work / 20 sec rest' },
+          { id: 'week-2-mountain-climbers', name: 'Mountain Climbers', sets: 4, setLabel: 'rounds', reps: '40 sec work / 20 sec rest' },
+          { id: 'week-2-walking-lunges', name: 'Walking Lunges', sets: 4, setLabel: 'rounds', reps: '40 sec work / 20 sec rest' },
+        ],
+      },
+      {
+        id: 'conditioning-ramp-up-week-2-day-3',
+        dayNumber: 3 as const,
+        title: 'Strength + steady-state',
+        focus: 'Full-body strength at RPE 6, then aerobic base work.',
+        exercises: [
+          { id: 'week-2-lat-pulldown-assisted-pull-up', name: 'Lat Pulldown or Assisted Pull-Up', sets: 4, reps: '12', rpePrescription: 'RPE 6' },
+          { id: 'week-2-goblet-split-squat', name: 'Goblet Split Squat', sets: 4, reps: '12', rpePrescription: 'RPE 6' },
+          { id: 'week-2-half-kneeling-shoulder-press', name: 'DB 1/2 Kneel Shoulder Press', sets: 4, reps: '12 | 12', rpePrescription: 'RPE 6' },
+          { id: 'week-2-cable-face-pull', name: 'Cable Face Pull', sets: 4, reps: '15' },
+          { id: 'week-2-dead-bug', name: 'Dead Bug', sets: 4, reps: '10' },
+          { id: 'week-2-steady-state-cardio-day-3', name: 'Steady-State Cardio', sets: 1, reps: '15 min', rpePrescription: 'Conversational pace' },
+        ],
+      },
+    ],
+  },
+  {
+    weekNumber: 3,
+    workoutDays: [
+      {
+        id: 'conditioning-ramp-up-week-3-day-1',
+        dayNumber: 1 as const,
+        title: 'Strength + steady-state',
+        focus: 'Full-body strength at RPE 6, then aerobic base work.',
+        exercises: [
+          { id: 'week-3-goblet-squat', name: 'Goblet Squat', sets: 5, reps: '12', rpePrescription: 'RPE 6' },
+          { id: 'week-3-db-chest-press', name: 'DB Chest Press', sets: 5, reps: '12', rpePrescription: 'RPE 6' },
+          { id: 'week-3-bent-db-row', name: 'Bent DB Row', sets: 5, reps: '12', rpePrescription: 'RPE 6' },
+          { id: 'week-3-single-leg-rdl', name: 'Single-Leg Romanian Deadlift', sets: 5, reps: '12', rpePrescription: 'RPE 6' },
+          { id: 'week-3-plank', name: 'Plank', sets: 5, reps: '30-45 sec' },
+          { id: 'week-3-steady-state-cardio-day-1', name: 'Steady-State Cardio', sets: 1, reps: '15 min', rpePrescription: 'Conversational pace' },
+        ],
+      },
+      {
+        id: 'conditioning-ramp-up-week-3-day-2',
+        dayNumber: 2 as const,
+        title: 'Conditioning circuit',
+        focus: 'Five movements performed for time across five rounds.',
+        exercises: [
+          { id: 'week-3-kettlebell-swings', name: 'Kettlebell Swings', sets: 5, setLabel: 'rounds', reps: '40 sec work / 20 sec rest' },
+          { id: 'week-3-box-step-ups', name: 'Box Step-Ups', sets: 5, setLabel: 'rounds', reps: '40 sec work / 20 sec rest' },
+          { id: 'week-3-medicine-ball-slams', name: 'Medicine Ball Slams', sets: 5, setLabel: 'rounds', reps: '40 sec work / 20 sec rest' },
+          { id: 'week-3-mountain-climbers', name: 'Mountain Climbers', sets: 5, setLabel: 'rounds', reps: '40 sec work / 20 sec rest' },
+          { id: 'week-3-walking-lunges', name: 'Walking Lunges', sets: 5, setLabel: 'rounds', reps: '40 sec work / 20 sec rest' },
+        ],
+      },
+      {
+        id: 'conditioning-ramp-up-week-3-day-3',
+        dayNumber: 3 as const,
+        title: 'Strength + steady-state',
+        focus: 'Full-body strength at RPE 6, then aerobic base work.',
+        exercises: [
+          { id: 'week-3-lat-pulldown-assisted-pull-up', name: 'Lat Pulldown or Assisted Pull-Up', sets: 5, reps: '12', rpePrescription: 'RPE 6' },
+          { id: 'week-3-goblet-split-squat', name: 'Goblet Split Squat', sets: 5, reps: '12', rpePrescription: 'RPE 6' },
+          { id: 'week-3-half-kneeling-shoulder-press', name: 'DB 1/2 Kneel Shoulder Press', sets: 5, reps: '12 | 12', rpePrescription: 'RPE 6' },
+          { id: 'week-3-cable-face-pull', name: 'Cable Face Pull', sets: 5, reps: '15' },
+          { id: 'week-3-dead-bug', name: 'Dead Bug', sets: 5, reps: '10' },
+          { id: 'week-3-steady-state-cardio-day-3', name: 'Steady-State Cardio', sets: 1, reps: '15 min', rpePrescription: 'Conversational pace' },
+        ],
+      },
+    ],
+  },
+  {
+    weekNumber: 4,
+    workoutDays: [
+      {
+        id: 'conditioning-ramp-up-week-4-day-1',
+        dayNumber: 1 as const,
+        title: 'Strength + steady-state',
+        focus: 'Full-body strength at RPE 6, then aerobic base work.',
+        exercises: [
+          { id: 'week-4-goblet-squat', name: 'Goblet Squat', sets: 5, reps: '15', rpePrescription: 'RPE 6' },
+          { id: 'week-4-db-chest-press', name: 'DB Chest Press', sets: 5, reps: '15', rpePrescription: 'RPE 6' },
+          { id: 'week-4-bent-db-row', name: 'Bent DB Row', sets: 5, reps: '15', rpePrescription: 'RPE 6' },
+          { id: 'week-4-single-leg-rdl', name: 'Single-Leg Romanian Deadlift', sets: 5, reps: '15', rpePrescription: 'RPE 6' },
+          { id: 'week-4-plank', name: 'Plank', sets: 5, reps: '30-45 sec' },
+          { id: 'week-4-steady-state-cardio-day-1', name: 'Steady-State Cardio', sets: 1, reps: '15 min', rpePrescription: 'Conversational pace' },
+        ],
+      },
+      {
+        id: 'conditioning-ramp-up-week-4-day-2',
+        dayNumber: 2 as const,
+        title: 'Conditioning circuit',
+        focus: 'Five movements performed for time across five rounds.',
+        exercises: [
+          { id: 'week-4-kettlebell-swings', name: 'Kettlebell Swings', sets: 5, setLabel: 'rounds', reps: '40 sec work / 20 sec rest' },
+          { id: 'week-4-box-step-ups', name: 'Box Step-Ups', sets: 5, setLabel: 'rounds', reps: '40 sec work / 20 sec rest' },
+          { id: 'week-4-medicine-ball-slams', name: 'Medicine Ball Slams', sets: 5, setLabel: 'rounds', reps: '40 sec work / 20 sec rest' },
+          { id: 'week-4-mountain-climbers', name: 'Mountain Climbers', sets: 5, setLabel: 'rounds', reps: '40 sec work / 20 sec rest' },
+          { id: 'week-4-walking-lunges', name: 'Walking Lunges', sets: 5, setLabel: 'rounds', reps: '40 sec work / 20 sec rest' },
+        ],
+      },
+      {
+        id: 'conditioning-ramp-up-week-4-day-3',
+        dayNumber: 3 as const,
+        title: 'Strength + steady-state',
+        focus: 'Full-body strength at RPE 6, then aerobic base work.',
+        exercises: [
+          { id: 'week-4-lat-pulldown-assisted-pull-up', name: 'Lat Pulldown or Assisted Pull-Up', sets: 5, reps: '15', rpePrescription: 'RPE 6' },
+          { id: 'week-4-goblet-split-squat', name: 'Goblet Split Squat', sets: 5, reps: '15', rpePrescription: 'RPE 6' },
+          { id: 'week-4-half-kneeling-shoulder-press', name: 'DB 1/2 Kneel Shoulder Press', sets: 5, reps: '15 | 15', rpePrescription: 'RPE 6' },
+          { id: 'week-4-cable-face-pull', name: 'Cable Face Pull', sets: 5, reps: '15' },
+          { id: 'week-4-dead-bug', name: 'Dead Bug', sets: 5, reps: '15' },
+          { id: 'week-4-steady-state-cardio-day-3', name: 'Steady-State Cardio', sets: 1, reps: '15 min', rpePrescription: 'Conversational pace' },
+        ],
+      },
+    ],
+  },
+  {
+    weekNumber: 5,
+    workoutDays: [
+      {
+        id: 'conditioning-ramp-up-week-5-day-1',
+        dayNumber: 1 as const,
+        title: 'Strength + steady-state',
+        focus: 'Full-body strength at RPE 7, then aerobic base work.',
+        exercises: [
+          { id: 'week-5-goblet-squat', name: 'Goblet Squat', sets: 5, reps: '15', rpePrescription: 'RPE 7' },
+          { id: 'week-5-db-chest-press', name: 'DB Chest Press', sets: 5, reps: '15', rpePrescription: 'RPE 7' },
+          { id: 'week-5-bent-db-row', name: 'Bent DB Row', sets: 5, reps: '15', rpePrescription: 'RPE 7' },
+          { id: 'week-5-single-leg-rdl', name: 'Single-Leg Romanian Deadlift', sets: 5, reps: '15', rpePrescription: 'RPE 7' },
+          { id: 'week-5-plank', name: 'Plank', sets: 5, reps: '30-45 sec' },
+          { id: 'week-5-steady-state-cardio-day-1', name: 'Steady-State Cardio', sets: 1, reps: '15 min', rpePrescription: 'Conversational pace' },
+        ],
+      },
+      {
+        id: 'conditioning-ramp-up-week-5-day-2',
+        dayNumber: 2 as const,
+        title: 'Conditioning circuit',
+        focus: 'Five movements performed for time across five rounds.',
+        exercises: [
+          { id: 'week-5-kettlebell-swings', name: 'Kettlebell Swings', sets: 5, setLabel: 'rounds', reps: '40 sec work / 20 sec rest' },
+          { id: 'week-5-box-step-ups', name: 'Box Step-Ups', sets: 5, setLabel: 'rounds', reps: '40 sec work / 20 sec rest' },
+          { id: 'week-5-medicine-ball-slams', name: 'Medicine Ball Slams', sets: 5, setLabel: 'rounds', reps: '40 sec work / 20 sec rest' },
+          { id: 'week-5-mountain-climbers', name: 'Mountain Climbers', sets: 5, setLabel: 'rounds', reps: '40 sec work / 20 sec rest' },
+          { id: 'week-5-walking-lunges', name: 'Walking Lunges', sets: 5, setLabel: 'rounds', reps: '40 sec work / 20 sec rest' },
+        ],
+      },
+      {
+        id: 'conditioning-ramp-up-week-5-day-3',
+        dayNumber: 3 as const,
+        title: 'Strength + steady-state',
+        focus: 'Full-body strength at RPE 7, then aerobic base work.',
+        exercises: [
+          { id: 'week-5-lat-pulldown-assisted-pull-up', name: 'Lat Pulldown or Assisted Pull-Up', sets: 5, reps: '15', rpePrescription: 'RPE 7' },
+          { id: 'week-5-goblet-split-squat', name: 'Goblet Split Squat', sets: 5, reps: '15', rpePrescription: 'RPE 7' },
+          { id: 'week-5-half-kneeling-shoulder-press', name: 'DB 1/2 Kneel Shoulder Press', sets: 5, reps: '15 | 15', rpePrescription: 'RPE 7' },
+          { id: 'week-5-cable-face-pull', name: 'Cable Face Pull', sets: 5, reps: '15' },
+          { id: 'week-5-dead-bug', name: 'Dead Bug', sets: 5, reps: '15' },
+          { id: 'week-5-steady-state-cardio-day-3', name: 'Steady-State Cardio', sets: 1, reps: '15 min', rpePrescription: 'Conversational pace' },
+        ],
+      },
+    ],
+  },
+  {
+    weekNumber: 6,
+    workoutDays: [
+      {
+        id: 'conditioning-ramp-up-week-6-day-1',
+        dayNumber: 1 as const,
+        title: 'Strength + steady-state',
+        focus: 'Full-body strength at RPE 8, then aerobic base work.',
+        exercises: [
+          { id: 'week-6-goblet-squat', name: 'Goblet Squat', sets: 5, reps: '15', rpePrescription: 'RPE 8' },
+          { id: 'week-6-db-chest-press', name: 'DB Chest Press', sets: 5, reps: '15', rpePrescription: 'RPE 8' },
+          { id: 'week-6-bent-db-row', name: 'Bent DB Row', sets: 5, reps: '15', rpePrescription: 'RPE 8' },
+          { id: 'week-6-single-leg-rdl', name: 'Single-Leg Romanian Deadlift', sets: 5, reps: '15', rpePrescription: 'RPE 8' },
+          { id: 'week-6-plank', name: 'Plank', sets: 5, reps: '30-45 sec' },
+          { id: 'week-6-steady-state-cardio-day-1', name: 'Steady-State Cardio', sets: 1, reps: '15 min', rpePrescription: 'Conversational pace' },
+        ],
+      },
+      {
+        id: 'conditioning-ramp-up-week-6-day-2',
+        dayNumber: 2 as const,
+        title: 'Conditioning circuit',
+        focus: 'Five movements performed for time across five rounds.',
+        exercises: [
+          { id: 'week-6-kettlebell-swings', name: 'Kettlebell Swings', sets: 5, setLabel: 'rounds', reps: '40 sec work / 20 sec rest' },
+          { id: 'week-6-box-step-ups', name: 'Box Step-Ups', sets: 5, setLabel: 'rounds', reps: '40 sec work / 20 sec rest' },
+          { id: 'week-6-medicine-ball-slams', name: 'Medicine Ball Slams', sets: 5, setLabel: 'rounds', reps: '40 sec work / 20 sec rest' },
+          { id: 'week-6-mountain-climbers', name: 'Mountain Climbers', sets: 5, setLabel: 'rounds', reps: '40 sec work / 20 sec rest' },
+          { id: 'week-6-walking-lunges', name: 'Walking Lunges', sets: 5, setLabel: 'rounds', reps: '40 sec work / 20 sec rest' },
+        ],
+      },
+      {
+        id: 'conditioning-ramp-up-week-6-day-3',
+        dayNumber: 3 as const,
+        title: 'Strength + steady-state',
+        focus: 'Full-body strength at RPE 8, then aerobic base work.',
+        exercises: [
+          { id: 'week-6-lat-pulldown-assisted-pull-up', name: 'Lat Pulldown or Assisted Pull-Up', sets: 5, reps: '15', rpePrescription: 'RPE 8' },
+          { id: 'week-6-goblet-split-squat', name: 'Goblet Split Squat', sets: 5, reps: '15', rpePrescription: 'RPE 8' },
+          { id: 'week-6-half-kneeling-shoulder-press', name: 'DB 1/2 Kneel Shoulder Press', sets: 5, reps: '15 | 15', rpePrescription: 'RPE 8' },
+          { id: 'week-6-cable-face-pull', name: 'Cable Face Pull', sets: 5, reps: '15' },
+          { id: 'week-6-dead-bug', name: 'Dead Bug', sets: 5, reps: '15' },
+          { id: 'week-6-steady-state-cardio-day-3', name: 'Steady-State Cardio', sets: 1, reps: '15 min', rpePrescription: 'Conversational pace' },
+        ],
+      },
+    ],
+  },
 ];
 
 export const seedPrograms: Program[] = [
@@ -105,7 +340,7 @@ export const seedPrograms: Program[] = [
     tone: 'Conditioning + progression',
     accent: '#8B5CF6',
     startedAt: '2026-09-01T00:00:00.000Z',
-    workoutDays: conditioningRampUpWeekOne,
+    workoutWeeks: conditioningRampUpWeeks,
   },
   {
     id: 'cool-down',

@@ -64,7 +64,6 @@ export function buildEarnedTrophies(sessions: WorkoutSession[]): Trophy[] {
         unlockedAt: session.completedAt,
         attainmentSessionId: session.id,
         statsSnapshot: {
-          tonnage: session.tonnage,
           exercises: (session.exercises ?? []).map((exercise) => ({
             name: exercise.name,
             tonnage: exercise.tonnage,

@@ -1,0 +1,14 @@
+{
+  "name": "exercise-catalog-import",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "import": "tsx import.ts",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "tsx": "^4.20.5",
+    "typescript": "~6.0.3",
+    "vitest": "^3.2.4"
+  }
+}
