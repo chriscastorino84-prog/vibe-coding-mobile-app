@@ -17,7 +17,7 @@ type WorkoutScreenProps = {
 type EditableExercise = {
   id: string;
   name: string;
-  sets: Array<{ weight: string; reps: string; effort: string; quality: string; notes: string }>;
+  sets: Array<{ weight: string; reps: string; durationSeconds: string; effort: string; quality: string; notes: string }>;
   workoutType?: 'standard' | 'amrap' | 'timed_sets';
   restSeconds?: number;
   workDurationSeconds?: number;
@@ -56,7 +56,14 @@ export function WorkoutScreen({ program, workoutDay, onComplete, onBack }: Worko
       return workoutDay.exercises.map((exercise) => ({
         id: exercise.id,
         name: exercise.name,
-        sets: Array.from({ length: exercise.sets }, () => ({ weight: '', reps: exercise.reps, effort: '', quality: '5', notes: '' })),
+        sets: Array.from({ length: exercise.sets }, () => ({
+          weight: '',
+          reps: exercise.workoutType === 'timed_sets' ? '' : exercise.reps,
+          durationSeconds: exercise.workoutType === 'timed_sets' ? String(exercise.workDurationSeconds ?? '') : '',
+          effort: '',
+          quality: '5',
+          notes: '',
+        })),
         workoutType: exercise.workoutType,
         restSeconds: exercise.restSeconds,
         workDurationSeconds: exercise.workDurationSeconds,
@@ -66,7 +73,7 @@ export function WorkoutScreen({ program, workoutDay, onComplete, onBack }: Worko
 
     return exerciseDefinitions.map((exercise, index) => ({
       ...exercise,
-      sets: [{ weight: String((index + 1) * 5), reps: String(5 + index), effort: '', quality: '5', notes: '' }],
+      sets: [{ weight: String((index + 1) * 5), reps: String(5 + index), durationSeconds: '', effort: '', quality: '5', notes: '' }],
       workoutType: 'standard' as const,
     }));
   });
@@ -136,10 +143,16 @@ export function WorkoutScreen({ program, workoutDay, onComplete, onBack }: Worko
     if (activeExercise.workoutType === 'timed_sets' && activeExercise.workDurationSeconds && setElapsed < activeExercise.workDurationSeconds) return;
     const activeSet = exerciseValues[activeExerciseIndex]?.sets[activeSetIndex];
     const weight = Number(activeSet?.weight);
+    const isTimedSet = activeExercise.workoutType === 'timed_sets';
     const reps = Number(activeSet?.reps);
+    const durationSeconds = Number(activeSet?.durationSeconds);
     const quality = Number(activeSet?.quality);
-    if (!activeSet || !Number.isFinite(weight) || weight < 0 || !Number.isFinite(reps) || reps <= 0) {
-      setSetError('Enter the actual weight and reps before saving this set.');
+    if (!activeSet || !Number.isFinite(weight) || weight < 0 || (isTimedSet
+      ? !Number.isFinite(durationSeconds) || durationSeconds <= 0
+      : !Number.isFinite(reps) || reps <= 0)) {
+      setSetError(isTimedSet
+        ? 'Enter the actual weight and seconds before saving this isometric set.'
+        : 'Enter the actual weight and reps before saving this set.');
       return;
     }
     if (!Number.isInteger(quality) || quality < 1 || quality > 10) {
@@ -209,8 +222,13 @@ export function WorkoutScreen({ program, workoutDay, onComplete, onBack }: Worko
         const sets = exercise.sets.map((set, index) => ({
           id: `${exercise.id}-set-${index + 1}`,
           weight: Number(set.weight || 0),
-          reps: Number.isFinite(Number(set.reps)) ? Number(set.reps) : 0,
-          prescribedReps: Number.isFinite(Number(set.reps)) ? Number(set.reps) : 0,
+          reps: exercise.workoutType === 'timed_sets' ? 0 : (Number.isFinite(Number(set.reps)) ? Number(set.reps) : 0),
+          ...(exercise.workoutType === 'timed_sets' && Number.isFinite(Number(set.durationSeconds))
+            ? { durationSeconds: Number(set.durationSeconds), prescribedDurationSeconds: Number(sourceExercise?.workDurationSeconds) || undefined }
+            : {}),
+          ...(exercise.workoutType !== 'timed_sets' && Number.isFinite(Number(set.reps))
+            ? { prescribedReps: Number(set.reps) }
+            : {}),
           ...(set.effort.trim()
             ? sourceExercise?.rpePrescription?.toLowerCase().includes('rir')
               ? { actualRir: Number(set.effort) }
@@ -274,7 +292,7 @@ export function WorkoutScreen({ program, workoutDay, onComplete, onBack }: Worko
     });
   };
 
-  const updateSet = (exerciseId: string, setIndex: number, field: 'weight' | 'reps' | 'effort' | 'quality' | 'notes', value: string) => {
+  const updateSet = (exerciseId: string, setIndex: number, field: 'weight' | 'reps' | 'durationSeconds' | 'effort' | 'quality' | 'notes', value: string) => {
     setExerciseValues((current) => current.map((exercise) => {
       if (exercise.id !== exerciseId) {
         return exercise;
@@ -449,7 +467,14 @@ export function WorkoutScreen({ program, workoutDay, onComplete, onBack }: Worko
             <Text style={styles.setProgress}>Set {Math.min(activeSetIndex + 1, activeExercise.sets)} of {activeExercise.sets}</Text>
             <View style={styles.prescriptionCard}>
               <Text style={styles.prescriptionLabel}>Program prescription</Text>
-              <Text style={styles.prescriptionValue}>{activeExercise.reps} reps · {activeExercise.rpePrescription ?? 'Target effort set by program'}</Text>
+              <Text style={styles.prescriptionValue}>
+                {activeExercise.workoutType === 'timed_sets'
+                  ? `${activeExercise.workDurationSeconds ?? activeExercise.reps} seconds`
+                  : activeExercise.workoutType === 'amrap'
+                    ? `${activeExercise.reps} reps in ${formatDuration(activeExercise.workDurationSeconds ?? 0)}`
+                    : `${activeExercise.reps} reps`}
+                {' · '}{activeExercise.rpePrescription ?? 'Target effort set by program'}
+              </Text>
               <Text style={styles.prescriptionHint}>Edit the actual result below if equipment, fatigue, or conditions require it.</Text>
             </View>
             <View style={styles.focusInputRow}>
@@ -458,8 +483,18 @@ export function WorkoutScreen({ program, workoutDay, onComplete, onBack }: Worko
                 <TextInput style={styles.focusInput} value={exerciseValues[activeExerciseIndex]?.sets[activeSetIndex]?.weight ?? ''} keyboardType="decimal-pad" onChangeText={(text) => updateSet(activeExercise.id, activeSetIndex, 'weight', text)} placeholder="0" placeholderTextColor={palette.textMuted} accessibilityLabel="Actual weight" />
               </View>
               <View style={styles.focusField}>
-                <Text style={styles.fieldLabel}>Actual reps</Text>
-                <TextInput style={styles.focusInput} value={exerciseValues[activeExerciseIndex]?.sets[activeSetIndex]?.reps ?? ''} keyboardType="number-pad" onChangeText={(text) => updateSet(activeExercise.id, activeSetIndex, 'reps', text)} placeholder="0" placeholderTextColor={palette.textMuted} accessibilityLabel="Actual reps" />
+                <Text style={styles.fieldLabel}>{activeExercise.workoutType === 'timed_sets' ? 'Actual seconds' : 'Actual reps'}</Text>
+                <TextInput
+                  style={styles.focusInput}
+                  value={activeExercise.workoutType === 'timed_sets'
+                    ? exerciseValues[activeExerciseIndex]?.sets[activeSetIndex]?.durationSeconds ?? ''
+                    : exerciseValues[activeExerciseIndex]?.sets[activeSetIndex]?.reps ?? ''}
+                  keyboardType="number-pad"
+                  onChangeText={(text) => updateSet(activeExercise.id, activeSetIndex, activeExercise.workoutType === 'timed_sets' ? 'durationSeconds' : 'reps', text)}
+                  placeholder="0"
+                  placeholderTextColor={palette.textMuted}
+                  accessibilityLabel={activeExercise.workoutType === 'timed_sets' ? 'Actual seconds' : 'Actual reps'}
+                />
               </View>
             </View>
             <Text style={styles.fieldLabel}>Set quality · 1–10 effort diagnostic</Text>

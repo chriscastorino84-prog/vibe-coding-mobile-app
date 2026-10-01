@@ -56,6 +56,19 @@ export function ProgramDetailScreen({ program, workoutDay, onStart, onBack }: Pr
                   <Text style={styles.exerciseName}>{exercise.name}</Text>
                   <Text style={styles.prescription}>{exercise.prescription}</Text>
                 </View>
+                {exercise.workoutType && (
+                  <View style={styles.modeRow}>
+                    <Text style={styles.modeBadge}>
+                      {exercise.workoutType === 'timed_sets' ? 'ISOMETRIC · LOG SECONDS' : exercise.workoutType === 'amrap' ? 'REPS FOR TIME · LOG REPS' : 'STANDARD · LOG REPS'}
+                    </Text>
+                    {exercise.workoutType === 'timed_sets' && exercise.workDurationSeconds ? (
+                      <Text style={styles.modeHint}>Target {exercise.workDurationSeconds} seconds per set</Text>
+                    ) : null}
+                    {exercise.workoutType === 'amrap' && exercise.workDurationSeconds ? (
+                      <Text style={styles.modeHint}>Complete as many reps as possible in {Math.floor(exercise.workDurationSeconds / 60)}:{String(exercise.workDurationSeconds % 60).padStart(2, '0')}</Text>
+                    ) : null}
+                  </View>
+                )}
                 {exercise.focus && (
                   <View style={styles.focusRow}>
                     <Text style={styles.focusLabel}>Focus</Text>
@@ -134,6 +147,9 @@ const styles = StyleSheet.create({
   exerciseHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', gap: spacing.sm },
   exerciseName: { color: palette.text, fontSize: 16, fontWeight: '800', flex: 1 },
   prescription: { color: palette.accentSoft, fontSize: 12, fontWeight: '800', textAlign: 'right', maxWidth: 150 },
+  modeRow: { marginTop: spacing.sm, padding: spacing.sm, backgroundColor: palette.panel, borderRadius: radii.sm },
+  modeBadge: { color: palette.accent, fontSize: 10, fontWeight: '900', letterSpacing: 0.7 },
+  modeHint: { color: palette.textMuted, fontSize: 12, marginTop: 3 },
   focusRow: { flexDirection: 'row', marginTop: spacing.sm, gap: spacing.sm },
   focusLabel: { color: palette.accent, fontSize: 11, fontWeight: '800', textTransform: 'uppercase', letterSpacing: 1 },
   focusText: { color: palette.text, fontSize: 13, lineHeight: 19, flex: 1 },

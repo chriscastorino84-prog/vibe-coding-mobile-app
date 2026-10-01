@@ -21,14 +21,17 @@ export function WorkoutCard({ workout, onPress }: WorkoutCardProps) {
       </View>
       <View style={styles.tableHeader}>
         <Text style={styles.exerciseHeader}>Exercise</Text>
-        <Text style={styles.cellHeader}>Weight</Text>
-        <Text style={styles.cellHeader}>Reps</Text>
+        <Text style={styles.cellHeader}>Load</Text>
+        <Text style={styles.cellHeader}>Result</Text>
       </View>
       {workout.exercises.map((exercise) => (
         <View key={exercise.id} style={styles.exerciseGroup}>
           <View style={styles.exerciseTitleRow}>
             <Text style={styles.exerciseName}>{exercise.name}</Text>
-            <Text style={styles.prescription}>{exercise.rpePrescription ?? `${exercise.sets} ${exercise.setLabel ?? 'sets'}`}</Text>
+            <View style={styles.prescriptionGroup}>
+              <Text style={styles.typeBadge}>{exercise.workoutType === 'timed_sets' ? 'ISOMETRIC' : exercise.workoutType === 'amrap' ? 'REPS FOR TIME' : 'STANDARD'}</Text>
+              <Text style={styles.prescription}>{formatPrescription(exercise)}</Text>
+            </View>
           </View>
           {Array.from({ length: exercise.sets }, (_, setIndex) => (
             <View key={`${exercise.id}-${setIndex}`} style={styles.exerciseRow}>
@@ -45,6 +48,20 @@ export function WorkoutCard({ workout, onPress }: WorkoutCardProps) {
       </View>
     </TouchableOpacity>
   );
+}
+
+function formatPrescription(exercise: WorkoutDay['exercises'][number]) {
+  if (exercise.workoutType === 'timed_sets') {
+    return `${exercise.workDurationSeconds ?? exercise.reps} sec`;
+  }
+  if (exercise.workoutType === 'amrap') {
+    return `${exercise.reps} reps · ${formatDuration(exercise.workDurationSeconds ?? 0)}`;
+  }
+  return exercise.rpePrescription ?? `${exercise.sets} ${exercise.setLabel ?? 'sets'} · ${exercise.reps} reps`;
+}
+
+function formatDuration(seconds: number) {
+  return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`;
 }
 
 const styles = StyleSheet.create({
@@ -64,6 +81,8 @@ const styles = StyleSheet.create({
   exerciseTitleRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: spacing.xs },
   exerciseName: { color: palette.text, fontSize: 14, fontWeight: '700' },
   prescription: { color: palette.textMuted, fontSize: 11, marginTop: 3 },
+  prescriptionGroup: { alignItems: 'flex-end', maxWidth: 175 },
+  typeBadge: { color: palette.accent, fontSize: 9, fontWeight: '900', letterSpacing: 0.8 },
   setNumber: { color: palette.textMuted, fontSize: 11, flex: 1 },
   cell: { width: 58, height: 34, borderRadius: radii.sm, backgroundColor: palette.panel, alignItems: 'center', justifyContent: 'center', marginLeft: spacing.xs },
   cellPlaceholder: { color: palette.textMuted, fontSize: 16, fontWeight: '700' },

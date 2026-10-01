@@ -31,6 +31,7 @@ Research basis:
 - [x] Session overview and reflection prototype
 - [x] Private recap preview with selectable safe metrics
 - [x] Privacy-safe recap metadata shape
+- [x] Unit-aware active-set logging for reps-for-time and timed isometrics
 
 ## Next code-ready tasks
 
@@ -41,6 +42,7 @@ Research basis:
 - [ ] Add archive dashboard UI for the completed snapshot and generated recap.
 - [ ] Add photo picker/library integration with upload, retry, replacement, deletion, and account-cleanup behavior.
 - [ ] Extend recap preview with persisted badges, selected photos, and redaction controls.
+- [ ] Add focused UI coverage for reps-for-time and timed-isometric set capture.
 - [ ] Add explicit export/share through the platform share sheet; never auto-post.
 
 ## Requires owner/product approval

@@ -74,8 +74,10 @@ export type WorkoutSet = {
   id: string;
   weight: number;
   reps: number;
+  durationSeconds?: number;
   prescribedWeight?: number;
   prescribedReps?: number;
+  prescribedDurationSeconds?: number;
   actualRpe?: number;
   actualRir?: number;
   qualityScore?: number;
