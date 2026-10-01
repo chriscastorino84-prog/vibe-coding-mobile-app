@@ -15,13 +15,15 @@ import { seedPrograms } from './src/data/seedPrograms';
 import { buildDashboardSummary } from './src/analytics';
 import { buildEarnedTrophies } from './src/trophies';
 import type { Program, ProgressPhotoCheckpoint, Trophy, WorkoutDay, WorkoutSession } from './src/types';
+import { initializeLocalDatabase } from './src/local/database';
+import { AppShell } from './src/auth/AppShell';
 
 const SESSIONS_STORAGE_KEY = 'workout.completed-sessions.v1';
 const TROPHIES_STORAGE_KEY = 'workout.trophies.v1';
 const PROGRESS_PHOTOS_STORAGE_KEY = 'workout.progress-photo-checkpoints.v1';
 const PROGRESS_PHOTO_WEEKS = new Set([1, 3, 6]);
 
-export default function App() {
+function PrototypeApp() {
   const [screen, setScreen] = useState<'home' | 'detail' | 'workout' | 'program-garage' | 'trophy-garage' | 'trophy-detail' | 'photo-prompt' | 'progress-photo-prompt'>('home');
   const [selectedProgram, setSelectedProgram] = useState<Program>(seedPrograms[1]);
   const [selectedWorkoutDay, setSelectedWorkoutDay] = useState<WorkoutDay>();
@@ -33,10 +35,12 @@ export default function App() {
   const [pendingWorkoutDay, setPendingWorkoutDay] = useState<WorkoutDay>();
   const [pendingProgressPhotoWeek, setPendingProgressPhotoWeek] = useState<number>();
   const [isHydrated, setIsHydrated] = useState(false);
+  const [databaseError, setDatabaseError] = useState<string>();
 
   useEffect(() => {
     const loadSessions = async () => {
       try {
+        await initializeLocalDatabase();
         const storedSessions = await AsyncStorage.getItem(SESSIONS_STORAGE_KEY);
         const storedTrophies = await AsyncStorage.getItem(TROPHIES_STORAGE_KEY);
         const storedProgressPhotos = await AsyncStorage.getItem(PROGRESS_PHOTOS_STORAGE_KEY);
@@ -45,6 +49,7 @@ export default function App() {
           if (Array.isArray(parsedSessions)) {
             setSessions(parsedSessions as WorkoutSession[]);
           }
+
         }
         if (storedTrophies) {
           const parsedTrophies: unknown = JSON.parse(storedTrophies);
@@ -58,6 +63,8 @@ export default function App() {
             setProgressPhotoCheckpoints(parsedCheckpoints as ProgressPhotoCheckpoint[]);
           }
         }
+      } catch (error) {
+        setDatabaseError(error instanceof Error ? error.message : 'Unable to initialize local storage');
       } finally {
         setIsHydrated(true);
       }
@@ -106,6 +113,10 @@ export default function App() {
 
   if (!isHydrated) {
     return <View style={{ flex: 1 }} />;
+  }
+
+  if (databaseError) {
+    return <View style={{ flex: 1 }} accessibilityLabel={`Storage initialization failed: ${databaseError}`} />;
   }
 
   const handleSelectProgram = (program: Program) => {
@@ -289,4 +300,8 @@ export default function App() {
   }
 
   return null;
+}
+
+export default function App() {
+  return <AppShell><PrototypeApp /></AppShell>;
 }

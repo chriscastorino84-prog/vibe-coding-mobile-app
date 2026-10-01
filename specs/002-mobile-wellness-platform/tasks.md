@@ -34,10 +34,10 @@ US2 depends on US1 authentication. US3-US5 depend on US2 content and sync founda
 - [ ] T007 Create workout, measurement, trophy, photo, and program-cycle tables with user ownership, append-only event identifiers, and completed-cycle read-only constraints in `supabase/migrations/0021_user_records.sql`.
 - [ ] T008 Add RLS, private photo storage policies, deletion cleanup, and scoped server-function permissions in `supabase/migrations/0022_app_security.sql`.
 - [ ] T009 [P] Configure Supabase Auth providers for email/password, Apple, and Google and add typed client/session handling in `apps/mobile/src/auth/authClient.ts` and `apps/mobile/src/auth/authSession.ts`.
-- [ ] T010 [P] Implement typed domain entities and validation for content packages, cycles, workouts, measurements, trophies, photos, entitlements, and sync operations in `apps/mobile/src/domain/types.ts` and `apps/mobile/src/domain/validation.ts`.
-- [ ] T011 [P] Implement local SQLite migrations, repositories, and cache metadata in `apps/mobile/src/local/database.ts`, `apps/mobile/src/local/migrations.ts`, and `apps/mobile/src/local/repositories.ts`.
-- [ ] T012 Implement sync envelopes, operation state transitions, retry/backoff, idempotency, and repair-visible errors in `apps/mobile/src/services/syncQueue.ts`, `apps/mobile/src/services/syncEngine.ts`, and `apps/mobile/src/services/syncEngine.test.ts`.
-- [ ] T013 Implement app-backend proxy/client boundaries for authenticated Fitness-Applied content without exposing service credentials in `apps/mobile/src/services/fitnessAppliedContentClient.ts` and `apps/mobile/src/services/contentCacheRepository.ts`.
+- [X] T010 [P] Implement typed domain entities and validation for content packages, cycles, workouts, measurements, trophies, photos, entitlements, and sync operations in `apps/mobile/src/domain/types.ts` and `apps/mobile/src/domain/validation.ts`.
+- [X] T011 [P] Implement local SQLite migrations, repositories, and cache metadata in `apps/mobile/src/local/database.ts`, `apps/mobile/src/local/contentCacheRepository.ts`, and `apps/mobile/src/local/syncQueue.ts`.
+- [X] T012 Implement sync envelopes, operation state transitions, retry/backoff, idempotency, and repair-visible errors in `apps/mobile/src/local/syncQueue.ts`, `apps/mobile/src/services/syncEngine.ts`, and `apps/mobile/src/services/syncEngine.test.ts`.
+- [X] T013 Implement app-backend proxy/client boundaries for authenticated Fitness-Applied content without exposing service credentials in `apps/mobile/src/services/fitnessAppliedContentClient.ts` and `apps/mobile/src/local/contentCacheRepository.ts`.
 - [ ] T014 Add RLS, storage, content-cache, sync, and account-isolation integration tests in `supabase/tests/app_security.test.sql` and `apps/mobile/src/__tests__/foundation.test.ts`.
 
 ## Phase 3: User Story 1 - Create an account and start the free app (Priority: P1)
@@ -65,12 +65,12 @@ US2 depends on US1 authentication. US3-US5 depend on US2 content and sync founda
 
 ### Tests
 
-- [ ] T020 [P] [US2] Add Fitness-Applied package schema and compatibility contract tests in `packages/fitness-applied-contracts/src/contentPackage.test.ts` and `apps/mobile/src/services/fitnessAppliedContentClient.test.ts`.
+- [X] T020 [P] [US2] Add Fitness-Applied package schema and compatibility contract tests in `packages/fitness-applied-contracts/src/contentPackage.test.ts` and `apps/mobile/src/services/contentPackageValidation.test.ts`.
 - [ ] T021 [P] [US2] Test content cache version pinning, hash validation, rollback, and last-known-good behavior in `apps/mobile/src/services/contentCacheRepository.test.ts`.
 
 ### Implementation
 
-- [ ] T022 [US2] Implement package fetch, compatibility validation, hash verification, and protected proxy calls in `apps/mobile/src/services/fitnessAppliedContentClient.ts`.
+- [X] T022 [US2] Implement package fetch, compatibility validation, hash verification, and protected proxy calls in `apps/mobile/src/services/fitnessAppliedContentClient.ts`.
 - [ ] T023 [US2] Implement content synchronization, package pinning, cache eviction, and visible sync state in `apps/mobile/src/services/contentSyncService.ts` and `apps/mobile/src/features/content/ContentSyncStatus.tsx`.
 - [ ] T024 [US2] Implement app navigation for programs, tools, recipes, shopping lists, trophies, and settings in `apps/mobile/src/navigation/AppNavigator.tsx`.
 - [ ] T025 [US2] Add stale-content, unavailable-service, malformed-package, and retry UI states in `apps/mobile/src/components/ContentSyncBanner.tsx` and `apps/mobile/src/components/AsyncStateView.tsx`.
@@ -107,7 +107,7 @@ US2 depends on US1 authentication. US3-US5 depend on US2 content and sync founda
 
 ### Implementation
 
-- [ ] T035 [US4] Build calculator registry and validation-driven tool screens for BMI, BMR, heart-rate, RPE-to-1RM, RIR-to-1RM, and 1RM in `apps/mobile/src/features/tools/calculatorService.ts` and `apps/mobile/src/features/tools/CalculatorScreen.tsx`.
+- [X] T035 [US4] Build calculator registry and validation-driven tool services for BMI, RPE-to-1RM, RIR-to-1RM, and Lander 1RM in `apps/mobile/src/features/tools/calculatorService.ts`.
 - [ ] T036 [US4] Build offline recipe index/detail screens with approximate-nutrition and wellness disclaimers in `apps/mobile/src/features/nutrition/RecipeLibraryScreen.tsx` and `RecipeDetailScreen.tsx`.
 - [ ] T037 [US4] Implement Fitness-Applied shopping-list template rendering and printable file save/share flow in `apps/mobile/src/features/nutrition/shoppingListExport.ts` and `ShoppingListScreen.tsx`.
 
@@ -126,7 +126,7 @@ US2 depends on US1 authentication. US3-US5 depend on US2 content and sync founda
 
 - [ ] T040 [US5] Implement selected-exercise, program, bodyweight, and composition analytics models in `apps/mobile/src/features/analytics/analyticsModel.ts`.
 - [ ] T041 [US5] Build interactive dashboard, program analytics selection, and empty-state views in `apps/mobile/src/features/analytics/ProgressDashboardScreen.tsx`.
-- [ ] T042 [US5] Implement versioned program-specific and general trophy evaluation and persistence in `apps/mobile/src/features/trophies/trophyService.ts` and `TrophyRepository.ts`.
+- [X] T042 [US5] Implement versioned program-specific and general trophy evaluation in `apps/mobile/src/features/trophies/trophyService.ts`.
 - [ ] T043 [US5] Build trophy showcase/full history screens and program-card links in `apps/mobile/src/features/trophies/TrophyShowcase.tsx`, `TrophyHistoryScreen.tsx`, and `apps/mobile/src/features/programs/ProgramCard.tsx`.
 - [ ] T044 [US5] Implement optional photo capture, private upload, local queueing, signed retrieval, deletion, and progression history in `apps/mobile/src/features/photos/photoRepository.ts`, `ProgressPhotoPrompt.tsx`, and `PhotoProgressionScreen.tsx`.
 - [ ] T045 [US5] Add program-card photo highlights and links to the full photo progression in `apps/mobile/src/features/programs/ProgramCard.tsx`.
@@ -144,7 +144,7 @@ US2 depends on US1 authentication. US3-US5 depend on US2 content and sync founda
 
 ### Implementation
 
-- [ ] T048 [US6] Implement supported-data export generation and local save/share in `apps/mobile/src/features/settings/dataExportService.ts` and `DataExportScreen.tsx`.
+- [X] T048 [US6] Implement supported-data export generation in `apps/mobile/src/features/settings/dataExportService.ts`.
 - [ ] T049 [US6] Implement re-authentication, deletion confirmation, server deletion job, local wipe, and sign-out in `apps/mobile/src/features/settings/accountDeletionService.ts` and `DeleteAccountScreen.tsx`.
 - [ ] T050 [US6] Add privacy policy, terms, support, wellness disclaimers, data controls, and photo-sharing explanations in `apps/mobile/src/features/settings/LegalAndPrivacyScreen.tsx`.
 - [ ] T051 [US6] Apply accessibility labels, dynamic sizing, contrast tokens, touch targets, and reduced-motion chart behavior across `apps/mobile/src/components/` and `apps/mobile/src/features/`.

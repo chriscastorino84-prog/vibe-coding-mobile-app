@@ -3,6 +3,7 @@ import type { ContentPackage } from '@fitness-applied/contracts';
 import { getPublicEnvironment } from '../config/environment';
 import { saveContentPackage, getCachedContentPackage } from '../local/contentCacheRepository';
 import { validateContentPackage } from './contentPackageValidation';
+import { verifyContentPackageHash } from './contentPackageHash';
 
 export async function fetchContentPackage(
   packageId: string,
@@ -22,6 +23,7 @@ export async function fetchContentPackage(
 
   const payload: unknown = await response.json();
   validateContentPackage(payload);
+  await verifyContentPackageHash(payload);
   await saveContentPackage(payload);
   return payload;
 }
@@ -36,6 +38,7 @@ export async function getContentPackageWithOfflineFallback(
     const cached = await getCachedContentPackage(packageId, locale);
     if (cached) {
       validateContentPackage(cached);
+      await verifyContentPackageHash(cached);
       return { package: cached, source: 'cache' };
     }
     throw error;

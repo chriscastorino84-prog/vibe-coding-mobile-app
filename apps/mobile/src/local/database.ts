@@ -38,6 +38,26 @@ export async function migrateLocalDatabase() {
       created_at TEXT NOT NULL,
       updated_at TEXT NOT NULL
     );
+    CREATE TABLE IF NOT EXISTS workouts (
+      workout_id TEXT PRIMARY KEY NOT NULL,
+      user_id TEXT NOT NULL,
+      program_id TEXT NOT NULL,
+      content_version TEXT NOT NULL,
+      scheduled_week INTEGER NOT NULL,
+      scheduled_day INTEGER NOT NULL,
+      status TEXT NOT NULL CHECK (status IN ('in_progress', 'completed', 'abandoned')),
+      payload TEXT NOT NULL,
+      started_at TEXT NOT NULL,
+      completed_at TEXT
+    );
+    CREATE TABLE IF NOT EXISTS measurements (
+      measurement_id TEXT PRIMARY KEY NOT NULL,
+      workout_id TEXT,
+      bodyweight_value REAL NOT NULL,
+      bodyweight_unit TEXT NOT NULL CHECK (bodyweight_unit IN ('kg', 'lb')),
+      body_composition_percent REAL NOT NULL,
+      recorded_at TEXT NOT NULL
+    );
   `);
   await database.runAsync(
     'INSERT OR IGNORE INTO schema_migrations (version, applied_at) VALUES (?, ?)',
@@ -45,4 +65,8 @@ export async function migrateLocalDatabase() {
     new Date().toISOString(),
   );
   return database;
+}
+
+export async function initializeLocalDatabase() {
+  return migrateLocalDatabase();
 }

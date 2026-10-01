@@ -1,6 +1,6 @@
 import type { ContentPackage, ContentPackageMetadata } from '@fitness-applied/contracts';
 
-const SHA256_HASH = /^[a-f0-9]{64}$/i;
+const SHA256_HASH = /^(?!0{64}$)[a-f0-9]{64}$/i;
 
 export function validateContentPackageMetadata(metadata: ContentPackageMetadata) {
   if (!metadata.packageId || !metadata.contentVersion || !metadata.locale) {

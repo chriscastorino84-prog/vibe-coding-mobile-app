@@ -11,8 +11,40 @@ export interface ContentPackageMetadata {
   status: ContentStatus;
 }
 
+export interface ContentProgramExercise {
+  id: string;
+  name: string;
+  prescription?: string;
+  description?: string;
+  focus?: string;
+}
+
+export interface ContentProgramSection {
+  id: string;
+  title: string;
+  summary?: string;
+  rounds?: string;
+  exercises: ContentProgramExercise[];
+}
+
+/**
+ * The published program shape is intentionally small. The mobile app can
+ * safely ignore authoring-only fields while still rendering static sections.
+ */
+export interface ContentProgram {
+  id: string;
+  name?: string;
+  type?: string;
+  description?: string;
+  phase?: string;
+  tone?: string;
+  accent?: string;
+  sections?: ContentProgramSection[];
+  workoutWeeks?: unknown[];
+}
+
 export interface ContentPackage extends ContentPackageMetadata {
-  programs: unknown[];
+  programs: ContentProgram[];
   calculators: unknown[];
   recipes: unknown[];
   shoppingListTemplates: unknown[];

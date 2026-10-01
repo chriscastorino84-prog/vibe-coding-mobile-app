@@ -1,6 +1,6 @@
 import type { Program } from '../types';
 
-const dynamicWarmUpSections: NonNullable<Program['sections']> = [
+export const staticWarmUpSections: NonNullable<Program['sections']> = [
   {
     id: 'cardio-primer',
     title: 'Cardio Primer',
@@ -32,6 +32,28 @@ const dynamicWarmUpSections: NonNullable<Program['sections']> = [
       { id: 'prone-ys', name: "Prone Y's", prescription: '15 bodyweight; 12 light; 10 light+', focus: 'Keep thumbs up and pull them toward the sky behind you.' },
       { id: 'four-position-bridge', name: '4-Position Bridge + High-Hip Clamshells', prescription: '5 reps each position + 10 clamshells', focus: 'Brace first, keep a neutral spine, and drive hips high.', description: 'Move through four foot/knee positions, then open and close the legs with hips held high.' },
       { id: 'hollow-rock', name: 'Hollow Rock', prescription: '15 reps', focus: 'Lift your chest, press your low back down, and hold your legs off the floor.', description: 'If the low back takes over, switch to long-lever reverse sit-ups.' },
+    ],
+  },
+];
+
+export const staticCoolDownSections: NonNullable<Program['sections']> = [
+  {
+    id: 'breathing-reset',
+    title: 'Breathing Reset',
+    summary: 'Bring breathing and heart rate down before you leave the session.',
+    rounds: '2 minutes',
+    exercises: [
+      { id: 'nasal-breathing', name: 'Nasal Breathing', prescription: '2 minutes', focus: 'Inhale quietly through the nose and extend each exhale.' },
+    ],
+  },
+  {
+    id: 'cool-down-mobility',
+    title: 'Cool-Down Mobility',
+    summary: 'Use comfortable, controlled positions to restore range of motion.',
+    rounds: '1–2 rounds',
+    exercises: [
+      { id: 'half-kneeling-hip-flexor', name: 'Half-Kneeling Hip Flexor Stretch', prescription: '30 seconds each side', focus: 'Tuck the pelvis gently and keep the ribs stacked over the hips.' },
+      { id: 'childs-pose', name: "Child's Pose", prescription: '5 slow breaths', focus: 'Let the shoulders relax and stop before any pinching or pain.' },
     ],
   },
 ];
@@ -327,7 +349,7 @@ export const seedPrograms: Program[] = [
     tone: 'Mobility + readiness',
     accent: '#4FD1C5',
     startedAt: '2026-09-01T00:00:00.000Z',
-    sections: dynamicWarmUpSections,
+    sections: staticWarmUpSections,
   },
   {
     id: 'resistance-build',
@@ -353,6 +375,7 @@ export const seedPrograms: Program[] = [
     tone: 'Recovery + reset',
     accent: '#F7C873',
     startedAt: '2026-09-01T00:00:00.000Z',
+    sections: staticCoolDownSections,
   },
   {
     id: 'cardio-base',
