@@ -1,15 +1,17 @@
 {
   "expo": {
-    "name": "mobile",
-    "slug": "mobile",
+    "name": "Fitness Applied",
+    "slug": "fitness-applied",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.fitnessapplied.mobile"
     },
     "android": {
+      "package": "com.fitnessapplied.mobile",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/android-icon-foreground.png",
@@ -18,6 +20,7 @@
       },
       "predictiveBackGestureEnabled": false
     },
+    "scheme": "fitnessapplied",
     "web": {
       "favicon": "./assets/favicon.png"
     },
@@ -28,7 +31,8 @@
           "photosPermission": "Allow this app to save your progress photos.",
           "cameraPermission": "Allow this app to take progress photos."
         }
-      ]
+      ],
+      "expo-sqlite"
     ]
   }
 }
