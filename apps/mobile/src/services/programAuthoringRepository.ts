@@ -1,4 +1,4 @@
-import type { ProgramScheduleRow, ProgramSetup } from '../domain/types';
+import type { ProgramScheduleRow, ProgramSetup, ProgramSubWorkout } from '../domain/types';
 import { assertProgramStaff } from './catalogRepository';
 import { repositoryOperation, type RepositoryResult } from './repositoryResult';
 import { getSupabaseClient } from './supabase';
@@ -9,6 +9,7 @@ export type SaveProgramInput = {
   productKey?: string;
   setup: ProgramSetup;
   rows: ProgramScheduleRow[];
+  subWorkouts?: Array<Omit<ProgramSubWorkout, 'id'>>;
 };
 
 export type SavedProgramDraft = {
@@ -40,6 +41,13 @@ export async function saveProgramDraft(input: SaveProgramInput): Promise<Reposit
       effort_conversion_method: input.setup.progressionMethod === 'RPE' || input.setup.progressionMethod === 'RIR'
         ? 'helms-rpe-rir-estimate-v1'
         : null,
+      max_exercises_per_workout: input.setup.maxExercisesPerWorkout ?? input.setup.exerciseIds.length,
+      max_sets_per_exercise: input.setup.maxSetsPerExercise ?? input.setup.sets,
+      max_reps_per_set: input.setup.maxRepsPerSet ?? input.setup.reps,
+      warmup_enabled: input.setup.warmupEnabled ?? false,
+      cooldown_enabled: input.setup.cooldownEnabled ?? false,
+      discovery_enabled: input.setup.discoveryEnabled ?? false,
+      strength_formula_version: input.setup.strengthFormulaVersion ?? 'lander-v1',
       created_by: userId,
     }).select('id').single();
     if (versionError) {
@@ -65,6 +73,23 @@ export async function saveProgramDraft(input: SaveProgramInput): Promise<Reposit
     if (rowsError) {
       await client.from('programs').delete().eq('id', program.id);
       throw rowsError;
+    }
+    if (input.subWorkouts?.length) {
+      const { error: subWorkoutsError } = await client.from('program_subworkouts').insert(
+        input.subWorkouts.map((subWorkout) => ({
+          parent_program_version_id: version.id,
+          child_program_version_id: subWorkout.childProgramVersionId,
+          relationship_type: subWorkout.relationshipType,
+          launch_position: subWorkout.launchPosition,
+          required: subWorkout.required,
+          return_behavior: subWorkout.returnBehavior,
+          display_label: subWorkout.displayLabel,
+        })),
+      );
+      if (subWorkoutsError) {
+        await client.from('programs').delete().eq('id', program.id);
+        throw subWorkoutsError;
+      }
     }
     return { programId: program.id, versionId: version.id, versionNumber: 1 };
   });

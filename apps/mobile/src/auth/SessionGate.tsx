@@ -1,14 +1,17 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Linking } from 'react-native';
 import type { Session } from '@supabase/supabase-js';
 
 import { AuthScreen } from '../screens/AuthScreen';
 import { ConsentScreen } from '../screens/ConsentScreen';
 import { PasswordResetScreen } from '../screens/PasswordResetScreen';
+import { PasswordUpdateScreen } from '../screens/PasswordUpdateScreen';
 import { hasRequiredConsent, type ConsentRecord } from './consent';
 import { restoreAuthSession } from './authSession';
 import {
   sendPasswordReset,
+  updatePassword,
   signInWithEmail,
   signInWithProvider,
   signUpWithEmail,
@@ -26,6 +29,7 @@ export function SessionGate({ children }: { children: ReactNode }) {
   const [authLoading, setAuthLoading] = useState(false);
   const [error, setError] = useState<string>();
   const [resetMode, setResetMode] = useState(false);
+  const [passwordUpdateMode, setPasswordUpdateMode] = useState(false);
   const [demoMode, setDemoMode] = useState(false);
   const [resetMessage, setResetMessage] = useState<string>();
   const [authMode, setAuthMode] = useState<'sign-in' | 'sign-up'>('sign-in');
@@ -64,6 +68,29 @@ export function SessionGate({ children }: { children: ReactNode }) {
     return () => { mounted = false; cleanup?.(); };
   }, [configured]);
 
+  useEffect(() => {
+    const handleRecoveryUrl = async (url: string | null) => {
+      if (!url || !url.startsWith('fitnessapplied://reset-password')) return;
+      const fragment = url.split('#')[1] ?? '';
+      const params = new URLSearchParams(fragment);
+      const accessToken = params.get('access_token');
+      const refreshToken = params.get('refresh_token');
+      if (!accessToken || !refreshToken) {
+        setError('This recovery link is invalid or has expired. Request a new link.');
+        return;
+      }
+      const { error: sessionError } = await (await import('../services/supabase')).getSupabaseClient().auth.setSession({
+        access_token: accessToken,
+        refresh_token: refreshToken,
+      });
+      if (sessionError) setError(sessionError.message);
+      else setPasswordUpdateMode(true);
+    };
+    void Linking.getInitialURL().then(handleRecoveryUrl);
+    const subscription = Linking.addEventListener('url', ({ url }) => { void handleRecoveryUrl(url); });
+    return () => subscription.remove();
+  }, []);
+
   const runAuth = async (operation: () => Promise<{ data: { session?: Session | null; url?: string | null }; error: { message: string } | null }>) => {
     setAuthLoading(true); setError(undefined);
     try {
@@ -82,6 +109,13 @@ export function SessionGate({ children }: { children: ReactNode }) {
   };
 
   if (loading) return <AuthScreen configured={configured} loading onSubmit={() => undefined} onResetPassword={() => undefined} onProvider={() => undefined} onContinueDemo={() => undefined} />;
+  if (passwordUpdateMode) return <PasswordUpdateScreen loading={authLoading} error={error} message={resetMessage} onSubmit={(password) => {
+    setAuthLoading(true); setError(undefined); setResetMessage(undefined);
+    void updatePassword(password).then(({ error: updateError }) => {
+      if (updateError) setError(updateError.message);
+      else { setResetMessage('Password updated. You can continue into the app.'); setPasswordUpdateMode(false); }
+    }).catch((updateError) => setError(updateError instanceof Error ? updateError.message : 'Unable to update password.')).finally(() => setAuthLoading(false));
+  }} />;
   if (resetMode) return <PasswordResetScreen loading={authLoading} error={error} message={resetMessage} onBack={() => { setResetMode(false); setError(undefined); }} onSubmit={(email) => {
     setAuthLoading(true); setError(undefined); setResetMessage(undefined);
     void sendPasswordReset(email).then(({ error: resetError }) => {

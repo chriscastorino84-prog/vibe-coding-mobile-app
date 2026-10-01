@@ -21,11 +21,18 @@
 - **SyncOperation**: client operation ID, entity type, payload, state, retry count, last error, timestamps.
 - **ContentCacheEntry**: package/version, payload hash, local availability, last validated timestamp.
 - **Entitlement**: user, product/program, tier (`free`, `single_cycle`, `unlimited`), status, source, cycle usage.
+- **ProgramCycleSnapshot**: completed enrollment, pinned program version, completion timestamp, selected dashboard configuration, and immutable user-visible summary metrics.
+- **ProgramCycleSnapshotMetric**: one metric value belonging to a user-owned program snapshot.
+- **ProgramAnalyticsDefinition**: programmer-selected metric, audience, display label, unit, and aggregation behavior.
+- **ProgramAggregateMetric**: coach-facing aggregate metric with participant count and no user identifier or raw snapshot reference.
 
 ## Invariants
 
 - Published content packages are immutable.
 - Completed cycles are read-only.
+- Every completed enrollment creates one archive snapshot, including one-day programs.
+- Coaches can query aggregate program metrics only; user snapshots and anthropometric details remain user-owned.
+- Leaderboard participation is separate from aggregate analytics and requires explicit user opt-in.
 - User records are isolated by authenticated user ID.
 - Photo objects are private by default.
 - Sync operations are idempotent by client operation ID.

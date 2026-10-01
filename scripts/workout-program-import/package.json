@@ -1,0 +1,15 @@
+{
+  "name": "workout-program-import",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "export": "tsx export.ts",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "@types/node": "^24.6.0",
+    "tsx": "^4.20.5",
+    "typescript": "~6.0.3",
+    "vitest": "^3.2.4"
+  }
+}

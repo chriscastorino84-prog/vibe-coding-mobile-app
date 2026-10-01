@@ -41,6 +41,11 @@ export function HomeScreen({ programs, summary, trophies, onSelectProgram, onVie
           <Text style={styles.sectionTitle}>Progress dashboard</Text>
           <Text style={styles.sectionMeta}>{summary.completedSessionCount} session{summary.completedSessionCount === 1 ? '' : 's'}</Text>
         </View>
+        {programs.some((program) => program.adPolicy === 'free_programs_only' && program.accessTier === 'free') && (
+          <View style={styles.adPlacement} accessibilityLabel="Free program dashboard advertisement">
+            <Text style={styles.adText}>Advertisement</Text>
+          </View>
+        )}
         <MetricLineGraph points={summary.metricPoints} />
       </View>
 
@@ -140,6 +145,8 @@ const styles = StyleSheet.create({
   garageSection: {
     paddingBottom: spacing.md,
   },
+  adPlacement: { minHeight: 52, marginTop: spacing.md, borderWidth: 1, borderColor: palette.border, backgroundColor: palette.panel, borderRadius: radii.md, alignItems: 'center', justifyContent: 'center' },
+  adText: { color: palette.textMuted, fontSize: 11, letterSpacing: 1, textTransform: 'uppercase' },
   garageGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',

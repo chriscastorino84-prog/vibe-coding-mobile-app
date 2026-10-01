@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 import { palette, radii, spacing } from '../theme/theme';
@@ -13,24 +13,134 @@ type WorkoutScreenProps = {
   onBack: () => void;
 };
 
+type EditableExercise = {
+  id: string;
+  name: string;
+  sets: Array<{ weight: string; reps: string }>;
+  workoutType?: 'standard' | 'amrap' | 'timed_sets';
+  restSeconds?: number;
+  workDurationSeconds?: number;
+  intervalSeconds?: number;
+};
+
 export function WorkoutScreen({ program, workoutDay, onComplete, onBack }: WorkoutScreenProps) {
-  const [exerciseValues, setExerciseValues] = useState(() => {
+  const [started, setStarted] = useState(false);
+  const [countdown, setCountdown] = useState(3);
+  const [activeExerciseIndex, setActiveExerciseIndex] = useState(0);
+  const [completedSets, setCompletedSets] = useState<Record<string, number>>({});
+  const [roundCounts, setRoundCounts] = useState<Record<string, number>>({});
+  const [restRemaining, setRestRemaining] = useState<number | null>(null);
+  const [masterElapsed, setMasterElapsed] = useState(0);
+  const [setElapsed, setSetElapsed] = useState(0);
+  const [showFinishPrompt, setShowFinishPrompt] = useState(false);
+  const lastTapAt = useRef(0);
+  const workoutStartedAt = useRef<number | null>(null);
+  const [exerciseValues, setExerciseValues] = useState<EditableExercise[]>(() => {
     if (workoutDay) {
       return workoutDay.exercises.map((exercise) => ({
         id: exercise.id,
         name: exercise.name,
         sets: Array.from({ length: exercise.sets }, () => ({ weight: '', reps: exercise.reps })),
+        workoutType: exercise.workoutType,
+        restSeconds: exercise.restSeconds,
+        workDurationSeconds: exercise.workDurationSeconds,
+        intervalSeconds: exercise.intervalSeconds,
       }));
     }
 
     return exerciseDefinitions.map((exercise, index) => ({
       ...exercise,
       sets: [{ weight: String((index + 1) * 5), reps: String(5 + index) }],
+      workoutType: 'standard' as const,
     }));
   });
   const [measurementValues, setMeasurementValues] = useState<Record<string, string>>({});
   const [rpeQuality, setRpeQuality] = useState<RpeQuality>(3);
   const [notes, setNotes] = useState('');
+  const activeExercise = workoutDay?.exercises[activeExerciseIndex];
+
+  useEffect(() => {
+    if (!started || restRemaining !== null) return undefined;
+    const interval = setInterval(() => {
+      setMasterElapsed(workoutStartedAt.current ? Math.floor((Date.now() - workoutStartedAt.current) / 1000) : 0);
+      setSetElapsed((value) => value + 1);
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [started, restRemaining]);
+
+  useEffect(() => {
+    if (restRemaining === null) return undefined;
+    if (restRemaining <= 0) {
+      setRestRemaining(null);
+      setSetElapsed(0);
+      return undefined;
+    }
+    const timer = setTimeout(() => setRestRemaining((value) => value === null ? null : value - 1), 1000);
+    return () => clearTimeout(timer);
+  }, [restRemaining]);
+
+  useEffect(() => {
+    if (!started || countdown <= 0) return undefined;
+    const timer = setTimeout(() => setCountdown((value) => value - 1), 1000);
+    return () => clearTimeout(timer);
+  }, [started, countdown]);
+
+  useEffect(() => {
+    if (!activeExercise || activeExercise.workoutType !== 'amrap' || !activeExercise.workDurationSeconds) return;
+    if (setElapsed < activeExercise.workDurationSeconds) return;
+    if (activeExerciseIndex + 1 >= (workoutDay?.exercises.length ?? 0)) {
+      setShowFinishPrompt(true);
+    } else {
+      setActiveExerciseIndex((current) => current + 1);
+      setSetElapsed(0);
+    }
+  }, [activeExercise, activeExerciseIndex, setElapsed, workoutDay?.exercises.length]);
+
+  const beginWorkout = () => {
+    workoutStartedAt.current = Date.now();
+    setStarted(true);
+    setCountdown(3);
+  };
+
+  const formatDuration = (seconds: number) => `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`;
+
+  const finishSet = () => {
+    if (!activeExercise || restRemaining !== null || countdown > 0) return;
+    if (activeExercise.workoutType === 'timed_sets' && activeExercise.workDurationSeconds && setElapsed < activeExercise.workDurationSeconds) return;
+    const now = Date.now();
+    const currentRounds = roundCounts[activeExercise.id] ?? 0;
+    const duplicateWindow = activeExercise.workoutType === 'amrap'
+      ? Math.max(0.75, 0.75 * Math.max(1, currentRounds))
+      : 0.25;
+    if (now - lastTapAt.current < duplicateWindow * 1000) return;
+    lastTapAt.current = now;
+
+    if (activeExercise.workoutType === 'amrap') {
+      setRoundCounts((current) => ({ ...current, [activeExercise.id]: currentRounds + 1 }));
+      setSetElapsed(0);
+      return;
+    }
+
+    const setCount = completedSets[activeExercise.id] ?? 0;
+    const nextSet = setCount + 1;
+    setCompletedSets((current) => ({ ...current, [activeExercise.id]: nextSet }));
+    setSetElapsed(0);
+    const finalSet = nextSet >= activeExercise.sets;
+    if (finalSet) {
+      if (activeExerciseIndex + 1 >= (workoutDay?.exercises.length ?? 0)) {
+        setShowFinishPrompt(true);
+      } else {
+        setActiveExerciseIndex((current) => current + 1);
+      }
+      return;
+    }
+    const restSeconds = activeExercise.workoutType === 'timed_sets'
+      ? (activeExercise.intervalSeconds ?? activeExercise.restSeconds ?? 0)
+      : (activeExercise.restSeconds ?? 0);
+    if (restSeconds > 0) {
+      setRestRemaining(restSeconds);
+    }
+  };
 
   const exercises = useMemo<WorkoutExercise[]>(
     () =>
@@ -96,6 +206,59 @@ export function WorkoutScreen({ program, workoutDay, onComplete, onBack }: Worko
     }));
   };
 
+  if (!started) {
+    return (
+      <View style={styles.startScreen}>
+        <Text style={styles.phase}>{program.phase}</Text>
+        <Text style={styles.title}>{workoutDay?.title ?? program.name}</Text>
+        <Text style={styles.startCopy}>Tap start when you are ready. The workout timer begins with a three-second countdown.</Text>
+        {program.adPolicy === 'free_programs_only' && <AdPlacement label="Free program · workout banner" />}
+        <TouchableOpacity style={styles.startWorkoutButton} onPress={beginWorkout}>
+          <Text style={styles.completeText}>Tap to start</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={onBack}><Text style={styles.backText}>Back</Text></TouchableOpacity>
+      </View>
+    );
+  }
+
+  if (restRemaining !== null) {
+    return (
+      <View style={styles.restScreen}>
+        <Text style={styles.kicker}>Rest interval</Text>
+        <Text style={styles.restTime}>{formatDuration(restRemaining)}</Text>
+        <Text style={styles.restCopy}>The next set will appear when the rest interval ends.</Text>
+        {program.adPolicy === 'free_programs_only' && <AdPlacement label="Free program · rest screen" />}
+        <TouchableOpacity onPress={() => setRestRemaining(null)}><Text style={styles.skipText}>Skip rest</Text></TouchableOpacity>
+      </View>
+    );
+  }
+
+  if (countdown > 0) {
+    return (
+      <TouchableOpacity style={styles.countdownScreen} onPress={() => setCountdown(0)} activeOpacity={0.9}>
+        <Text style={styles.kicker}>Get ready</Text>
+        <Text style={styles.countdownText}>{countdown}</Text>
+        <Text style={styles.restCopy}>Tap to begin now</Text>
+      </TouchableOpacity>
+    );
+  }
+
+  if (showFinishPrompt) {
+    return (
+      <View style={styles.finishPrompt}>
+        <Text style={styles.kicker}>Workout complete</Text>
+        <Text style={styles.title}>End this workout?</Text>
+        <Text style={styles.restCopy}>Your last set is recorded. Finish now to save the session and its metrics.</Text>
+        <TouchableOpacity style={styles.startWorkoutButton} onPress={handleComplete}>
+          <Text style={styles.completeText}>End and save workout</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => setShowFinishPrompt(false)}>
+          <Text style={styles.backText}>Return to workout</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.screen}>
       <View style={styles.headerRow}>
@@ -110,6 +273,10 @@ export function WorkoutScreen({ program, workoutDay, onComplete, onBack }: Worko
       </View>
 
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+        <View style={styles.timerBar}>
+          <Text style={styles.timerLabel}>Total {formatDuration(masterElapsed)}</Text>
+          <Text style={styles.timerLabel}>Set {formatDuration(setElapsed)}</Text>
+        </View>
         {workoutDay?.dayNumber === 1 && (
           <View style={styles.programBrief}>
             <Text style={styles.briefLabel}>Program brief</Text>
@@ -147,6 +314,24 @@ export function WorkoutScreen({ program, workoutDay, onComplete, onBack }: Worko
                 />
               </View>
             ))}
+            {activeExercise && workoutDay && (
+              <TouchableOpacity style={styles.tapTracker} onPress={finishSet} accessibilityLabel={`Complete ${activeExercise.name} set`}>
+                <Text style={styles.tapTrackerTitle}>
+                  {activeExercise.workoutType === 'amrap'
+                    ? `Tap for round ${(roundCounts[activeExercise.id] ?? 0) + 1}`
+                    : activeExercise.workoutType === 'timed_sets'
+                      ? `Tap when set ${completedSets[activeExercise.id] ?? 0 + 1} ends`
+                      : `Tap when set ${(completedSets[activeExercise.id] ?? 0) + 1} ends`}
+                </Text>
+                <Text style={styles.tapTrackerHint}>
+                  {activeExercise.workoutType === 'amrap'
+                    ? `${activeExercise.workDurationSeconds ?? 0}s work · ${roundCounts[activeExercise.id] ?? 0} rounds`
+                    : activeExercise.workoutType === 'timed_sets'
+                      ? `${activeExercise.workDurationSeconds ?? 0}s work · ${activeExercise.intervalSeconds ?? 0}s interval`
+                      : 'Tap records the completed set and starts programmed rest.'}
+                </Text>
+              </TouchableOpacity>
+            )}
           </View>
         ))}
 
@@ -206,7 +391,29 @@ export function WorkoutScreen({ program, workoutDay, onComplete, onBack }: Worko
   );
 }
 
+function AdPlacement({ label }: { label: string }) {
+  return <View style={styles.adPlacement} accessibilityLabel={label}><Text style={styles.adText}>Advertisement</Text></View>;
+}
+
 const styles = StyleSheet.create({
+  kicker: { color: palette.accent, fontSize: 11, fontWeight: '800', letterSpacing: 1.2, textTransform: 'uppercase' },
+  startScreen: { flex: 1, backgroundColor: palette.background, padding: spacing.xl, justifyContent: 'center', alignItems: 'center', gap: spacing.lg },
+  startCopy: { color: palette.textMuted, fontSize: 15, lineHeight: 22, textAlign: 'center', maxWidth: 340 },
+  startWorkoutButton: { backgroundColor: palette.accent, borderRadius: radii.lg, paddingHorizontal: spacing.xl, paddingVertical: spacing.lg, minWidth: 220, alignItems: 'center' },
+  countdownScreen: { flex: 1, backgroundColor: palette.background, justifyContent: 'center', alignItems: 'center' },
+  countdownText: { color: palette.text, fontSize: 112, fontWeight: '900' },
+  restScreen: { flex: 1, backgroundColor: palette.background, justifyContent: 'center', alignItems: 'center', padding: spacing.xl, gap: spacing.lg },
+  finishPrompt: { flex: 1, backgroundColor: palette.background, justifyContent: 'center', alignItems: 'center', padding: spacing.xl, gap: spacing.lg },
+  restTime: { color: palette.accent, fontSize: 88, fontWeight: '900', letterSpacing: -4 },
+  restCopy: { color: palette.textMuted, fontSize: 15, textAlign: 'center' },
+  skipText: { color: palette.accentSoft, fontSize: 15, fontWeight: '800' },
+  timerBar: { flexDirection: 'row', justifyContent: 'space-between', backgroundColor: palette.panel, borderRadius: radii.md, padding: spacing.md, marginBottom: spacing.md },
+  timerLabel: { color: palette.accentSoft, fontWeight: '800' },
+  tapTracker: { backgroundColor: palette.accent, borderRadius: radii.lg, padding: spacing.lg, marginVertical: spacing.lg },
+  tapTrackerTitle: { color: '#07131D', fontSize: 20, fontWeight: '900', textAlign: 'center' },
+  tapTrackerHint: { color: '#07131D', fontSize: 13, textAlign: 'center', marginTop: spacing.xs },
+  adPlacement: { width: '100%', minHeight: 52, borderWidth: 1, borderColor: palette.border, backgroundColor: palette.panel, borderRadius: radii.md, alignItems: 'center', justifyContent: 'center' },
+  adText: { color: palette.textMuted, fontSize: 11, letterSpacing: 1, textTransform: 'uppercase' },
   screen: {
     flex: 1,
     backgroundColor: palette.background,

@@ -22,6 +22,56 @@ export type ProgramSetup = {
   trainingDaysPerWeek: number;
   sets: number;
   reps: number;
+  maxExercisesPerWorkout?: number;
+  maxSetsPerExercise?: number;
+  maxRepsPerSet?: number;
+  warmupEnabled?: boolean;
+  cooldownEnabled?: boolean;
+  discoveryEnabled?: boolean;
+  strengthFormulaVersion?: string;
+};
+
+export type ProgramSubWorkout = {
+  id?: string;
+  childProgramVersionId: string;
+  relationshipType: 'warmup' | 'cooldown' | 'discovery';
+  launchPosition: 'before_workout' | 'after_workout' | 'program_setup';
+  required: boolean;
+  returnBehavior: 'return_to_parent_workout' | 'return_to_parent_completion' | 'return_to_parent_program';
+  displayLabel: string;
+};
+
+export type ProgramAnalyticsDefinition = {
+  metricKey: string;
+  audience: 'user' | 'coach' | 'both';
+  displayLabel: string;
+  unit?: string;
+  aggregation: 'sum' | 'average' | 'median' | 'minimum' | 'maximum' | 'percentage';
+  enabled: boolean;
+};
+
+export type ProgramAggregateMetric = {
+  programVersionId: string;
+  metricKey: string;
+  periodStart: string;
+  periodEnd: string;
+  participantCount: number;
+  numericValue?: number;
+  percentageValue?: number;
+};
+
+export type ProgramCycleSnapshot = {
+  id: string;
+  enrollmentId: string;
+  programVersionId: string;
+  completedAt: string;
+  dashboardConfig: Record<string, unknown>;
+  metrics: Array<{
+    metricKey: string;
+    numericValue?: number;
+    textValue?: string;
+    unit?: string;
+  }>;
 };
 
 export type ProgramScheduleRow = {
@@ -44,6 +94,8 @@ export type ProgramVersion = {
   durationWeeks: number;
   trainingDaysPerWeek: number;
   rows: ProgramScheduleRow[];
+  template?: Pick<ProgramSetup, 'maxExercisesPerWorkout' | 'maxSetsPerExercise' | 'maxRepsPerSet' | 'warmupEnabled' | 'cooldownEnabled' | 'discoveryEnabled' | 'strengthFormulaVersion'>;
+  subWorkouts?: ProgramSubWorkout[];
 };
 
 export type ProgramEnrollment = {
@@ -52,6 +104,7 @@ export type ProgramEnrollment = {
   programVersionId: string;
   status: 'active' | 'completed' | 'cancelled';
   discoveryStatus: 'not_started' | 'in_progress' | 'complete';
+  subWorkouts?: ProgramSubWorkout[];
 };
 
 export type WorkoutSetInput = {

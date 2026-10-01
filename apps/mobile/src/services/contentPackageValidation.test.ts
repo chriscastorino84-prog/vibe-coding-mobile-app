@@ -33,4 +33,17 @@ describe('content package validation', () => {
       contentHash: '0'.repeat(64),
     })).toThrow();
   });
+
+  it('accepts published WOD programs in the content package', () => {
+    expect(() => validateContentPackage({
+      ...packageBase,
+      status: 'published',
+      contentHash: 'b'.repeat(64),
+      programs: [{
+        id: 'wod-1',
+        category: 'WOD',
+        marketplace: { status: 'published', accessTier: 'free', adPolicy: 'none' },
+      }],
+    })).not.toThrow();
+  });
 });

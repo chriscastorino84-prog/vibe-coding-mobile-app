@@ -1,0 +1,41 @@
+{
+  "manifestVersion": "1.0.0",
+  "locale": "en-US",
+  "launchScope": {
+    "corePrograms": [
+      "warm-up",
+      "cool-down",
+      "macro-program"
+    ],
+    "calculators": [
+      "bmi",
+      "bmr",
+      "heart-rate",
+      "rpe-to-1rm",
+      "rir-to-1rm",
+      "one-rep-max"
+    ],
+    "recipes": "Fitness-Applied launch recipe collection",
+    "shoppingLists": "Fitness-Applied launch shopping-list templates",
+    "trophies": "Fitness-Applied launch trophy definitions",
+    "wodMarketplace": {
+      "category": "WOD",
+      "accessTier": "free",
+      "marketplaceStatus": "published",
+      "source": "kaggle/uihyunk/crossfit-wods-2019-2025",
+      "sourceRevision": "v1",
+      "recordCount": 1272,
+      "attribution": "Dataset by UiHyunK on Kaggle; content collected from CrossFit.com.",
+      "licenseReview": {
+        "status": "approved",
+        "reviewer": "owner",
+        "reviewedAt": "2026-10-01"
+      }
+    }
+  },
+  "publication": {
+    "contentVersion": "pending",
+    "contentHash": "pending",
+    "publishedAt": null
+  }
+}

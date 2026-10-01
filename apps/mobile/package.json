@@ -12,6 +12,7 @@
     "expo-image-picker": "~57.0.20",
     "expo-sqlite": "~57.0.3",
     "expo-status-bar": "~57.0.1",
+    "expo-updates": "~57.0.24",
     "native-base": "^3.4.28",
     "react": "19.2.3",
     "react-dom": "19.2.3",
@@ -34,8 +35,10 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "test": "vitest run",
+    "release:verify": "npm run typecheck && npm run test && npm run release:preflight",
     "test:watch": "vitest",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "release:preflight": "node scripts/release-preflight.mjs"
   },
   "private": true
 }

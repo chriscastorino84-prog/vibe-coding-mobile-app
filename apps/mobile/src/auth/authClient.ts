@@ -11,7 +11,13 @@ export function signInWithEmail(email: string, password: string) {
 }
 
 export function sendPasswordReset(email: string) {
-  return getSupabaseClient().auth.resetPasswordForEmail(email.trim());
+  return getSupabaseClient().auth.resetPasswordForEmail(email.trim(), {
+    redirectTo: 'fitnessapplied://reset-password',
+  });
+}
+
+export function updatePassword(password: string) {
+  return getSupabaseClient().auth.updateUser({ password });
 }
 
 export function signOut() {

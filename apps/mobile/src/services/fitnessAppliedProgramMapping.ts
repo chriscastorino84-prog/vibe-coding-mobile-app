@@ -1,7 +1,7 @@
 import type { ContentPackage } from '@fitness-applied/contracts';
 
 import { seedPrograms } from '../data/seedPrograms';
-import type { Program, ProgramSection } from '../types';
+import type { Program, ProgramExercise, ProgramSection, WorkoutDay, WorkoutWeek } from '../types';
 
 export const FITNESS_APPLIED_PROGRAM_IDS = {
   warmUp: 'warm-up',
@@ -25,6 +25,18 @@ function stringValue(record: Record<string, unknown>, key: string, fallback: str
   return typeof record[key] === 'string' && record[key] ? record[key] as string : fallback;
 }
 
+function localizedValue(value: unknown, fallback: string): string {
+  if (typeof value === 'string' && value) return value;
+  const record = asRecord(value);
+  if (!record) return fallback;
+  const preferred = record['en-US'] ?? Object.values(record)[0];
+  return typeof preferred === 'string' && preferred ? preferred : fallback;
+}
+
+function workoutTypeValue(value: unknown): ProgramExercise['workoutType'] {
+  return value === 'amrap' || value === 'timed_sets' || value === 'standard' ? value : undefined;
+}
+
 function mapSections(value: unknown): ProgramSection[] | undefined {
   if (!Array.isArray(value)) return undefined;
 
@@ -34,14 +46,24 @@ function mapSections(value: unknown): ProgramSection[] | undefined {
     const exercises = section.exercises.flatMap((exerciseValue, exerciseIndex) => {
       const exercise = asRecord(exerciseValue);
       if (!exercise) return [];
-      const name = stringValue(exercise, 'name', '');
+      const name = localizedValue(exercise.name, '');
       if (!name) return [];
+      const workoutType = workoutTypeValue(exercise.workoutType);
       return [{
         id: stringValue(exercise, 'id', `${sectionIndex}-${exerciseIndex}`),
         name,
-        prescription: stringValue(exercise, 'prescription', ''),
-        ...(typeof exercise.description === 'string' ? { description: exercise.description } : {}),
-        ...(typeof exercise.focus === 'string' ? { focus: exercise.focus } : {}),
+        prescription: localizedValue(exercise.prescription, ''),
+        ...(exercise.description ? { description: localizedValue(exercise.description, '') } : {}),
+        ...(exercise.focus ? { focus: localizedValue(exercise.focus, '') } : {}),
+        ...(workoutType === 'amrap' || workoutType === 'timed_sets' || workoutType === 'standard'
+          ? { workoutType } : {}),
+        ...(typeof exercise.workDurationSeconds === 'number' ? { workDurationSeconds: exercise.workDurationSeconds } : {}),
+        ...(typeof exercise.intervalSeconds === 'number' ? { intervalSeconds: exercise.intervalSeconds } : {}),
+        ...(typeof exercise.restSeconds === 'number' ? { restSeconds: exercise.restSeconds } : {}),
+        ...(typeof exercise.sets === 'number' ? { sets: exercise.sets } : {}),
+        ...(typeof exercise.reps === 'string' ? { reps: exercise.reps } : {}),
+        ...(typeof exercise.sets === 'number' ? { sets: exercise.sets } : {}),
+        ...(typeof exercise.reps === 'string' ? { reps: exercise.reps } : {}),
       }];
     });
     if (exercises.length === 0) return [];
@@ -57,6 +79,35 @@ function mapSections(value: unknown): ProgramSection[] | undefined {
   return sections.length > 0 ? sections : undefined;
 }
 
+function mapWorkoutWeeks(value: unknown): WorkoutWeek[] | undefined {
+  const sections = mapSections(value);
+  if (!sections?.length) return undefined;
+  const weeks = new Map<number, WorkoutDay[]>();
+  sections.forEach((section, index) => {
+    const match = section.id.match(/week-(\d+)-day-(\d+)/i);
+    const weekNumber = Number(match?.[1] ?? 1);
+    const dayNumber = Number(match?.[2] ?? index + 1);
+    const day: WorkoutDay = {
+      id: section.id,
+      dayNumber: Math.min(3, Math.max(1, dayNumber)) as 1 | 2 | 3,
+      title: section.title,
+      focus: section.summary ?? '',
+      exercises: section.exercises.map((exercise) => ({
+        id: exercise.id,
+        name: exercise.name,
+        sets: exercise.sets ?? 1,
+        reps: exercise.reps ?? exercise.prescription,
+        ...(exercise.workoutType ? { workoutType: exercise.workoutType } : {}),
+        ...(exercise.restSeconds === undefined ? {} : { restSeconds: exercise.restSeconds }),
+        ...(exercise.workDurationSeconds === undefined ? {} : { workDurationSeconds: exercise.workDurationSeconds }),
+        ...(exercise.intervalSeconds === undefined ? {} : { intervalSeconds: exercise.intervalSeconds }),
+      })),
+    };
+    weeks.set(weekNumber, [...(weeks.get(weekNumber) ?? []), day]);
+  });
+  return [...weeks.entries()].sort(([left], [right]) => left - right).map(([weekNumber, workoutDays]) => ({ weekNumber, workoutDays }));
+}
+
 function canonicalProgramId(value: unknown): string | undefined {
   if (typeof value !== 'string') return undefined;
   return packageIdAliases[value.toLowerCase()] ?? value;
@@ -67,14 +118,27 @@ function mapProgram(fallback: Program, value: unknown): Program {
   if (!content) return fallback;
 
   const sections = mapSections(content.sections);
+  const workoutWeeks = mapWorkoutWeeks(content.sections);
+  const programType = content.kind === 'static_session' ? 'cardio' : fallback.type;
+  const marketplace = asRecord(content.marketplace);
   return {
     ...fallback,
-    name: stringValue(content, 'name', fallback.name),
-    description: stringValue(content, 'description', fallback.description),
-    phase: stringValue(content, 'phase', fallback.phase),
+    id: stringValue(content, 'programId', fallback.id),
+    name: localizedValue(content.title, stringValue(content, 'name', fallback.name)),
+    type: programType,
+    ...(typeof content.category === 'string' ? { category: content.category } : {}),
+    status: 'current',
+    description: localizedValue(content.description, fallback.description),
+    phase: localizedValue(content.goal, stringValue(content, 'phase', fallback.phase)),
     tone: stringValue(content, 'tone', fallback.tone),
     accent: stringValue(content, 'accent', fallback.accent),
+    ...(marketplace && typeof marketplace.status === 'string' && typeof marketplace.accessTier === 'string' && typeof marketplace.adPolicy === 'string' ? {
+      marketplaceStatus: marketplace.status as Program['marketplaceStatus'],
+      accessTier: marketplace.accessTier as Program['accessTier'],
+      adPolicy: marketplace.adPolicy as Program['adPolicy'],
+    } : {}),
     ...(sections ? { sections } : {}),
+    ...(workoutWeeks ? { workoutWeeks } : {}),
   };
 }
 
@@ -96,8 +160,20 @@ export function mapContentPackageToPrograms(
     if (id) contentById.set(id, program);
   }
 
-  return fallbackPrograms.map((fallback) => {
-    const content = contentById.get(fallback.id);
-    return content ? mapProgram(fallback, content) : fallback;
-  });
+  if (contentById.size === 0) return fallbackPrograms;
+  const fallbackById = new Map(fallbackPrograms.map((program) => [program.id, program]));
+  return [...contentById.entries()].map(([id, content]) => mapProgram(
+    fallbackById.get(id) ?? {
+      id,
+      name: id,
+      type: 'resistance',
+      status: 'current',
+      description: '',
+      phase: 'Program',
+      tone: 'Published program',
+      accent: '#D96C4A',
+      startedAt: new Date(0).toISOString(),
+    },
+    content,
+  ));
 }

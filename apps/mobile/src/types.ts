@@ -6,6 +6,7 @@ export type Program = {
   id: string;
   name: string;
   type: ProgramType;
+  category?: string;
   status: ProgramStatus;
   description: string;
   phase: string;
@@ -17,6 +18,23 @@ export type Program = {
   endingPhotoUri?: string;
   sections?: ProgramSection[];
   workoutWeeks?: WorkoutWeek[];
+  marketplaceStatus?: 'private' | 'published' | 'retired';
+  accessTier?: 'free' | 'paid';
+  adPolicy?: 'none' | 'free_programs_only';
+};
+
+export type ProgramCycleSnapshot = {
+  id: string;
+  enrollmentId: string;
+  programVersionId: string;
+  completedAt: string;
+  dashboardConfig: Record<string, unknown>;
+  metrics: Array<{
+    metricKey: string;
+    numericValue?: number;
+    textValue?: string;
+    unit?: string;
+  }>;
 };
 
 export type ProgramExercise = {
@@ -25,6 +43,12 @@ export type ProgramExercise = {
   prescription: string;
   description?: string;
   focus?: string;
+  workoutType?: 'standard' | 'amrap' | 'timed_sets';
+  workDurationSeconds?: number;
+  intervalSeconds?: number;
+  restSeconds?: number;
+  sets?: number;
+  reps?: string;
 };
 
 export type ProgramSection = {
@@ -68,6 +92,10 @@ export type WorkoutDayExercise = {
   setLabel?: string;
   reps: string;
   rpePrescription?: string;
+  workoutType?: 'standard' | 'amrap' | 'timed_sets';
+  restSeconds?: number;
+  workDurationSeconds?: number;
+  intervalSeconds?: number;
 };
 
 export type WorkoutDay = {

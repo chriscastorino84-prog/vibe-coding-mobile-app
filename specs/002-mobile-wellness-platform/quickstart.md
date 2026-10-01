@@ -7,6 +7,25 @@
 - iOS and Android test devices or simulators.
 - Separate test accounts for user isolation and deletion tests.
 
+## External setup checklist
+
+The following steps require owner accounts or approval and cannot be completed by local code changes:
+
+1. Create an Expo account and run `npx eas login` from `apps/mobile`.
+2. Confirm the permanent identifiers in `apps/mobile/app.json` before the first store build.
+3. Create staging and production Supabase projects; apply migrations with the Supabase CLI or dashboard.
+4. Configure Supabase email authentication, Apple provider, and Google provider.
+5. Set `EXPO_PUBLIC_SUPABASE_URL`, `EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, and `EXPO_PUBLIC_CONTENT_API_URL` as EAS environment variables.
+6. Approve and publish the warm-up and cool-down Fitness-Applied packages to staging.
+7. Create Apple Developer and Google Play Console app records using the identifiers in `app.json`.
+8. Provide a public privacy policy, terms, support URL, and web account-deletion URL.
+9. Complete Apple privacy details and Google Play Data Safety/account-deletion declarations.
+10. Run `npm run release:preflight`, then create preview builds with `eas build --profile preview --platform all`.
+
+The `supabase/functions/delete-account` function must be deployed with the
+Supabase service-role secret held only in the server environment. It must never
+be added to an Expo environment variable or mobile build.
+
 ## Validation scenarios
 
 1. **Authentication**: create an account with email, Apple, and Google; restore a session; sign out; reset a password.

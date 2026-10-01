@@ -1,173 +1,206 @@
-# Tasks: Fitness Applied Mobile Wellness Platform
+# Tasks: Fitness Applied Mobile Wellness Platform Launch
 
 **Input**: Design documents from `specs/002-mobile-wellness-platform/`
 
 **Prerequisites**: `plan.md`, `spec.md`, `research.md`, `data-model.md`, `contracts/`, `quickstart.md`
 
+**Scope**: Remaining work required to move the existing Expo/Supabase app, Fitness-Applied content service, and Kaggle WOD catalog toward an iOS/Android launch and public marketplace.
+
+## Current baseline
+
+The repository already contains the Expo app shell, Supabase program/content foundations, local SQLite and sync primitives, Fitness-Applied contract validation, program authoring support, marketplace fields, and the Kaggle WOD exporter. Tasks marked as remaining below close the gaps needed for a release candidate; they do not recreate completed groundwork.
+
+## Work ownership
+
+See [launch-readiness-matrix.md](./launch-readiness-matrix.md) for the full
+split. In short:
+
+- **Founder-owned**: external accounts, legal/content approval, deployed
+  Supabase services, store metadata/assets, physical-device acceptance, and
+  final release approval.
+- **Agent-executable now**: repository code, tests, fixtures, local validation,
+  documentation, and app-side work that does not require production secrets.
+- **Gated**: staging/production verification and publication tasks that depend on
+  the founder-owned actions being complete.
+
 ## Dependencies and execution order
 
-1. Setup and foundational tasks.
-2. US1 authentication and app shell.
-3. US2 content contract, synchronization, and offline cache.
-4. US3 programs, workouts, cycles, and measurements.
+1. Phase 1 release setup and Phase 2 backend/security gates.
+2. US1 authentication and app-shell release blockers.
+3. US2 content synchronization and WOD marketplace publication.
+4. US3 workout/cycle completion.
 5. US4 calculators, recipes, and shopping-list export.
-6. US5 analytics, trophies, and photos.
-7. US6 privacy, export, deletion, accessibility, and store release.
+6. US5 progress, trophies, analytics, and photos.
+7. US6 privacy, export, deletion, accessibility, and support.
+8. Final release hardening, store submission, and post-launch operations.
 
-US2 depends on US1 authentication. US3-US5 depend on US2 content and sync foundations. US6 depends on all user-facing flows.
+US1 must be production-ready before external acceptance testing. US2 must be production-ready before launch content can be reviewed. US3-US5 can proceed in parallel after the content and sync contracts are stable. US6 and final release tasks depend on all user-facing flows.
 
-## Phase 1: Setup
+## Phase 1: Setup and launch inventory
 
-**Purpose**: Establish mobile release, shared contract, test, and environment foundations.
+**Purpose**: Establish a single, auditable definition of launch scope and the environments needed to ship.
 
-- [X] T001 Create staging/production environment documentation and secret-boundary rules in `apps/mobile/README.md` and `apps/mobile/.env.example`.
-- [X] T002 Add Expo/EAS development, preview, and production profiles with stable iOS/Android identifiers in `apps/mobile/eas.json` and `apps/mobile/app.json`.
-- [X] T003 [P] Add SQLite/local persistence dependencies and test scripts in `apps/mobile/package.json`, `apps/mobile/package-lock.json`, and `apps/mobile/vitest.config.ts`.
-- [X] T004 [P] Create versioned Fitness-Applied contract package structure and shared schemas in `packages/fitness-applied-contracts/package.json` and `packages/fitness-applied-contracts/src/index.ts`.
-- [X] T005 [P] Add app-store privacy, wellness disclaimer, accessibility, and release-check documentation in `apps/mobile/README.md` and `specs/002-mobile-wellness-platform/quickstart.md`.
+- [X] T001 [P] Inventory implemented, partial, and missing requirements against `specs/002-mobile-wellness-platform/spec.md` in `specs/002-mobile-wellness-platform/launch-readiness-matrix.md`.
+- [ ] T002 [P] Confirm permanent iOS bundle identifier, Android application ID, app display name, icons, splash assets, and supported SDK versions in `apps/mobile/app.json`.
+- [ ] T003 [P] Document staging and production Supabase projects, Fitness-Applied content API endpoints, EAS environments, and secret ownership in `apps/mobile/README.md` and `apps/mobile/.env.example`.
+- [X] T004 [P] Add deterministic release commands for typecheck, unit tests, contract tests, Supabase checks, and Expo preflight in `apps/mobile/package.json` and `apps/mobile/scripts/release-preflight.mjs`.
+- [X] T005 Create a launch content manifest listing the three core programs, calculators, recipes, shopping lists, trophies, and WOD catalog revision in `packages/fitness-applied-contracts/fixtures/launch-content-manifest.json`.
 
-## Phase 2: Foundational
+## Phase 2: Foundational production and security gates
 
-**Purpose**: Establish app-owned identity, database security, local storage, sync primitives, and content access boundaries.
+**Purpose**: Complete blocking infrastructure before broad user-story work.
 
-- [ ] T006 Create app-owned user, consent, content-cache, sync-operation, entitlement, and deletion-audit schema with the data-model invariants in `supabase/migrations/0020_app_foundation.sql`.
-- [ ] T007 Create workout, measurement, trophy, photo, and program-cycle tables with user ownership, append-only event identifiers, and completed-cycle read-only constraints in `supabase/migrations/0021_user_records.sql`.
-- [ ] T008 Add RLS, private photo storage policies, deletion cleanup, and scoped server-function permissions in `supabase/migrations/0022_app_security.sql`.
-- [ ] T009 [P] Configure Supabase Auth providers for email/password, Apple, and Google and add typed client/session handling in `apps/mobile/src/auth/authClient.ts` and `apps/mobile/src/auth/authSession.ts`.
-- [X] T010 [P] Implement typed domain entities and validation for content packages, cycles, workouts, measurements, trophies, photos, entitlements, and sync operations in `apps/mobile/src/domain/types.ts` and `apps/mobile/src/domain/validation.ts`.
-- [X] T011 [P] Implement local SQLite migrations, repositories, and cache metadata in `apps/mobile/src/local/database.ts`, `apps/mobile/src/local/contentCacheRepository.ts`, and `apps/mobile/src/local/syncQueue.ts`.
-- [X] T012 Implement sync envelopes, operation state transitions, retry/backoff, idempotency, and repair-visible errors in `apps/mobile/src/local/syncQueue.ts`, `apps/mobile/src/services/syncEngine.ts`, and `apps/mobile/src/services/syncEngine.test.ts`.
-- [X] T013 Implement app-backend proxy/client boundaries for authenticated Fitness-Applied content without exposing service credentials in `apps/mobile/src/services/fitnessAppliedContentClient.ts` and `apps/mobile/src/local/contentCacheRepository.ts`.
-- [ ] T014 Add RLS, storage, content-cache, sync, and account-isolation integration tests in `supabase/tests/app_security.test.sql` and `apps/mobile/src/__tests__/foundation.test.ts`.
+- [ ] T006 Apply every pending Supabase migration to a disposable staging project and record the migration order and rollback notes in `specs/002-mobile-wellness-platform/quickstart.md`.
+- [ ] T007 [P] Configure Supabase Auth email verification, password reset, Apple, and Google providers and verify redirect URLs in the staging project and `apps/mobile/src/auth/authClient.ts`.
+- [ ] T008 [P] Add staging database/RLS/storage integration coverage for user isolation, private photos, sync idempotency, completed-cycle immutability, and account deletion in `supabase/tests/app_security.test.sql`.
+- [ ] T009 [P] Add explicit production error reporting and user-visible failure states for content, sync, auth, and deletion operations in `apps/mobile/src/services/telemetry.ts` and `apps/mobile/src/services/repositoryResult.ts`.
+- [X] T010 Verify no service-role keys, private API credentials, or staging secrets are embedded in the Expo bundle and document the check in `apps/mobile/scripts/release-preflight.mjs`.
+- [X] T011 Run the mobile typecheck and complete unit-test baseline; record failures as linked backlog items rather than suppressing them in `apps/mobile/package.json` and `apps/mobile/README.md`.
 
 ## Phase 3: User Story 1 - Create an account and start the free app (Priority: P1)
 
-**Goal**: Provide a reliable authenticated consumer app shell.
+**Goal**: Make account creation, session restoration, consent, and the authenticated app shell reliable on real devices.
 
-**Independent Test**: A user can sign up/sign in with each supported method, restore a session, see the free app home, and use cached content after losing connectivity.
-
-### Tests
-
-- [ ] T015 [P] [US1] Test email, Apple, Google, session restore, sign-out, and connectivity-state transitions in `apps/mobile/src/auth/authSession.test.ts`.
-
-### Implementation
-
-- [ ] T016 [US1] Build sign-in, sign-up, verification, password-reset, and provider-auth screens in `apps/mobile/src/features/auth/AuthScreen.tsx` and `apps/mobile/src/features/auth/PasswordResetScreen.tsx`.
-- [ ] T017 [US1] Build authenticated session gate, onboarding, wellness disclaimer, and sync-status shell in `apps/mobile/src/App.tsx` and `apps/mobile/src/features/app/AppShell.tsx`.
-- [ ] T018 [US1] Implement settings actions for sign-out and session recovery in `apps/mobile/src/features/settings/AccountSettingsScreen.tsx`.
-- [ ] T019 [US1] Add user consent recording and first-run privacy/terms presentation in `apps/mobile/src/auth/consentRepository.ts` and `apps/mobile/src/features/auth/ConsentScreen.tsx`.
-
-## Phase 4: User Story 2 - Use published Fitness-Applied content offline (Priority: P1)
-
-**Goal**: Synchronize and use versioned programs, calculators, recipes, shopping lists, and trophies offline.
-
-**Independent Test**: After synchronization, all launch content remains usable offline and last-known-good status is visible when the content service is unavailable.
+**Independent Test**: A tester can create accounts with email, Apple, and Google; restore a session on a second device; sign out; reset a password; and see the authenticated home screen.
 
 ### Tests
 
-- [X] T020 [P] [US2] Add Fitness-Applied package schema and compatibility contract tests in `packages/fitness-applied-contracts/src/contentPackage.test.ts` and `apps/mobile/src/services/contentPackageValidation.test.ts`.
-- [ ] T021 [P] [US2] Test content cache version pinning, hash validation, rollback, and last-known-good behavior in `apps/mobile/src/services/contentCacheRepository.test.ts`.
+- [ ] T012 [P] [US1] Add auth journey tests for email verification, provider callbacks, session restore, sign-out, password reset, and offline session behavior in `apps/mobile/src/auth/authSession.test.ts`.
+- [ ] T013 [P] [US1] Add a device acceptance checklist for first launch, consent, auth errors, loading states, and session recovery in `specs/002-mobile-wellness-platform/quickstart.md`.
 
 ### Implementation
 
-- [X] T022 [US2] Implement package fetch, compatibility validation, hash verification, and protected proxy calls in `apps/mobile/src/services/fitnessAppliedContentClient.ts`.
-- [ ] T023 [US2] Implement content synchronization, package pinning, cache eviction, and visible sync state in `apps/mobile/src/services/contentSyncService.ts` and `apps/mobile/src/features/content/ContentSyncStatus.tsx`.
-- [ ] T024 [US2] Implement app navigation for programs, tools, recipes, shopping lists, trophies, and settings in `apps/mobile/src/navigation/AppNavigator.tsx`.
-- [ ] T025 [US2] Add stale-content, unavailable-service, malformed-package, and retry UI states in `apps/mobile/src/components/ContentSyncBanner.tsx` and `apps/mobile/src/components/AsyncStateView.tsx`.
+- [ ] T014 [US1] Finish sign-in, sign-up, verification, provider-auth, and password-reset screens using the actual app navigation structure in `apps/mobile/src/screens/AuthScreen.tsx`, `apps/mobile/src/screens/PasswordResetScreen.tsx`, and `apps/mobile/App.tsx`.
+- [ ] T015 [US1] Finish session gating, first-run consent, wellness disclaimer, and offline/authenticated shell states in `apps/mobile/src/auth/SessionGate.tsx`, `apps/mobile/src/screens/ConsentScreen.tsx`, and `apps/mobile/src/auth/AppShell.tsx`.
+- [ ] T016 [US1] Add robust user-facing recovery for expired sessions, unavailable providers, malformed callbacks, and connectivity changes in `apps/mobile/src/auth/authSession.ts` and `apps/mobile/src/components/AsyncStateView.tsx`.
+
+## Phase 4: User Story 2 - Use published content offline and publish WOD marketplace content (Priority: P1)
+
+**Goal**: Ship a verified, immutable launch content package and make all approved Kaggle WODs discoverable under the WOD category.
+
+**Independent Test**: A tester can synchronize the launch package, open every launch program and WOD offline, see the last-known-good version, and browse WOD records with category `WOD` and marketplace status `published`.
+
+### Tests
+
+- [X] T017 [P] [US2] Add content-package contract fixtures for launch programs, WOD category metadata, marketplace status, attribution, and schema compatibility in `packages/fitness-applied-contracts/src/contentPackage.test.ts` and `packages/fitness-applied-contracts/fixtures/`.
+- [X] T018 [P] [US2] Add importer regression tests for all CSV columns, quoted commas, deterministic IDs, duplicate source rows, empty WOD rejection, and explicit license approval in `scripts/workout-program-import/export.test.ts`.
+- [ ] T019 [P] [US2] Add synchronization tests for hash validation, version pinning, rollback, cache eviction, unavailable API, and last-known-good display in `apps/mobile/src/services/contentSyncService.test.ts` and `apps/mobile/src/services/contentPackageValidation.test.ts`.
+
+### Implementation
+
+- [ ] T020 [US2] Run the approved Kaggle exporter against the pinned CSV revision and store the reproducible command, record count, reviewer, date, and attribution in `scripts/workout-program-import/README.md` and `specs/002-mobile-wellness-platform/launch-content-manifest.json`.
+- [ ] T021 [US2] Add a reviewed-content ingestion step that validates the generated WOD package against the shared contract before it can be uploaded to the Fitness-Applied content service in `scripts/workout-program-import/export.ts` and `packages/fitness-applied-contracts/src/index.ts`.
+- [ ] T022 [US2] Publish the WOD records as free `category: "WOD"` marketplace content without changing source attribution or license metadata in the Fitness-Applied content package fixture and its publishing workflow.
+- [ ] T023 [US2] Finish package synchronization, package pinning, cache persistence, retry state, and visible last-sync status in `apps/mobile/src/services/contentSyncService.ts`, `apps/mobile/src/local/contentCacheRepository.ts`, and `apps/mobile/src/screens/HomeScreen.tsx`.
+- [ ] T024 [US2] Add marketplace category filtering and WOD presentation without breaking existing program mapping in `apps/mobile/src/services/fitnessAppliedProgramMapping.ts`, `apps/mobile/src/types.ts`, and `apps/mobile/src/components/ProgramCard.tsx`.
+- [ ] T025 [US2] Verify the published staging package from a clean app install, then record content hash, version, record count, and rollback package in `specs/002-mobile-wellness-platform/quickstart.md`.
 
 ## Phase 5: User Story 3 - Complete and track a program cycle (Priority: P1)
 
-**Goal**: Let users preview, complete, synchronize, lock, and restart program cycles.
+**Goal**: Make preview, workout logging, offline save, sync, completion locking, and independent restart production-ready.
 
-**Independent Test**: A user can complete an offline workout, synchronize it once, complete a cycle, reopen it read-only, and start an independent second cycle.
+**Independent Test**: A tester can start a program, complete and reconnect an offline workout exactly once, finish a cycle, reopen it read-only, and start a second cycle.
 
 ### Tests
 
-- [ ] T026 [P] [US3] Test program package mapping, schedule preview, cycle state transitions, and read-only completion in `apps/mobile/src/domain/programCycle.test.ts`.
-- [ ] T027 [P] [US3] Test offline workout saves, repeated sync submissions, prescribed/performed values, and measurement association in `apps/mobile/src/features/workouts/workoutSync.test.ts`.
+- [ ] T026 [P] [US3] Add schedule and cycle-state tests for version pinning, prescribed values, completion locking, and independent restart in `apps/mobile/src/domain/programSchedule.test.ts` and `apps/mobile/src/services/fitnessAppliedProgramRepository.test.ts`.
+- [ ] T027 [P] [US3] Add offline workout integration tests for append-only set results, measurements, retries, duplicate operation IDs, and reconnect behavior in `apps/mobile/src/services/syncEngine.test.ts` and `apps/mobile/src/local/workoutRepository.test.ts`.
 
 ### Implementation
 
-- [ ] T028 [US3] Implement program package repository, full/week/day preview models, and exact content-version pinning in `apps/mobile/src/features/programs/programRepository.ts` and `apps/mobile/src/features/programs/programPreview.ts`.
-- [ ] T029 [US3] Build program library, program detail, cycle start, and cycle history screens in `apps/mobile/src/features/programs/ProgramLibraryScreen.tsx`, `ProgramDetailScreen.tsx`, and `ProgramCycleHistoryScreen.tsx`.
-- [ ] T030 [US3] Implement workout schedule, set-entry, completion, offline-save, and sync-retry flows in `apps/mobile/src/features/workouts/ActiveWorkoutScreen.tsx`, `workoutRepository.ts`, and `workoutCompletion.ts`.
-- [ ] T031 [US3] Implement cycle completion locking and independent restart behavior in `apps/mobile/src/features/programs/programCycleService.ts`.
-- [ ] T032 [US3] Add manual bodyweight and body-composition inputs to workout completion in `apps/mobile/src/features/workouts/WorkoutMeasurementsForm.tsx`.
+- [ ] T028 [US3] Finish program library, detail, schedule preview, cycle start, and cycle history flows using the existing screens and repositories in `apps/mobile/src/screens/ProgramGarageScreen.tsx`, `apps/mobile/src/screens/ProgramDetailScreen.tsx`, `apps/mobile/src/screens/ProgramLockerScreen.tsx`, and `apps/mobile/src/services/fitnessAppliedProgramRepository.ts`.
+- [ ] T029 [US3] Finish active workout set entry, zero-value handling, measurement capture, completion, abandonment, and offline persistence in `apps/mobile/src/screens/WorkoutScreen.tsx`, `apps/mobile/src/local/workoutRepository.ts`, and `apps/mobile/src/domain/validation.ts`.
+- [ ] T030 [US3] Finish cycle completion snapshots, immutable read-only history, and independent restart behavior in `apps/mobile/src/services/programSnapshotRepository.ts`, `apps/mobile/src/services/fitnessAppliedProgramRepository.ts`, and `apps/mobile/src/screens/ProgramLockerScreen.tsx`.
 
 ## Phase 6: User Story 4 - Use calculators and nutrition resources (Priority: P1)
 
-**Goal**: Provide all requested offline tools, recipes, and printable shopping-list output.
+**Goal**: Make all launch tools usable offline with transparent validation, approximation, method metadata, recipes, and shopping-list export.
 
-**Independent Test**: A user can run all six calculators offline, read recipes, and save/share a printable shopping-list file.
+**Independent Test**: A tester can run all six calculators with valid and invalid inputs offline, read recipes, and create/share a printable shopping-list file.
 
-### Tests
+- [ ] T031 [P] [US4] Add valid, invalid, boundary, method-version, and limitation tests for all six calculator definitions in `apps/mobile/src/features/tools/*.test.ts` and `packages/fitness-applied-contracts/fixtures/`.
+- [ ] T032 [P] [US4] Add offline recipe and shopping-list fixture tests, including empty lists, duplicate ingredients, units, file creation, and share cancellation in `apps/mobile/src/features/nutrition/` and `apps/mobile/src/features/settings/dataExportService.test.ts`.
+- [ ] T033 [US4] Finish calculator screens and ensure every estimate displays method/version, uncertainty or limitations, and actionable validation errors in `apps/mobile/src/features/tools/` and `apps/mobile/src/domain/`.
+- [ ] T034 [US4] Finish recipe browsing, recipe approximation disclaimers, shopping-list generation, local save, and native share/export behavior in `apps/mobile/src/features/nutrition/` and `apps/mobile/src/features/shoppingList/`.
 
-- [ ] T033 [P] [US4] Test calculator input validation, method/version display, limitations, and Fitness-Applied result mapping in `apps/mobile/src/features/tools/calculatorService.test.ts`.
-- [ ] T034 [P] [US4] Test recipe rendering and shopping-list document generation on iOS, Android, and web-compatible test targets in `apps/mobile/src/features/nutrition/shoppingListExport.test.ts`.
+## Phase 7: User Story 5 - Review progress, trophies, analytics, and photos (Priority: P1)
 
-### Implementation
+**Goal**: Deliver the differentiating progress card with correct empty states, private photos, trophies, and cycle analytics.
 
-- [X] T035 [US4] Build calculator registry and validation-driven tool services for BMI, RPE-to-1RM, RIR-to-1RM, and Lander 1RM in `apps/mobile/src/features/tools/calculatorService.ts`.
-- [ ] T036 [US4] Build offline recipe index/detail screens with approximate-nutrition and wellness disclaimers in `apps/mobile/src/features/nutrition/RecipeLibraryScreen.tsx` and `RecipeDetailScreen.tsx`.
-- [ ] T037 [US4] Implement Fitness-Applied shopping-list template rendering and printable file save/share flow in `apps/mobile/src/features/nutrition/shoppingListExport.ts` and `ShoppingListScreen.tsx`.
+**Independent Test**: A tester with workout and measurement history can filter one exercise, view trends and trophy highlights, add a private photo, and open complete histories; a new user sees useful empty states.
 
-## Phase 7: User Story 5 - Review progress, trophies, and photos (Priority: P1)
-
-**Goal**: Provide private progress records and interactive program/exercise dashboards.
-
-**Independent Test**: A user can see selected-exercise trends, body metrics, trophy/photo highlights, and complete history pages.
-
-### Tests
-
-- [ ] T038 [P] [US5] Test selected-exercise projected/actual series, body metric baselines, empty states, and completed-cycle filtering in `apps/mobile/src/features/analytics/analyticsModel.test.ts`.
-- [ ] T039 [P] [US5] Test program/general trophy rule versions, idempotent unlocks, and private photo metadata in `apps/mobile/src/features/trophies/trophyService.test.ts` and `apps/mobile/src/features/photos/photoRepository.test.ts`.
-
-### Implementation
-
-- [ ] T040 [US5] Implement selected-exercise, program, bodyweight, and composition analytics models in `apps/mobile/src/features/analytics/analyticsModel.ts`.
-- [ ] T041 [US5] Build interactive dashboard, program analytics selection, and empty-state views in `apps/mobile/src/features/analytics/ProgressDashboardScreen.tsx`.
-- [X] T042 [US5] Implement versioned program-specific and general trophy evaluation in `apps/mobile/src/features/trophies/trophyService.ts`.
-- [ ] T043 [US5] Build trophy showcase/full history screens and program-card links in `apps/mobile/src/features/trophies/TrophyShowcase.tsx`, `TrophyHistoryScreen.tsx`, and `apps/mobile/src/features/programs/ProgramCard.tsx`.
-- [ ] T044 [US5] Implement optional photo capture, private upload, local queueing, signed retrieval, deletion, and progression history in `apps/mobile/src/features/photos/photoRepository.ts`, `ProgressPhotoPrompt.tsx`, and `PhotoProgressionScreen.tsx`.
-- [ ] T045 [US5] Add program-card photo highlights and links to the full photo progression in `apps/mobile/src/features/programs/ProgramCard.tsx`.
+- [ ] T035 [P] [US5] Add analytics tests for selected-exercise filtering, projected/actual performance, bodyweight/composition baselines, empty states, and snapshot metrics in `apps/mobile/src/components/MetricChart.test.tsx`, `apps/mobile/src/services/programSnapshotRepository.test.ts`, and `apps/mobile/src/features/analytics/`.
+- [ ] T036 [P] [US5] Add trophy and photo privacy tests for award rules, private storage access, cancellation, deletion, and cycle-card highlights in `apps/mobile/src/features/trophies/`, `apps/mobile/src/features/analytics/`, and `supabase/tests/app_security.test.sql`.
+- [ ] T037 [US5] Finish live program-card dashboard faces, progress graphs, trophy highlights, photo highlights, and no-data explanations in `apps/mobile/src/components/ProgramCard.tsx`, `apps/mobile/src/components/MetricChart.tsx`, and `apps/mobile/src/screens/DashboardScreen.tsx`.
+- [ ] T038 [US5] Finish photo capture/upload/share-state handling with private-by-default storage and non-blocking cancellation in `apps/mobile/src/features/analytics/`, `apps/mobile/src/services/`, and `supabase/migrations/`.
 
 ## Phase 8: User Story 6 - Control account data and privacy (Priority: P1)
 
-**Goal**: Complete store-critical account controls, privacy, export, and deletion.
+**Goal**: Make privacy, export, deletion, accessibility, and legal disclosures ready for store review.
 
-**Independent Test**: A user can export supported records and permanently delete their account and private data in-app.
+**Independent Test**: A tester can export supported records, cancel an optional photo, sign out, re-authenticate, permanently delete the account, and verify that cloud/local records and private photos are removed.
 
-### Tests
+- [ ] T039 [P] [US6] Add export-contract tests covering workouts, measurements, cycles, trophies, photos metadata, consent, and empty accounts in `apps/mobile/src/features/settings/dataExportService.test.ts`.
+- [ ] T040 [P] [US6] Add end-to-end deletion verification for cloud rows, storage objects, local databases, queued operations, and session invalidation in `apps/mobile/src/features/settings/accountDeletionService.test.ts` and `supabase/tests/account_deletion.test.sql`.
+- [ ] T041 [US6] Finish re-authentication, deletion confirmation, server deletion function deployment configuration, local wipe, and sign-out in `apps/mobile/src/features/settings/accountDeletionService.ts`, `apps/mobile/src/screens/AccountSettingsScreen.tsx`, and `supabase/functions/delete-account/index.ts`.
+- [ ] T042 [US6] Finish usable data export and account/privacy controls in `apps/mobile/src/features/settings/dataExportService.ts` and `apps/mobile/src/screens/AccountSettingsScreen.tsx`.
+- [ ] T043 [US6] Add public privacy policy, terms, support URL, wellness disclaimers, photo-sharing explanation, and store data-deletion URL in `apps/mobile/src/screens/`, `apps/mobile/README.md`, and release metadata.
+- [ ] T044 [US6] Run VoiceOver/TalkBack, dynamic text, contrast, touch-target, keyboard/focus, and reduced-motion checks and fix findings in `apps/mobile/src/components/`, `apps/mobile/src/screens/`, and `apps/mobile/src/theme/`.
 
-- [ ] T046 [P] [US6] Test export contents, deletion idempotency, pending-operation cancellation, private-photo removal, and user isolation in `apps/mobile/src/features/settings/accountLifecycle.test.ts` and `supabase/tests/account_lifecycle.test.sql`.
-- [ ] T047 [P] [US6] Run accessibility checks for labels, text scaling, contrast, targets, charts, and reduced motion in `apps/mobile/src/__tests__/accessibility.test.ts`.
+## Phase 9: Release hardening and marketplace launch
 
-### Implementation
+**Purpose**: Validate the complete product from clean environments and submit only after all launch gates pass.
 
-- [X] T048 [US6] Implement supported-data export generation in `apps/mobile/src/features/settings/dataExportService.ts`.
-- [ ] T049 [US6] Implement re-authentication, deletion confirmation, server deletion job, local wipe, and sign-out in `apps/mobile/src/features/settings/accountDeletionService.ts` and `DeleteAccountScreen.tsx`.
-- [ ] T050 [US6] Add privacy policy, terms, support, wellness disclaimers, data controls, and photo-sharing explanations in `apps/mobile/src/features/settings/LegalAndPrivacyScreen.tsx`.
-- [ ] T051 [US6] Apply accessibility labels, dynamic sizing, contrast tokens, touch targets, and reduced-motion chart behavior across `apps/mobile/src/components/` and `apps/mobile/src/features/`.
+- [ ] T045 [P] Add staging and production content-package fixtures plus one complete offline acceptance fixture in `packages/fitness-applied-contracts/fixtures/` and `apps/mobile/src/__tests__/fixtures/`.
+- [ ] T046 [P] Add localization-ready message/content keys and English resources for auth, sync, workout, privacy, errors, and marketplace labels in `apps/mobile/src/localization/`.
+- [ ] T047 [P] Add crash/error monitoring that excludes advertising and behavior tracking, then document data collection and retention in `apps/mobile/src/services/telemetry.ts` and `apps/mobile/README.md`.
+- [ ] T048 Run the full typecheck, unit, contract, RLS, storage, deletion, and offline suites from a clean checkout and resolve every failure in the affected source files.
+- [ ] T049 Build iOS and Android preview artifacts from staging with `eas build --profile preview --platform all`, install them on physical devices, and record results in `specs/002-mobile-wellness-platform/quickstart.md`.
+- [ ] T050 Run the complete quickstart scenarios on both platforms, including auth, offline content, WOD browsing, workouts, calculators, export, analytics, privacy, deletion, and accessibility in `specs/002-mobile-wellness-platform/quickstart.md`.
+- [ ] T051 [P] Prepare App Store and Google Play metadata, screenshots, age rating, privacy nutrition labels/Data Safety, support URL, account-deletion URL, and reviewer notes in `apps/mobile/store/` and `apps/mobile/README.md`.
+- [ ] T052 Verify production Supabase migrations, Auth providers, storage policies, Edge Functions, content API package hash, WOD count, and environment variables in `apps/mobile/scripts/release-preflight.mjs`.
+- [ ] T053 Create signed production builds with `eas build --profile production --platform all`, upload them to TestFlight and Google Play internal testing, and complete smoke tests before public submission.
+- [ ] T054 Record founder sign-off for content rights, WOD attribution, security/RLS, privacy/deletion, accessibility, analytics disclaimers, and release rollback in `specs/002-mobile-wellness-platform/launch-signoff.md`.
+- [ ] T055 Define post-launch monitoring, support triage, content rollback, WOD correction, crash response, and first-week review cadence in `apps/mobile/README.md` and `specs/002-mobile-wellness-platform/launch-operations.md`.
 
-## Phase 9: Polish & Cross-Cutting Concerns
+## Independent test criteria by user story
 
-- [ ] T052 [P] Add staging/production Fitness-Applied contract fixtures and one complete offline acceptance fixture in `packages/fitness-applied-contracts/fixtures/` and `apps/mobile/src/__tests__/fixtures/`.
-- [ ] T053 [P] Add crash/error monitoring without advertising or behavior tracking and document privacy disclosures in `apps/mobile/src/services/telemetry.ts` and `apps/mobile/README.md`.
-- [ ] T054 [P] Add localization-ready message/content keys and English locale resources in `apps/mobile/src/localization/`.
-- [ ] T055 Add future free/single-cycle/unlimited entitlement schema and repository tests without enabling payments in `supabase/migrations/0023_future_entitlements.sql` and `apps/mobile/src/services/entitlementRepository.ts`.
-- [ ] T056 Run typecheck, unit tests, contract tests, Supabase security tests, and offline sync tests; record outcomes in `specs/002-mobile-wellness-platform/quickstart.md`.
-- [ ] T057 Build iOS and Android preview/production artifacts with EAS, verify store metadata/permissions/secrets, and record release sign-off in `apps/mobile/eas.json`, `apps/mobile/app.json`, and `specs/002-mobile-wellness-platform/quickstart.md`.
+- **US1**: Auth provider journeys, session restore, consent, sign-out, and password reset pass on iOS and Android.
+- **US2**: A clean install synchronizes a signed package, opens all content offline, shows last-known-good status, and lists published free WOD records under `WOD`.
+- **US3**: Offline workout completion synchronizes exactly once, preserves prescribed/performed values, locks completed cycles, and supports a second cycle.
+- **US4**: All six calculators reject invalid input, expose method metadata, and recipes/shopping-list export work offline.
+- **US5**: Dashboard metrics are correctly scoped, empty states are understandable, trophies render, and photos remain private by default.
+- **US6**: Export, re-authenticated deletion, local wipe, private-photo removal, disclosures, and accessibility checks pass.
 
 ## Parallel execution examples
 
-- Setup: T003, T004, and T005 can run in parallel after T001/T002.
-- Foundation: T009, T010, and T011 can run in parallel; T012-T014 follow their interfaces.
-- US2: T020 and T021 can run in parallel before T022-T025.
-- US3: T026 and T027 can run in parallel before T028-T032.
-- US4: T033 and T034 can run in parallel before T035-T037.
-- US5: T038 and T039 can run in parallel before T040-T045.
-- US6: T046 and T047 can run in parallel before T048-T051.
+After T006-T011 are complete:
 
-## MVP scope
+```text
+US1: T012-T016
+US2: T017-T025
+US3: T026-T030
+US4: T031-T034
+US5: T035-T038
+```
 
-The minimum app-store candidate is the foundational layer plus US1-US4: authenticated app shell, synchronized/offline content, the three programs with workout tracking, six calculators, recipes, and printable shopping lists. US5 and US6 remain release-critical for the stated product promise and must be completed before public submission; they are not optional post-launch enhancements.
+Within the release phase, T045-T047 and T051 can run in parallel with the final acceptance work. T048-T054 remain sequential gates because each depends on the preceding validated environment or artifact.
+
+## Implementation strategy
+
+### MVP launch slice
+
+1. Complete T001-T011.
+2. Complete US1 and US2, including the signed launch content package and WOD marketplace publication.
+3. Complete the minimum US3 workout loop and US6 privacy/deletion gates.
+4. Run T048-T050 on physical iOS and Android devices.
+
+Do not submit the app until the MVP slice passes; US4 and US5 are launch requirements from the product specification and must be completed before public release even if they are developed in parallel with US3.
+
+### Bulk completion sequence
+
+1. Use separate workstreams for US1, US2, US3, US4, and US5 after foundational gates.
+2. Keep WOD export reproducible from the pinned Kaggle CSV; never hand-edit generated IDs or silently replace source text.
+3. Merge each workstream only after its independent test criteria pass.
+4. Execute US6 and the release phase against a clean checkout, staging project, and physical devices.
+5. Publish only the content package whose hash and record counts are captured in the launch manifest.

@@ -24,9 +24,16 @@ export function ProgramCard({ program, compact = false, tileWidth, onPress }: Pr
         ]}
       />
       <View style={styles.cardContent}>
-        <Text style={styles.phase}>{program.phase}</Text>
+        <View style={styles.cardTopline}>
+          <Text style={styles.phase}>{program.phase}</Text>
+          {program.accessTier && <Text style={styles.tier}>{program.accessTier === 'paid' ? 'PAID' : 'FREE'}</Text>}
+        </View>
         <Text style={styles.name}>{program.name}</Text>
         <Text style={styles.tone}>{program.tone}</Text>
+        <View style={styles.actionRow}>
+          <Text style={styles.actionText}>{compact ? 'Open today' : 'View schedule'}</Text>
+          <Text style={styles.actionArrow}>→</Text>
+        </View>
       </View>
     </TouchableOpacity>
   );
@@ -65,6 +72,8 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
     marginBottom: 8,
   },
+  cardTopline: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  tier: { color: palette.gold, fontSize: 10, fontWeight: '900', letterSpacing: 1 },
   name: {
     color: palette.text,
     fontSize: 20,
@@ -76,4 +85,7 @@ const styles = StyleSheet.create({
     fontSize: 13,
     lineHeight: 18,
   },
+  actionRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: spacing.lg, paddingTop: spacing.sm, borderTopWidth: 1, borderTopColor: palette.border },
+  actionText: { color: palette.accentSoft, fontSize: 12, fontWeight: '800' },
+  actionArrow: { color: palette.accent, fontSize: 20, fontWeight: '700' },
 });
