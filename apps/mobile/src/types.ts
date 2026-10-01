@@ -74,6 +74,12 @@ export type WorkoutSet = {
   id: string;
   weight: number;
   reps: number;
+  prescribedWeight?: number;
+  prescribedReps?: number;
+  actualRpe?: number;
+  actualRir?: number;
+  qualityScore?: number;
+  notes?: string;
 };
 
 export type WorkoutExercise = {
@@ -139,6 +145,16 @@ export type WorkoutSession = {
   measurements?: MeasurementObservation[];
   rpeQuality?: RpeQuality;
   notes?: string;
+  reflection?: string;
+  progressPhotoUri?: string;
+  workoutPhotoUris?: string[];
+  socialSummary?: {
+    generatedAt: string;
+    includesSensitiveData: false;
+    exported: boolean;
+    includedMetrics?: string[];
+    includedPhotoCount?: number;
+  };
 };
 
 export type Trophy = {

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 import { palette, radii, spacing } from '../theme/theme';
@@ -16,23 +17,38 @@ type WorkoutScreenProps = {
 type EditableExercise = {
   id: string;
   name: string;
-  sets: Array<{ weight: string; reps: string }>;
+  sets: Array<{ weight: string; reps: string; effort: string; quality: string; notes: string }>;
   workoutType?: 'standard' | 'amrap' | 'timed_sets';
   restSeconds?: number;
   workDurationSeconds?: number;
   intervalSeconds?: number;
 };
 
+const EFFORT_REMINDER_KEY = 'fitness-applied.workout.effort-reminder.v1';
+
 export function WorkoutScreen({ program, workoutDay, onComplete, onBack }: WorkoutScreenProps) {
   const [started, setStarted] = useState(false);
   const [countdown, setCountdown] = useState(3);
   const [activeExerciseIndex, setActiveExerciseIndex] = useState(0);
+  const [activeSetIndex, setActiveSetIndex] = useState(0);
   const [completedSets, setCompletedSets] = useState<Record<string, number>>({});
   const [roundCounts, setRoundCounts] = useState<Record<string, number>>({});
   const [restRemaining, setRestRemaining] = useState<number | null>(null);
   const [masterElapsed, setMasterElapsed] = useState(0);
   const [setElapsed, setSetElapsed] = useState(0);
   const [showFinishPrompt, setShowFinishPrompt] = useState(false);
+  const [completionStep, setCompletionStep] = useState<'overview' | 'reflection' | null>(null);
+  const [recapStep, setRecapStep] = useState(false);
+  const [recapSelections, setRecapSelections] = useState({
+    sessionTime: true,
+    tonnage: true,
+    setQuality: true,
+    photos: true,
+  });
+  const [setError, setSetError] = useState('');
+  const [effortReminderEnabled, setEffortReminderEnabled] = useState(true);
+  const [effortSkipAcknowledged, setEffortSkipAcknowledged] = useState(false);
+  const [showEffortSkipPrompt, setShowEffortSkipPrompt] = useState(false);
   const lastTapAt = useRef(0);
   const workoutStartedAt = useRef<number | null>(null);
   const [exerciseValues, setExerciseValues] = useState<EditableExercise[]>(() => {
@@ -40,7 +56,7 @@ export function WorkoutScreen({ program, workoutDay, onComplete, onBack }: Worko
       return workoutDay.exercises.map((exercise) => ({
         id: exercise.id,
         name: exercise.name,
-        sets: Array.from({ length: exercise.sets }, () => ({ weight: '', reps: exercise.reps })),
+        sets: Array.from({ length: exercise.sets }, () => ({ weight: '', reps: exercise.reps, effort: '', quality: '5', notes: '' })),
         workoutType: exercise.workoutType,
         restSeconds: exercise.restSeconds,
         workDurationSeconds: exercise.workDurationSeconds,
@@ -50,7 +66,7 @@ export function WorkoutScreen({ program, workoutDay, onComplete, onBack }: Worko
 
     return exerciseDefinitions.map((exercise, index) => ({
       ...exercise,
-      sets: [{ weight: String((index + 1) * 5), reps: String(5 + index) }],
+      sets: [{ weight: String((index + 1) * 5), reps: String(5 + index), effort: '', quality: '5', notes: '' }],
       workoutType: 'standard' as const,
     }));
   });
@@ -58,6 +74,17 @@ export function WorkoutScreen({ program, workoutDay, onComplete, onBack }: Worko
   const [rpeQuality, setRpeQuality] = useState<RpeQuality>(3);
   const [notes, setNotes] = useState('');
   const activeExercise = workoutDay?.exercises[activeExerciseIndex];
+
+  useEffect(() => {
+    let mounted = true;
+    void AsyncStorage.getItem(EFFORT_REMINDER_KEY).then((value) => {
+      if (!mounted || value === null) return;
+      setEffortReminderEnabled(value !== 'false');
+    });
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   useEffect(() => {
     if (!started || restRemaining !== null) return undefined;
@@ -104,9 +131,32 @@ export function WorkoutScreen({ program, workoutDay, onComplete, onBack }: Worko
 
   const formatDuration = (seconds: number) => `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`;
 
-  const finishSet = () => {
+  const finishSet = (skipEffortReminder = false) => {
     if (!activeExercise || restRemaining !== null || countdown > 0) return;
     if (activeExercise.workoutType === 'timed_sets' && activeExercise.workDurationSeconds && setElapsed < activeExercise.workDurationSeconds) return;
+    const activeSet = exerciseValues[activeExerciseIndex]?.sets[activeSetIndex];
+    const weight = Number(activeSet?.weight);
+    const reps = Number(activeSet?.reps);
+    const quality = Number(activeSet?.quality);
+    if (!activeSet || !Number.isFinite(weight) || weight < 0 || !Number.isFinite(reps) || reps <= 0) {
+      setSetError('Enter the actual weight and reps before saving this set.');
+      return;
+    }
+    if (!Number.isInteger(quality) || quality < 1 || quality > 10) {
+      setSetError('Set quality must be a whole number from 1 to 10.');
+      return;
+    }
+    const targetUsesRir = activeExercise.rpePrescription?.toLowerCase().includes('rir') ?? false;
+    const effort = Number(activeSet.effort);
+    if (activeSet.effort.trim() && (!Number.isFinite(effort) || effort < 0 || effort > 10)) {
+      setSetError(`${targetUsesRir ? 'RIR' : 'RPE'} must be between 0 and 10.`);
+      return;
+    }
+    if (!activeSet.effort.trim() && effortReminderEnabled && !effortSkipAcknowledged && !skipEffortReminder) {
+      setShowEffortSkipPrompt(true);
+      return;
+    }
+    setSetError('');
     const now = Date.now();
     const currentRounds = roundCounts[activeExercise.id] ?? 0;
     const duplicateWindow = activeExercise.workoutType === 'amrap'
@@ -131,9 +181,11 @@ export function WorkoutScreen({ program, workoutDay, onComplete, onBack }: Worko
         setShowFinishPrompt(true);
       } else {
         setActiveExerciseIndex((current) => current + 1);
+        setActiveSetIndex(0);
       }
       return;
     }
+    setActiveSetIndex((current) => current + 1);
     const restSeconds = activeExercise.workoutType === 'timed_sets'
       ? (activeExercise.intervalSeconds ?? activeExercise.restSeconds ?? 0)
       : (activeExercise.restSeconds ?? 0);
@@ -142,13 +194,30 @@ export function WorkoutScreen({ program, workoutDay, onComplete, onBack }: Worko
     }
   };
 
+  const resolveEffortSkip = (keepReminder: boolean) => {
+    setEffortSkipAcknowledged(true);
+    setShowEffortSkipPrompt(false);
+    setEffortReminderEnabled(keepReminder);
+    void AsyncStorage.setItem(EFFORT_REMINDER_KEY, String(keepReminder));
+    finishSet(true);
+  };
+
   const exercises = useMemo<WorkoutExercise[]>(
     () =>
-      exerciseValues.map((exercise) => {
+      exerciseValues.map((exercise, exerciseIndex) => {
+        const sourceExercise = workoutDay?.exercises[exerciseIndex];
         const sets = exercise.sets.map((set, index) => ({
           id: `${exercise.id}-set-${index + 1}`,
           weight: Number(set.weight || 0),
-            reps: Number.isFinite(Number(set.reps)) ? Number(set.reps) : 0,
+          reps: Number.isFinite(Number(set.reps)) ? Number(set.reps) : 0,
+          prescribedReps: Number.isFinite(Number(set.reps)) ? Number(set.reps) : 0,
+          ...(set.effort.trim()
+            ? sourceExercise?.rpePrescription?.toLowerCase().includes('rir')
+              ? { actualRir: Number(set.effort) }
+              : { actualRpe: Number(set.effort) }
+            : {}),
+          qualityScore: Number(set.quality) || undefined,
+          notes: set.notes.trim() || undefined,
         }));
 
         return {
@@ -190,10 +259,22 @@ export function WorkoutScreen({ program, workoutDay, onComplete, onBack }: Worko
       measurements,
       rpeQuality,
       notes: notes.trim() || undefined,
+      reflection: notes.trim() || undefined,
+      socialSummary: {
+        generatedAt: completedAt,
+        includesSensitiveData: false,
+        exported: false,
+        includedMetrics: [
+          ...(recapSelections.sessionTime ? ['session_time'] : []),
+          ...(recapSelections.tonnage ? ['total_tonnage'] : []),
+          ...(recapSelections.setQuality ? ['set_quality'] : []),
+        ],
+        includedPhotoCount: 0,
+      },
     });
   };
 
-  const updateSet = (exerciseId: string, setIndex: number, field: 'weight' | 'reps', value: string) => {
+  const updateSet = (exerciseId: string, setIndex: number, field: 'weight' | 'reps' | 'effort' | 'quality' | 'notes', value: string) => {
     setExerciseValues((current) => current.map((exercise) => {
       if (exercise.id !== exerciseId) {
         return exercise;
@@ -243,19 +324,96 @@ export function WorkoutScreen({ program, workoutDay, onComplete, onBack }: Worko
     );
   }
 
+  if (showFinishPrompt && completionStep === 'reflection') {
+    if (recapStep) {
+      const tonnage = exercises.reduce((total, exercise) => total + exercise.tonnage, 0);
+      return (
+        <ScrollView contentContainerStyle={styles.finishPrompt}>
+          <Text style={styles.kicker}>Private recap preview</Text>
+          <Text style={styles.title}>Choose your highlights.</Text>
+          <Text style={styles.restCopy}>This recap is saved privately. Sensitive information is excluded by default. Export and sharing are separate actions.</Text>
+          <View style={styles.recapCard}>
+            <Text style={styles.recapCardTitle}>{program.name}</Text>
+            <Text style={styles.recapCardSubtitle}>{workoutDay?.title ?? 'Workout session'}</Text>
+            {recapSelections.sessionTime ? <Text style={styles.recapMetric}>Session time · {formatDuration(masterElapsed)}</Text> : null}
+            {recapSelections.tonnage ? <Text style={styles.recapMetric}>Total tonnage · {Math.round(tonnage)}</Text> : null}
+            {recapSelections.setQuality ? <Text style={styles.recapMetric}>Effort diagnostic · {rpeQuality}/5</Text> : null}
+            {recapSelections.photos ? <Text style={styles.recapMetric}>Photos · none added yet</Text> : null}
+          </View>
+          {([
+            ['sessionTime', 'Session time'],
+            ['tonnage', 'Total tonnage'],
+            ['setQuality', 'Effort diagnostic'],
+            ['photos', 'Workout photos, except private photos'],
+          ] as const).map(([key, label]) => (
+            <TouchableOpacity
+              key={key}
+              style={styles.recapToggle}
+              onPress={() => setRecapSelections((current) => ({ ...current, [key]: !current[key] }))}
+              accessibilityRole="checkbox"
+              accessibilityState={{ checked: recapSelections[key] }}
+            >
+              <Text style={styles.recapToggleMark}>{recapSelections[key] ? '✓' : '○'}</Text>
+              <Text style={styles.recapToggleLabel}>{label}</Text>
+            </TouchableOpacity>
+          ))}
+          <TouchableOpacity style={styles.startWorkoutButton} onPress={handleComplete}>
+            <Text style={styles.completeText}>Save private recap</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => setRecapStep(false)}>
+            <Text style={styles.backText}>Back to reflection</Text>
+          </TouchableOpacity>
+        </ScrollView>
+      );
+    }
+
+    return (
+      <ScrollView contentContainerStyle={styles.finishPrompt}>
+        <Text style={styles.kicker}>Session reflection</Text>
+        <Text style={styles.title}>How did it feel?</Text>
+        <Text style={styles.restCopy}>Your reflection stays private and helps explain the performance data in your archive.</Text>
+        <TextInput
+          style={styles.reflectionInput}
+          value={notes}
+          onChangeText={setNotes}
+          placeholder="What should you remember about this session?"
+          placeholderTextColor={palette.textMuted}
+          multiline
+          accessibilityLabel="Session reflection"
+        />
+        <TouchableOpacity style={styles.startWorkoutButton} onPress={() => setRecapStep(true)}>
+          <Text style={styles.completeText}>Review private recap</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => setCompletionStep('overview')}>
+          <Text style={styles.backText}>Back to overview</Text>
+        </TouchableOpacity>
+      </ScrollView>
+    );
+  }
+
   if (showFinishPrompt) {
     return (
-      <View style={styles.finishPrompt}>
-        <Text style={styles.kicker}>Workout complete</Text>
-        <Text style={styles.title}>End this workout?</Text>
-        <Text style={styles.restCopy}>Your last set is recorded. Finish now to save the session and its metrics.</Text>
-        <TouchableOpacity style={styles.startWorkoutButton} onPress={handleComplete}>
-          <Text style={styles.completeText}>End and save workout</Text>
+      <ScrollView contentContainerStyle={styles.finishPrompt}>
+        <Text style={styles.kicker}>Session overview</Text>
+        <Text style={styles.title}>Strong work.</Text>
+        <Text style={styles.restCopy}>Review your session before saving. Your recap hides sensitive information by default.</Text>
+        <View style={styles.summaryBox}>
+          <Text style={styles.summaryLabel}>Session time</Text>
+          <Text style={styles.summaryValue}>{formatDuration(masterElapsed)}</Text>
+          <Text style={styles.summaryLabel}>Workout quality</Text>
+          <Text style={styles.summaryValue}>{rpeQuality}/5</Text>
+        </View>
+        <TouchableOpacity style={styles.photoPrompt} onPress={() => undefined} accessibilityLabel="Add progress or workout photos">
+          <Text style={styles.photoPromptTitle}>Add photos to your private recap</Text>
+          <Text style={styles.restCopy}>Progress photo, gym selfie, or workout highlight. Photos are optional and never shared automatically.</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.startWorkoutButton} onPress={() => setCompletionStep('reflection')}>
+          <Text style={styles.completeText}>Continue to reflection</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={() => setShowFinishPrompt(false)}>
           <Text style={styles.backText}>Return to workout</Text>
         </TouchableOpacity>
-      </View>
+      </ScrollView>
     );
   }
 
@@ -285,55 +443,59 @@ export function WorkoutScreen({ program, workoutDay, onComplete, onBack }: Worko
             <Text style={styles.briefFocus}>{program.tone}</Text>
           </View>
         )}
-        {exerciseValues.map((exercise, index) => (
-          <View key={exercise.id} style={styles.exerciseCard}>
-            <Text style={styles.exerciseTitle}>{index + 1}. {exercise.name}</Text>
-            <View style={styles.tableHeader}>
-              <Text style={styles.setHeader}>Set</Text>
-              <Text style={styles.cellHeader}>Weight</Text>
-              <Text style={styles.cellHeader}>Reps</Text>
+        {activeExercise && (
+          <View style={styles.focusCard}>
+            <Text style={styles.exerciseTitle}>{activeExercise.name}</Text>
+            <Text style={styles.setProgress}>Set {Math.min(activeSetIndex + 1, activeExercise.sets)} of {activeExercise.sets}</Text>
+            <View style={styles.prescriptionCard}>
+              <Text style={styles.prescriptionLabel}>Program prescription</Text>
+              <Text style={styles.prescriptionValue}>{activeExercise.reps} reps · {activeExercise.rpePrescription ?? 'Target effort set by program'}</Text>
+              <Text style={styles.prescriptionHint}>Edit the actual result below if equipment, fatigue, or conditions require it.</Text>
             </View>
-            {exercise.sets.map((set, setIndex) => (
-              <View key={`${exercise.id}-${setIndex}`} style={styles.setRow}>
-                <Text style={styles.setLabel}>{setIndex + 1}</Text>
-                <TextInput
-                  style={styles.input}
-                  value={set.weight}
-                  keyboardType="numeric"
-                  onChangeText={(text) => updateSet(exercise.id, setIndex, 'weight', text)}
-                  placeholder="0"
-                  placeholderTextColor={palette.textMuted}
-                />
-                <TextInput
-                  style={styles.input}
-                  value={set.reps}
-                  keyboardType="numeric"
-                  onChangeText={(text) => updateSet(exercise.id, setIndex, 'reps', text)}
-                  placeholder="0"
-                  placeholderTextColor={palette.textMuted}
-                />
+            <View style={styles.focusInputRow}>
+              <View style={styles.focusField}>
+                <Text style={styles.fieldLabel}>Actual weight</Text>
+                <TextInput style={styles.focusInput} value={exerciseValues[activeExerciseIndex]?.sets[activeSetIndex]?.weight ?? ''} keyboardType="decimal-pad" onChangeText={(text) => updateSet(activeExercise.id, activeSetIndex, 'weight', text)} placeholder="0" placeholderTextColor={palette.textMuted} accessibilityLabel="Actual weight" />
               </View>
-            ))}
-            {activeExercise && workoutDay && (
-              <TouchableOpacity style={styles.tapTracker} onPress={finishSet} accessibilityLabel={`Complete ${activeExercise.name} set`}>
-                <Text style={styles.tapTrackerTitle}>
-                  {activeExercise.workoutType === 'amrap'
-                    ? `Tap for round ${(roundCounts[activeExercise.id] ?? 0) + 1}`
-                    : activeExercise.workoutType === 'timed_sets'
-                      ? `Tap when set ${completedSets[activeExercise.id] ?? 0 + 1} ends`
-                      : `Tap when set ${(completedSets[activeExercise.id] ?? 0) + 1} ends`}
-                </Text>
-                <Text style={styles.tapTrackerHint}>
-                  {activeExercise.workoutType === 'amrap'
-                    ? `${activeExercise.workDurationSeconds ?? 0}s work · ${roundCounts[activeExercise.id] ?? 0} rounds`
-                    : activeExercise.workoutType === 'timed_sets'
-                      ? `${activeExercise.workDurationSeconds ?? 0}s work · ${activeExercise.intervalSeconds ?? 0}s interval`
-                      : 'Tap records the completed set and starts programmed rest.'}
-                </Text>
-              </TouchableOpacity>
-            )}
+              <View style={styles.focusField}>
+                <Text style={styles.fieldLabel}>Actual reps</Text>
+                <TextInput style={styles.focusInput} value={exerciseValues[activeExerciseIndex]?.sets[activeSetIndex]?.reps ?? ''} keyboardType="number-pad" onChangeText={(text) => updateSet(activeExercise.id, activeSetIndex, 'reps', text)} placeholder="0" placeholderTextColor={palette.textMuted} accessibilityLabel="Actual reps" />
+              </View>
+            </View>
+            <Text style={styles.fieldLabel}>Set quality · 1–10 effort diagnostic</Text>
+            <TextInput style={styles.qualityInput} value={exerciseValues[activeExerciseIndex]?.sets[activeSetIndex]?.quality ?? '5'} keyboardType="number-pad" onChangeText={(text) => updateSet(activeExercise.id, activeSetIndex, 'quality', text)}             accessibilityLabel="Set quality score from 1 to 10"
+            />
+            <Text style={styles.fieldLabel}>{activeExercise.rpePrescription?.toLowerCase().includes('rir') ? 'Actual RIR' : 'Actual RPE'} · optional until saved</Text>
+            <TextInput
+            style={styles.qualityInput}
+            value={exerciseValues[activeExerciseIndex]?.sets[activeSetIndex]?.effort ?? ''}
+            keyboardType="decimal-pad"
+            onChangeText={(text) => updateSet(activeExercise.id, activeSetIndex, 'effort', text)}
+            placeholder={activeExercise.rpePrescription?.toLowerCase().includes('rir') ? '0–10' : '1–10'}
+            placeholderTextColor={palette.textMuted}
+            accessibilityLabel={activeExercise.rpePrescription?.toLowerCase().includes('rir') ? 'Actual RIR' : 'Actual RPE'} />
+            <Text style={styles.fieldLabel}>Set notes</Text>
+            <TextInput style={styles.setNotesInput} value={exerciseValues[activeExerciseIndex]?.sets[activeSetIndex]?.notes ?? ''} onChangeText={(text) => updateSet(activeExercise.id, activeSetIndex, 'notes', text)} placeholder="Technique, equipment, or context" placeholderTextColor={palette.textMuted} accessibilityLabel="Set notes" multiline />
+            <TouchableOpacity style={styles.tapTracker} onPress={() => finishSet()} accessibilityLabel={`Save set ${activeSetIndex + 1}`}>
+              <Text style={styles.tapTrackerTitle}>Save set and continue</Text>
+              <Text style={styles.tapTrackerHint}>Records this set, then starts programmed rest when needed.</Text>
+            </TouchableOpacity>
+            {showEffortSkipPrompt ? (
+              <View style={styles.effortPrompt} accessibilityRole="alert">
+                <Text style={styles.effortPromptTitle}>Skip actual {activeExercise.rpePrescription?.toLowerCase().includes('rir') ? 'RIR' : 'RPE'}?</Text>
+                <Text style={styles.effortPromptText}>Recording effort helps the program adapt. You can skip it for this set.</Text>
+                <TouchableOpacity style={styles.promptPrimary} onPress={() => resolveEffortSkip(true)} accessibilityLabel="Skip effort and keep reminder on">
+                  <Text style={styles.completeText}>Skip this set · keep reminder on</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.promptSecondary} onPress={() => resolveEffortSkip(false)} accessibilityLabel="Skip effort and turn reminder off">
+                  <Text style={styles.backText}>Skip and don't remind me</Text>
+                </TouchableOpacity>
+              </View>
+            ) : null}
+            {setError ? <Text style={styles.setError} accessibilityLiveRegion="polite">{setError}</Text> : null}
+            {program.adPolicy === 'free_programs_only' && <AdPlacement label="Free program · set transition banner" />}
           </View>
-        ))}
+        )}
 
         <Text style={styles.sectionTitle}>Body measurements</Text>
         <Text style={styles.sectionHint}>Optional today. Each value becomes a dated graph point.</Text>
@@ -404,6 +566,7 @@ const styles = StyleSheet.create({
   countdownText: { color: palette.text, fontSize: 112, fontWeight: '900' },
   restScreen: { flex: 1, backgroundColor: palette.background, justifyContent: 'center', alignItems: 'center', padding: spacing.xl, gap: spacing.lg },
   finishPrompt: { flex: 1, backgroundColor: palette.background, justifyContent: 'center', alignItems: 'center', padding: spacing.xl, gap: spacing.lg },
+  reflectionInput: { width: '100%', minHeight: 140, backgroundColor: palette.card, borderWidth: 1, borderColor: palette.border, borderRadius: radii.md, padding: spacing.md, color: palette.text, fontSize: 16, lineHeight: 22, textAlignVertical: 'top' },
   restTime: { color: palette.accent, fontSize: 88, fontWeight: '900', letterSpacing: -4 },
   restCopy: { color: palette.textMuted, fontSize: 15, textAlign: 'center' },
   skipText: { color: palette.accentSoft, fontSize: 15, fontWeight: '800' },
@@ -476,6 +639,40 @@ const styles = StyleSheet.create({
     padding: spacing.md,
     marginBottom: spacing.md,
   },
+  focusCard: {
+    backgroundColor: palette.card,
+    borderWidth: 1,
+    borderColor: palette.accent,
+    borderRadius: radii.lg,
+    padding: spacing.lg,
+    marginBottom: spacing.lg,
+  },
+  setProgress: { color: palette.accentSoft, fontSize: 14, fontWeight: '800', marginBottom: spacing.md },
+  prescriptionCard: { backgroundColor: palette.panel, borderRadius: radii.md, padding: spacing.md, marginBottom: spacing.lg },
+  prescriptionLabel: { color: palette.accent, fontSize: 11, fontWeight: '800', textTransform: 'uppercase', letterSpacing: 1 },
+  prescriptionValue: { color: palette.text, fontSize: 20, fontWeight: '800', marginTop: spacing.xs },
+  prescriptionHint: { color: palette.textMuted, fontSize: 13, lineHeight: 18, marginTop: spacing.sm },
+  focusInputRow: { flexDirection: 'row', gap: spacing.md, marginBottom: spacing.lg },
+  focusField: { flex: 1 },
+  fieldLabel: { color: palette.textMuted, fontSize: 12, fontWeight: '800', textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: spacing.xs },
+  focusInput: { height: 56, borderRadius: radii.md, backgroundColor: palette.panel, color: palette.text, textAlign: 'center', fontSize: 22, fontWeight: '800', borderWidth: 1, borderColor: palette.border },
+  qualityInput: { width: 88, height: 52, borderRadius: radii.md, backgroundColor: palette.panel, color: palette.text, textAlign: 'center', fontSize: 20, fontWeight: '800', borderWidth: 1, borderColor: palette.border, marginBottom: spacing.md },
+  setNotesInput: { minHeight: 80, backgroundColor: palette.panel, borderWidth: 1, borderColor: palette.border, borderRadius: radii.md, padding: spacing.md, color: palette.text, fontSize: 15, marginBottom: spacing.md, textAlignVertical: 'top' },
+  setError: { color: palette.warning, fontSize: 13, lineHeight: 18, marginBottom: spacing.md },
+  effortPrompt: { backgroundColor: palette.panel, borderWidth: 1, borderColor: palette.warning, borderRadius: radii.md, padding: spacing.md, marginBottom: spacing.md },
+  effortPromptTitle: { color: palette.text, fontSize: 16, fontWeight: '800', marginBottom: spacing.xs },
+  effortPromptText: { color: palette.textMuted, fontSize: 13, lineHeight: 18, marginBottom: spacing.md },
+  promptPrimary: { backgroundColor: palette.accent, borderRadius: radii.md, padding: spacing.md, alignItems: 'center', marginBottom: spacing.sm },
+  promptSecondary: { minHeight: 44, justifyContent: 'center', alignItems: 'center' },
+  photoPrompt: { width: '100%', backgroundColor: palette.card, borderWidth: 1, borderColor: palette.border, borderRadius: radii.md, padding: spacing.md, marginBottom: spacing.lg },
+  photoPromptTitle: { color: palette.text, fontSize: 16, fontWeight: '800', marginBottom: spacing.xs },
+  recapCard: { width: '100%', backgroundColor: palette.card, borderWidth: 1, borderColor: palette.accent, borderRadius: radii.lg, padding: spacing.lg, marginVertical: spacing.lg },
+  recapCardTitle: { color: palette.text, fontSize: 22, fontWeight: '900' },
+  recapCardSubtitle: { color: palette.accentSoft, fontSize: 14, fontWeight: '700', marginTop: spacing.xs, marginBottom: spacing.md },
+  recapMetric: { color: palette.text, fontSize: 15, paddingVertical: spacing.xs },
+  recapToggle: { width: '100%', minHeight: 48, flexDirection: 'row', alignItems: 'center', backgroundColor: palette.panel, borderRadius: radii.md, paddingHorizontal: spacing.md, marginBottom: spacing.sm },
+  recapToggleMark: { color: palette.accent, fontSize: 22, fontWeight: '900', width: 32 },
+  recapToggleLabel: { color: palette.text, fontSize: 15, fontWeight: '700', flex: 1 },
   exerciseTitle: {
     color: palette.text,
     fontSize: 16,
