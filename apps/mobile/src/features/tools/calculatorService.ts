@@ -1,5 +1,9 @@
 import { convertEffortToPercentage, type EffortScale } from '../../domain/effortConversion';
 import { estimateLanderOneRepMax } from '../../domain/strengthEstimate';
+export { calculateBmr } from '../../../../../packages/fitness-applied-tools/src/bmrCalculator';
+export type { BmrCalculation, BmrSex } from '../../../../../packages/fitness-applied-tools/src/bmrCalculator';
+export { calculateHrZones } from '../../../../../packages/fitness-applied-tools/src/hrZoneCalculator';
+export type { HeartRateZone, HrZoneCalculation } from '../../../../../packages/fitness-applied-tools/src/hrZoneCalculator';
 
 export type CalculatorResult = {
   value: number;
