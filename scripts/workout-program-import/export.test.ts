@@ -47,4 +47,11 @@ describe('CrossFit WOD export', () => {
       license: { ...source.license, approved: false },
     }, catalog)).toThrow(/license review approval/i);
   });
+
+  it('uses the name column when the CSV has one, and numbers the workout when it does not', () => {
+    const named = exportWorkoutPrograms('name,date,wod\nFran,2024-01-05,"21-15-9 thrusters and pull-ups for time"', source, catalog);
+    expect(named.programs[0]).toMatchObject({ name: 'Fran', date: '2024-01-05' });
+    const unnamed = exportWorkoutPrograms('wod\n"AMRAP 12 minutes: 10 burpees"', source, catalog);
+    expect(unnamed.programs[0].name).toBe('CrossFit WOD 1');
+  });
 });

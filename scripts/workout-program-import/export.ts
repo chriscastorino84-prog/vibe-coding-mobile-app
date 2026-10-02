@@ -43,6 +43,8 @@ export type WorkoutExportExercise = {
 export type WorkoutExportProgram = {
   id: string;
   name: string;
+  /** Source date (YYYY-MM-DD) when the CSV carries one. */
+  date?: string;
   type: 'crossfit_wod';
   category: 'WOD';
   description: string;
@@ -162,13 +164,19 @@ export function exportWorkoutPrograms(
     const id = stableId(`${source.name}:${source.revision}:${index + 1}:${wod}`);
     const columns = parseWod(wod);
     const catalogExercise = resolveCatalogExercise(wod, exerciseCatalog);
+    // A `name` column (or `title`/`workout_name`) names the workout; without one
+    // the row number is the only handle, which is what the site cards would show.
+    const givenName = (row.name ?? row.title ?? row.workout_name ?? '').trim();
+    const name = givenName || `CrossFit WOD ${index + 1}`;
+    const date = (row.date ?? '').trim();
     const settings = [
       row.men_setting ? `Men's setting: ${row.men_setting}` : '',
       row.women_setting ? `Women's setting: ${row.women_setting}` : '',
     ].filter(Boolean).join('\n');
     return {
       id,
-      name: `CrossFit WOD ${index + 1}`,
+      name,
+      ...(date ? { date } : {}),
       type: 'crossfit_wod' as const,
       category: 'WOD' as const,
       description: settings ? `${wod}\n\n${settings}` : wod,
