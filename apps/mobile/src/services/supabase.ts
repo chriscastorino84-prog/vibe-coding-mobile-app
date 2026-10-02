@@ -1,5 +1,5 @@
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { secureStorage } from './secureStorage';
 
 let client: SupabaseClient | undefined;
 
@@ -27,7 +27,7 @@ export function getSupabaseClient(): SupabaseClient {
   client = createClient(url, anonKey, {
     auth: {
       autoRefreshToken: true,
-      storage: typeof window === 'undefined' ? undefined : AsyncStorage,
+      storage: typeof window === 'undefined' ? undefined : secureStorage,
       persistSession: true,
       detectSessionInUrl: false,
     },

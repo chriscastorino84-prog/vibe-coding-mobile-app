@@ -103,6 +103,7 @@ export function ProgramAuthoringSetupScreen({ onContinue, onBack }: Props) {
               <View style={styles.exerciseText}>
                 <Text style={styles.exerciseName}>{exercise.displayName}</Text>
                 <Text style={styles.hint}>{[exercise.equipment.join(', '), exercise.category].filter(Boolean).join(' · ')}</Text>
+                {exercise.instructions ? <Text style={styles.instructions}>{exercise.instructions}</Text> : null}
               </View>
               <Text style={styles.check}>{selected ? '✓' : '+'}</Text>
             </Pressable>
@@ -154,6 +155,7 @@ const styles = StyleSheet.create({
   label: { color: palette.text, fontSize: 13, fontWeight: '700', marginTop: spacing.md, marginBottom: 7 },
   input: { color: palette.text, backgroundColor: palette.panel, borderColor: palette.border, borderWidth: 1, borderRadius: radii.md, paddingHorizontal: spacing.md, paddingVertical: 12 },
   hint: { color: palette.textMuted, fontSize: 12, marginTop: 6 },
+  instructions: { color: palette.textMuted, fontSize: 12, lineHeight: 18, marginTop: spacing.xs },
   error: { color: '#FCA5A5', fontSize: 13, lineHeight: 19, marginTop: spacing.sm },
   exerciseList: { gap: 8, marginTop: spacing.sm },
   exercise: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: spacing.md, backgroundColor: palette.panel, borderWidth: 1, borderColor: palette.border, borderRadius: radii.md },

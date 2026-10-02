@@ -42,6 +42,7 @@ export type ProgramExercise = {
   name: string;
   prescription: string;
   description?: string;
+  instructions?: string;
   focus?: string;
   workoutType?: 'standard' | 'amrap' | 'timed_sets';
   workDurationSeconds?: number;
@@ -49,6 +50,15 @@ export type ProgramExercise = {
   restSeconds?: number;
   sets?: number;
   reps?: string;
+  timer?: {
+    mode: 'none' | 'countdown' | 'stopwatch' | 'interval';
+    durationSeconds?: number;
+    intervalSeconds?: number;
+  };
+  tracking?: {
+    inputs: Array<'weight' | 'reps' | 'seconds' | 'rounds' | 'distance'>;
+    effort?: 'rpe' | 'rir';
+  };
 };
 
 export type ProgramSection = {
@@ -96,6 +106,7 @@ export type RpeQuality = 1 | 2 | 3 | 4 | 5;
 export type WorkoutDayExercise = {
   id: string;
   name: string;
+  instructions?: string;
   sets: number;
   setLabel?: string;
   reps: string;

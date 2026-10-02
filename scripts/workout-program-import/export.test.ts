@@ -12,10 +12,13 @@ const source = {
 };
 
 describe('CrossFit WOD export', () => {
+  const catalog = [{ exerciseId: 'fitness-applied:burpee', name: 'Burpee', aliases: ['burpees'], instructions: 'Lower with control, then stand tall.' }];
+
   it('preserves the source workout and maps it to the content program shape', () => {
     const result = exportWorkoutPrograms(
       'wod,men_setting,women_setting\n"For time: 30 deadlifts 20 cleans",205 lb,145 lb\n"AMRAP 10 minutes: 5 burpees",,',
       source,
+      catalog,
     );
     expect(result.programs).toHaveLength(2);
     expect(result.programs[0].sections[0].exercises[0]).toMatchObject({
@@ -24,6 +27,8 @@ describe('CrossFit WOD export', () => {
       description: "Men's setting: 205 lb\nWomen's setting: 145 lb",
     });
     expect(result.programs[1].sections[0].exercises[0].workoutType).toBe('amrap');
+    expect(result.programs[1].sections[0].exercises[0].tracking.inputs).toContain('rounds');
+    expect(result.programs[1].sections[0].exercises[0].timer).toMatchObject({ mode: 'countdown', durationSeconds: 600 });
     expect(result.programs[0]).toMatchObject({ category: 'WOD', marketplace: { status: 'published' } });
   });
 
@@ -31,6 +36,7 @@ describe('CrossFit WOD export', () => {
     const result = exportWorkoutPrograms(
       'wod,men_setting,women_setting\n"Complete 3 rounds, then row 500m",,',
       source,
+      catalog,
     );
     expect(result.programs[0].description).toContain('Complete 3 rounds, then row 500m');
   });
@@ -39,6 +45,6 @@ describe('CrossFit WOD export', () => {
     expect(() => exportWorkoutPrograms('wod\nBurpees', {
       ...source,
       license: { ...source.license, approved: false },
-    })).toThrow(/license review approval/i);
+    }, catalog)).toThrow(/license review approval/i);
   });
 });

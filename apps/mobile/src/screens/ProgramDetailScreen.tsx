@@ -69,6 +69,7 @@ export function ProgramDetailScreen({ program, workoutDay, onStart, onBack }: Pr
                     ) : null}
                   </View>
                 )}
+                {exercise.instructions && <Text style={styles.instructions}>{exercise.instructions}</Text>}
                 {exercise.focus && (
                   <View style={styles.focusRow}>
                     <Text style={styles.focusLabel}>Focus</Text>
@@ -150,6 +151,7 @@ const styles = StyleSheet.create({
   modeRow: { marginTop: spacing.sm, padding: spacing.sm, backgroundColor: palette.panel, borderRadius: radii.sm },
   modeBadge: { color: palette.accent, fontSize: 10, fontWeight: '900', letterSpacing: 0.7 },
   modeHint: { color: palette.textMuted, fontSize: 12, marginTop: 3 },
+  instructions: { color: palette.textMuted, fontSize: 13, lineHeight: 19, marginTop: spacing.sm },
   focusRow: { flexDirection: 'row', marginTop: spacing.sm, gap: spacing.sm },
   focusLabel: { color: palette.accent, fontSize: 11, fontWeight: '800', textTransform: 'uppercase', letterSpacing: 1 },
   focusText: { color: palette.text, fontSize: 13, lineHeight: 19, flex: 1 },

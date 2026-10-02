@@ -17,6 +17,7 @@ type WorkoutScreenProps = {
 type EditableExercise = {
   id: string;
   name: string;
+  instructions?: string;
   sets: Array<{ weight: string; reps: string; durationSeconds: string; effort: string; quality: string; notes: string }>;
   workoutType?: 'standard' | 'amrap' | 'timed_sets';
   restSeconds?: number;
@@ -56,6 +57,7 @@ export function WorkoutScreen({ program, workoutDay, onComplete, onBack }: Worko
       return workoutDay.exercises.map((exercise) => ({
         id: exercise.id,
         name: exercise.name,
+        instructions: exercise.instructions,
         sets: Array.from({ length: exercise.sets }, () => ({
           weight: '',
           reps: exercise.workoutType === 'timed_sets' ? '' : exercise.reps,
@@ -241,6 +243,7 @@ export function WorkoutScreen({ program, workoutDay, onComplete, onBack }: Worko
         return {
           id: exercise.id,
           name: exercise.name,
+          instructions: exercise.instructions,
           sets,
           tonnage: calculateTonnage(sets),
         };
@@ -464,6 +467,7 @@ export function WorkoutScreen({ program, workoutDay, onComplete, onBack }: Worko
         {activeExercise && (
           <View style={styles.focusCard}>
             <Text style={styles.exerciseTitle}>{activeExercise.name}</Text>
+            {activeExercise.instructions ? <Text style={styles.exerciseInstructions}>{activeExercise.instructions}</Text> : null}
             <Text style={styles.setProgress}>Set {Math.min(activeSetIndex + 1, activeExercise.sets)} of {activeExercise.sets}</Text>
             <View style={styles.prescriptionCard}>
               <Text style={styles.prescriptionLabel}>Program prescription</Text>
@@ -712,6 +716,12 @@ const styles = StyleSheet.create({
     color: palette.text,
     fontSize: 16,
     fontWeight: '800',
+    marginBottom: spacing.md,
+  },
+  exerciseInstructions: {
+    color: palette.textMuted,
+    fontSize: 14,
+    lineHeight: 20,
     marginBottom: spacing.md,
   },
   tableHeader: {

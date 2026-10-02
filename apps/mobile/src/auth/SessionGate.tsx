@@ -1,5 +1,4 @@
 import { useEffect, useState, type ReactNode } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Linking } from 'react-native';
 import type { Session } from '@supabase/supabase-js';
 
@@ -18,6 +17,7 @@ import {
   subscribeToAuthChanges,
 } from './authClient';
 import { SupabaseConfigurationError } from '../services/supabase';
+import { secureStorage } from '../services/secureStorage';
 
 const CONSENT_STORAGE_KEY = 'fitness-applied.consent.v1';
 
@@ -38,7 +38,7 @@ export function SessionGate({ children }: { children: ReactNode }) {
     let mounted = true;
     const restore = async () => {
       try {
-        const storedConsent = await AsyncStorage.getItem(CONSENT_STORAGE_KEY);
+        const storedConsent = await secureStorage.getItem(CONSENT_STORAGE_KEY);
         if (storedConsent && mounted) {
           try { setConsent(JSON.parse(storedConsent) as ConsentRecord); } catch { setConsent(null); }
         }
@@ -105,7 +105,7 @@ export function SessionGate({ children }: { children: ReactNode }) {
 
   const acceptConsent = (record: ConsentRecord) => {
     setConsent(record);
-    void AsyncStorage.setItem(CONSENT_STORAGE_KEY, JSON.stringify(record));
+    void secureStorage.setItem(CONSENT_STORAGE_KEY, JSON.stringify(record));
   };
 
   if (loading) return <AuthScreen configured={configured} loading onSubmit={() => undefined} onResetPassword={() => undefined} onProvider={() => undefined} onContinueDemo={() => undefined} />;

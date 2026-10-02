@@ -32,6 +32,7 @@ export function WorkoutCard({ workout, onPress }: WorkoutCardProps) {
               <Text style={styles.typeBadge}>{exercise.workoutType === 'timed_sets' ? 'ISOMETRIC' : exercise.workoutType === 'amrap' ? 'REPS FOR TIME' : 'STANDARD'}</Text>
               <Text style={styles.prescription}>{formatPrescription(exercise)}</Text>
             </View>
+            {exercise.instructions ? <Text style={styles.instructions}>{exercise.instructions}</Text> : null}
           </View>
           {Array.from({ length: exercise.sets }, (_, setIndex) => (
             <View key={`${exercise.id}-${setIndex}`} style={styles.exerciseRow}>
@@ -83,6 +84,7 @@ const styles = StyleSheet.create({
   prescription: { color: palette.textMuted, fontSize: 11, marginTop: 3 },
   prescriptionGroup: { alignItems: 'flex-end', maxWidth: 175 },
   typeBadge: { color: palette.accent, fontSize: 9, fontWeight: '900', letterSpacing: 0.8 },
+  instructions: { color: palette.textMuted, fontSize: 12, lineHeight: 18, marginTop: spacing.xs, marginBottom: spacing.xs },
   setNumber: { color: palette.textMuted, fontSize: 11, flex: 1 },
   cell: { width: 58, height: 34, borderRadius: radii.sm, backgroundColor: palette.panel, alignItems: 'center', justifyContent: 'center', marginLeft: spacing.xs },
   cellPlaceholder: { color: palette.textMuted, fontSize: 16, fontWeight: '700' },

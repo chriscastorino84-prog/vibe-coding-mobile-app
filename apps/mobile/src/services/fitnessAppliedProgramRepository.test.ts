@@ -35,7 +35,12 @@ describe('Fitness-Applied program integration', () => {
         sections: [{
           id: 'primer',
           title: 'Primer',
-          exercises: [{ id: 'march', name: 'March in place', prescription: '2 minutes' }],
+          exercises: [{
+            id: 'fitness-applied:kaggle:0001',
+            name: '3/4 sit-up',
+            prescription: '8 reps',
+            instructions: 'Use a controlled tempo and keep the feet grounded.',
+          }],
         }],
       },
     ]));
@@ -43,7 +48,8 @@ describe('Fitness-Applied program integration', () => {
     const warmUp = programs.find((program) => program.id === 'warm-up');
     expect(warmUp?.name).toBe('Published Dynamic Warm-Up');
     expect(warmUp?.sections?.[0].title).toBe('Primer');
-    expect(warmUp?.sections?.[0].exercises[0].prescription).toBe('2 minutes');
+    expect(warmUp?.sections?.[0].exercises[0].id).toBe('fitness-applied:kaggle:0001');
+    expect(warmUp?.sections?.[0].exercises[0].instructions).toBe('Use a controlled tempo and keep the feet grounded.');
   });
 
   it('keeps static warm-up and cool-down sections when the package has no program records', () => {

@@ -46,14 +46,18 @@ function mapSections(value: unknown): ProgramSection[] | undefined {
     const exercises = section.exercises.flatMap((exerciseValue, exerciseIndex) => {
       const exercise = asRecord(exerciseValue);
       if (!exercise) return [];
-      const name = localizedValue(exercise.name, '');
+      const snapshot = asRecord(exercise.exercise) ?? exercise;
+      const name = localizedValue(snapshot.name ?? exercise.name, '');
       if (!name) return [];
       const workoutType = workoutTypeValue(exercise.workoutType);
       return [{
-        id: stringValue(exercise, 'id', `${sectionIndex}-${exerciseIndex}`),
+        id: stringValue(snapshot, 'exerciseId', stringValue(exercise, 'id', `${sectionIndex}-${exerciseIndex}`)),
         name,
         prescription: localizedValue(exercise.prescription, ''),
         ...(exercise.description ? { description: localizedValue(exercise.description, '') } : {}),
+        ...(exercise.instructions || snapshot.instructions
+          ? { instructions: localizedValue(exercise.instructions ?? snapshot.instructions, '') }
+          : {}),
         ...(exercise.focus ? { focus: localizedValue(exercise.focus, '') } : {}),
         ...(workoutType === 'amrap' || workoutType === 'timed_sets' || workoutType === 'standard'
           ? { workoutType } : {}),
@@ -62,6 +66,8 @@ function mapSections(value: unknown): ProgramSection[] | undefined {
         ...(typeof exercise.restSeconds === 'number' ? { restSeconds: exercise.restSeconds } : {}),
         ...(typeof exercise.sets === 'number' ? { sets: exercise.sets } : {}),
         ...(typeof exercise.reps === 'string' ? { reps: exercise.reps } : {}),
+        ...(asRecord(exercise.timer) ? { timer: exercise.timer as ProgramExercise['timer'] } : {}),
+        ...(asRecord(exercise.tracking) ? { tracking: exercise.tracking as ProgramExercise['tracking'] } : {}),
         ...(typeof exercise.sets === 'number' ? { sets: exercise.sets } : {}),
         ...(typeof exercise.reps === 'string' ? { reps: exercise.reps } : {}),
       }];
@@ -97,6 +103,7 @@ function mapWorkoutWeeks(value: unknown): WorkoutWeek[] | undefined {
         name: exercise.name,
         sets: exercise.sets ?? 1,
         reps: exercise.reps ?? exercise.prescription,
+        ...(exercise.instructions ? { instructions: exercise.instructions } : {}),
         ...(exercise.workoutType ? { workoutType: exercise.workoutType } : {}),
         ...(exercise.restSeconds === undefined ? {} : { restSeconds: exercise.restSeconds }),
         ...(exercise.workDurationSeconds === undefined ? {} : { workDurationSeconds: exercise.workDurationSeconds }),

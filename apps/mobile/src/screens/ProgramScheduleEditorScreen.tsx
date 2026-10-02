@@ -93,6 +93,9 @@ export function ProgramScheduleEditorScreen({ setup, exercises, rows, onRowsChan
                 {items.map((row) => (
                   <View key={row.id} style={styles.row}>
                     <Text style={styles.exerciseName}>{exercises.find((exercise) => exercise.id === row.exerciseId)?.displayName ?? row.exerciseId}</Text>
+                    {exercises.find((exercise) => exercise.id === row.exerciseId)?.instructions ? (
+                      <Text style={styles.instructions}>{exercises.find((exercise) => exercise.id === row.exerciseId)?.instructions}</Text>
+                    ) : null}
                     <View style={styles.rowFields}>
                       <NumberInput label="Sets" value={row.sets} onChange={(value) => updateRow(row.id, { sets: value })} />
                       <NumberInput label="Reps" value={row.reps} onChange={(value) => updateRow(row.id, { reps: value })} />
@@ -153,6 +156,7 @@ const styles = StyleSheet.create({
   dayHeader: { color: palette.text, fontSize: 16, fontWeight: '800', marginBottom: spacing.sm },
   row: { paddingVertical: spacing.sm, borderTopColor: palette.border, borderTopWidth: 1 },
   exerciseName: { color: palette.text, fontSize: 14, fontWeight: '700' },
+  instructions: { color: palette.textMuted, fontSize: 12, lineHeight: 18, marginTop: spacing.xs },
   rowFields: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm, marginTop: spacing.xs },
   numberInput: { width: 90 },
   fieldLabel: { color: palette.textMuted, fontSize: 11, fontWeight: '700', marginBottom: 4 },

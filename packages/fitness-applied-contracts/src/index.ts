@@ -13,16 +13,33 @@ export interface ContentPackageMetadata {
 
 export interface ContentProgramExercise {
   id: string;
+  exerciseId?: string;
   name: string;
   prescription?: string;
   description?: string;
+  instructions?: string;
   focus?: string;
   workoutType?: 'standard' | 'amrap' | 'timed_sets';
+  workoutFormat?: 'standard' | 'amrap' | 'for_time' | 'emom' | 'timed_sets';
+  rounds?: number;
+  sets?: number;
+  repetitions?: number;
+  timeCapSeconds?: number;
   workDurationSeconds?: number;
   intervalSeconds?: number;
   restSeconds?: number;
-  sets?: number;
+  movements?: string[];
+  conversionWarnings?: string[];
   reps?: string;
+  timer?: {
+    mode: 'none' | 'countdown' | 'stopwatch' | 'interval';
+    durationSeconds?: number;
+    intervalSeconds?: number;
+  };
+  tracking?: {
+    inputs: Array<'weight' | 'reps' | 'seconds' | 'rounds' | 'distance'>;
+    effort?: 'rpe' | 'rir';
+  };
 }
 
 export interface ContentProgramSection {

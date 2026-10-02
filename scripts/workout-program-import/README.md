@@ -24,7 +24,19 @@ Then run:
 
 ```powershell
 npm install
-npm run export -- --input C:\path\to\wods.csv --output C:\path\to\crossfit-wods-program-export.json --license-approved --reviewer "name" --reviewed-at "YYYY-MM-DD"
+npm run export -- --input C:\path\to\wods.csv --catalog C:\path\to\exercises-kaggle-text.json --output C:\path\to\crossfit-wods-program-export.json --license-approved --reviewer "name" --reviewed-at "YYYY-MM-DD"
+
+The optional catalog argument resolves exercise mentions to stable `exerciseId`
+values and includes the catalog instructions in each generated exercise
+snapshot. Generated exercises also declare their timer mode and tracking inputs
+so the mobile WOD runtime can support online and offline sessions without
+inferring behavior from display text.
+
+The importer uses the shared `@fitness-applied/tools` WOD conversion engine.
+Generated exercise records also carry structured `rounds`, `sets`,
+`repetitions`, `timeCapSeconds`, interval/work/rest durations, movement
+segments, and conversion warnings. Warnings are retained for review instead
+of silently converting ambiguous prose into a false prescription.
 ```
 
 The generated programs are categorized as `WOD`, marked

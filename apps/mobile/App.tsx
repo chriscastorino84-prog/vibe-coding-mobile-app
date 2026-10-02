@@ -4,7 +4,9 @@ import { StatusBar } from 'expo-status-bar';
 import { View } from 'react-native';
 
 import { ProgramDetailScreen } from './src/screens/ProgramDetailScreen';
-import { HomeScreen } from './src/screens/HomeScreen';
+import { WodMarketplaceScreen } from './src/screens/WodMarketplaceScreen';
+import { ToolsWireframeScreen } from './src/screens/ToolsWireframeScreen';
+import { DashboardScreen } from './src/screens/DashboardScreen';
 import { ProgramGarageScreen } from './src/screens/ProgramGarageScreen';
 import { ProgressPhotoPromptScreen } from './src/screens/ProgressPhotoPromptScreen';
 import { TrophyDashboardScreen } from './src/screens/TrophyDashboardScreen';
@@ -15,7 +17,7 @@ import { seedPrograms } from './src/data/seedPrograms';
 import { buildDashboardSummary } from './src/analytics';
 import { buildEarnedTrophies } from './src/trophies';
 import type { Program, ProgressPhotoCheckpoint, Trophy, WorkoutDay, WorkoutSession } from './src/types';
-import { initializeLocalDatabase } from './src/local/database';
+import { getPrivateRecord, initializeLocalDatabase, setPrivateRecord } from './src/local/database';
 import { AppShell } from './src/auth/AppShell';
 
 const SESSIONS_STORAGE_KEY = 'workout.completed-sessions.v1';
@@ -24,7 +26,7 @@ const PROGRESS_PHOTOS_STORAGE_KEY = 'workout.progress-photo-checkpoints.v1';
 const PROGRESS_PHOTO_WEEKS = new Set([1, 3, 6]);
 
 function PrototypeApp() {
-  const [screen, setScreen] = useState<'home' | 'detail' | 'workout' | 'program-garage' | 'trophy-garage' | 'trophy-detail' | 'photo-prompt' | 'progress-photo-prompt'>('home');
+  const [screen, setScreen] = useState<'home' | 'detail' | 'workout' | 'dashboard' | 'program-garage' | 'trophy-garage' | 'trophy-detail' | 'photo-prompt' | 'progress-photo-prompt' | 'wod-marketplace'>('home');
   const [selectedProgram, setSelectedProgram] = useState<Program>(seedPrograms[1]);
   const [selectedWorkoutDay, setSelectedWorkoutDay] = useState<WorkoutDay>();
   const [sessions, setSessions] = useState<WorkoutSession[]>([]);
@@ -41,28 +43,23 @@ function PrototypeApp() {
     const loadSessions = async () => {
       try {
         await initializeLocalDatabase();
-        const storedSessions = await AsyncStorage.getItem(SESSIONS_STORAGE_KEY);
-        const storedTrophies = await AsyncStorage.getItem(TROPHIES_STORAGE_KEY);
-        const storedProgressPhotos = await AsyncStorage.getItem(PROGRESS_PHOTOS_STORAGE_KEY);
-        if (storedSessions) {
-          const parsedSessions: unknown = JSON.parse(storedSessions);
-          if (Array.isArray(parsedSessions)) {
-            setSessions(parsedSessions as WorkoutSession[]);
-          }
-
-        }
-        if (storedTrophies) {
-          const parsedTrophies: unknown = JSON.parse(storedTrophies);
-          if (Array.isArray(parsedTrophies)) {
-            setTrophyRecords(parsedTrophies as Trophy[]);
-          }
-        }
-        if (storedProgressPhotos) {
-          const parsedCheckpoints: unknown = JSON.parse(storedProgressPhotos);
-          if (Array.isArray(parsedCheckpoints)) {
-            setProgressPhotoCheckpoints(parsedCheckpoints as ProgressPhotoCheckpoint[]);
-          }
-        }
+        const loadPrivateRecord = async <T,>(key: string, legacyKey: string) => {
+          const stored = await getPrivateRecord<T[]>(key);
+          if (stored) return stored;
+          const legacy = await AsyncStorage.getItem(legacyKey);
+          if (!legacy) return null;
+          const parsed: unknown = JSON.parse(legacy);
+          if (!Array.isArray(parsed)) return null;
+          await setPrivateRecord(key, parsed);
+          await AsyncStorage.removeItem(legacyKey);
+          return parsed as T[];
+        };
+        const storedSessions = await loadPrivateRecord<WorkoutSession>('private.sessions.v1', SESSIONS_STORAGE_KEY);
+        const storedTrophies = await loadPrivateRecord<Trophy>('private.trophies.v1', TROPHIES_STORAGE_KEY);
+        const storedProgressPhotos = await loadPrivateRecord<ProgressPhotoCheckpoint>('private.progress-photos.v1', PROGRESS_PHOTOS_STORAGE_KEY);
+        if (storedSessions) setSessions(storedSessions);
+        if (storedTrophies) setTrophyRecords(storedTrophies);
+        if (storedProgressPhotos) setProgressPhotoCheckpoints(storedProgressPhotos);
       } catch (error) {
         setDatabaseError(error instanceof Error ? error.message : 'Unable to initialize local storage');
       } finally {
@@ -75,19 +72,19 @@ function PrototypeApp() {
 
   useEffect(() => {
     if (isHydrated) {
-      void AsyncStorage.setItem(SESSIONS_STORAGE_KEY, JSON.stringify(sessions));
+      void setPrivateRecord('private.sessions.v1', sessions).catch((error) => setDatabaseError(error instanceof Error ? error.message : 'Unable to save workout history.'));
     }
   }, [isHydrated, sessions]);
 
   useEffect(() => {
     if (isHydrated) {
-      void AsyncStorage.setItem(TROPHIES_STORAGE_KEY, JSON.stringify(trophyRecords));
+      void setPrivateRecord('private.trophies.v1', trophyRecords).catch((error) => setDatabaseError(error instanceof Error ? error.message : 'Unable to save trophy history.'));
     }
   }, [isHydrated, trophyRecords]);
 
   useEffect(() => {
     if (isHydrated) {
-      void AsyncStorage.setItem(PROGRESS_PHOTOS_STORAGE_KEY, JSON.stringify(progressPhotoCheckpoints));
+      void setPrivateRecord('private.progress-photos.v1', progressPhotoCheckpoints).catch((error) => setDatabaseError(error instanceof Error ? error.message : 'Unable to save progress photos.'));
     }
   }, [isHydrated, progressPhotoCheckpoints]);
 
@@ -200,15 +197,31 @@ function PrototypeApp() {
     return (
       <View style={{ flex: 1 }}>
         <StatusBar style="light" />
-        <HomeScreen
-          programs={seedPrograms}
-          summary={dashboardSummary}
-          trophies={earnedTrophies}
-          onSelectProgram={handleSelectProgram}
-          onViewAllPrograms={() => setScreen('program-garage')}
-          onSelectTrophy={handleSelectTrophy}
-          onViewAllTrophies={() => setScreen('trophy-garage')}
+        <ToolsWireframeScreen
+          onOpenWorkout={() => handleStartWorkout(nextWorkoutDay)}
+          onOpenPrograms={() => setScreen('program-garage')}
+          onOpenDashboard={() => setScreen('dashboard')}
+          onOpenTrophies={() => setScreen('trophy-garage')}
+          onOpenWods={() => setScreen('wod-marketplace')}
         />
+      </View>
+    );
+  }
+
+  if (screen === 'dashboard') {
+    return (
+      <View style={{ flex: 1 }}>
+        <StatusBar style="light" />
+        <DashboardScreen program={activeProgram} summary={dashboardSummary} onBackToLocker={() => setScreen('home')} />
+      </View>
+    );
+  }
+
+  if (screen === 'wod-marketplace') {
+    return (
+      <View style={{ flex: 1 }}>
+        <StatusBar style="light" />
+        <WodMarketplaceScreen />
       </View>
     );
   }
@@ -282,7 +295,7 @@ function PrototypeApp() {
           onBack={() => setScreen('detail')}
           onComplete={async (session) => {
             const updatedSessions = [...sessions, session];
-            await AsyncStorage.setItem(SESSIONS_STORAGE_KEY, JSON.stringify(updatedSessions));
+            await setPrivateRecord('private.sessions.v1', updatedSessions);
             const previousTrophyIds = new Set(earnedTrophies.map((trophy) => trophy.id));
             const newTrophies = buildEarnedTrophies(updatedSessions).filter((trophy) => !previousTrophyIds.has(trophy.id));
             setSessions(updatedSessions);

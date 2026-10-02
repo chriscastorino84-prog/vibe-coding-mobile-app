@@ -32,6 +32,58 @@ Research basis:
 - [x] Private recap preview with selectable safe metrics
 - [x] Privacy-safe recap metadata shape
 - [x] Unit-aware active-set logging for reps-for-time and timed isometrics
+- [x] Carry structured exercise instructions into program previews and active sets
+
+## Exercise instruction implementation plan
+
+The exercise name remains the stable catalog identity. Instruction content is
+stored as structured, owner-controlled metadata and travels through the same
+catalog and program payload as the exercise reference.
+
+### Dataset rights gate
+
+The [`nyt-dev/exercises-dataset-fitness`](https://github.com/nyt-dev/exercises-dataset-fitness)
+repository was reviewed as a possible instruction source. The Kaggle API
+metadata for [`omarxadel/fitness-exercises-dataset`](https://www.kaggle.com/datasets/omarxadel/fitness-exercises-dataset)
+labels the dataset MIT, but the dataset description does not include a
+dataset-specific MIT notice identifying the rights holder for every record.
+The supplied MIT text names Mark Otto and Andrew Fong, which appears to be a
+software notice rather than a clear grant from the exercise-data rights
+holders. The GitHub mirror separately describes its copy as
+educational/non-commercial. The Kaggle description also references separately
+purchased GIF media.
+
+After a second-source check, the dataset remains rights-unresolved for
+commercial redistribution. It is not imported or shipped in Fitness Applied
+until the owner provides a dataset-specific license grant covering the
+exercise records and instruction text. Images and GIFs remain separately
+blocked pending their individual commercial rights and provenance.
+
+1. **Catalog contract and governance**
+   - Keep `name`/`displayName` searchable and stable.
+   - Store concise, rights-reviewed `instructions` separately.
+   - Preserve the source revision and owner-edit history when importing or
+     revising instruction text.
+2. **Authoring and publishing**
+   - Show instructions while selecting an exercise and reviewing generated
+     schedule rows.
+   - Publish the exercise reference, not a copied name-encoded instruction.
+   - Validate length, whitespace, and unsafe/unsupported content before publish.
+3. **Runtime delivery**
+   - Include instructions in catalog search results and published-program
+     exercise joins.
+   - Keep missing instructions valid and render no empty placeholder.
+   - Use the same field for content-package and relational program paths.
+4. **Workout UX**
+   - Show instructions below the active exercise name, before prescription.
+   - Keep the primary save action and set inputs visually dominant.
+   - Support long instructions without truncation or blocking set capture.
+5. **Quality and rollout**
+   - Add contract, mapping, authoring-preview, and UI tests.
+   - Apply the database migration before publishing instruction-dependent
+     programs.
+   - Validate on a physical device with long text, missing text, and offline
+     content.
 
 ## Next code-ready tasks
 
@@ -44,6 +96,13 @@ Research basis:
 - [ ] Extend recap preview with persisted badges, selected photos, and redaction controls.
 - [ ] Add focused UI coverage for reps-for-time and timed-isometric set capture.
 - [ ] Add explicit export/share through the platform share sheet; never auto-post.
+- [ ] Add instruction contract tests for catalog mapping, relational program joins, and missing/long text.
+- [ ] Add authoring validation for instruction length, whitespace normalization, and publish readiness.
+- [ ] Backfill reviewed catalog instructions into Supabase and verify migration/search indexing.
+- [x] Verify the Kaggle dataset declares MIT in its API metadata.
+- [x] Perform a second-source rights check against the mirror and dataset provenance.
+- [ ] Obtain a dataset-specific written license clarification from the owner before importing text metadata/instructions.
+- [ ] Verify separate commercial rights before importing any dataset images or GIFs.
 
 ## Requires owner/product approval
 

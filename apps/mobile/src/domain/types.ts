@@ -7,6 +7,7 @@ export type Exercise = {
   displayName: string;
   normalizedName: string;
   description: string | null;
+  instructions?: string | null;
   category: string | null;
   primaryMuscleGroups: string[];
   equipment: string[];
@@ -145,6 +146,7 @@ export function exerciseFromRow(row: Record<string, unknown>): Exercise {
     displayName: String(row.display_name),
     normalizedName: String(row.normalized_name),
     description: typeof row.description === 'string' ? row.description : null,
+    instructions: typeof row.instructions === 'string' ? row.instructions : null,
     category: typeof row.category === 'string' ? row.category : null,
     primaryMuscleGroups: Array.isArray(row.primary_muscle_groups)
       ? row.primary_muscle_groups.filter((value): value is string => typeof value === 'string')

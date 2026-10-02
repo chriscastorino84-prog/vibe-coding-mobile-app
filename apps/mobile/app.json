@@ -22,9 +22,7 @@
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
       "predictiveBackGestureEnabled": false,
-      "permissions": [
-        "android.permission.RECORD_AUDIO"
-      ]
+      "permissions": []
     },
     "scheme": "fitnessapplied",
     "web": {
@@ -38,7 +36,13 @@
           "cameraPermission": "Allow this app to take progress photos."
         }
       ],
-      "expo-sqlite"
+      [
+        "expo-sqlite",
+        {
+          "useSQLCipher": true
+        }
+      ],
+      "expo-secure-store"
     ],
     "extra": {
       "eas": {

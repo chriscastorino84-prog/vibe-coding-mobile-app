@@ -1,11 +1,32 @@
 import * as SQLite from 'expo-sqlite';
+import * as SecureStore from 'expo-secure-store';
+import * as Crypto from 'expo-crypto';
+import { Platform } from 'react-native';
 
 const DATABASE_NAME = 'fitness-applied.db';
+const DATABASE_KEY = 'fitness-applied.local-database-key.v1';
 
 let databasePromise: Promise<SQLite.SQLiteDatabase> | undefined;
 
+async function getDatabaseKey() {
+  if (Platform.OS === 'web') return undefined;
+  let key = await SecureStore.getItemAsync(DATABASE_KEY);
+  if (!key) {
+    key = Crypto.randomUUID();
+    await SecureStore.setItemAsync(DATABASE_KEY, key, {
+      keychainAccessible: SecureStore.WHEN_UNLOCKED_THIS_DEVICE_ONLY,
+    });
+  }
+  return key;
+}
+
 export function openLocalDatabase() {
-  databasePromise ??= SQLite.openDatabaseAsync(DATABASE_NAME);
+  databasePromise ??= (async () => {
+    const database = await SQLite.openDatabaseAsync(DATABASE_NAME);
+    const key = await getDatabaseKey();
+    if (key) await database.execAsync(`PRAGMA key = '${key.replaceAll("'", "''")}';`);
+    return database;
+  })();
   return databasePromise;
 }
 
@@ -58,6 +79,11 @@ export async function migrateLocalDatabase() {
       body_composition_percent REAL NOT NULL,
       recorded_at TEXT NOT NULL
     );
+    CREATE TABLE IF NOT EXISTS private_records (
+      record_key TEXT PRIMARY KEY NOT NULL,
+      payload TEXT NOT NULL,
+      updated_at TEXT NOT NULL
+    );
   `);
   await database.runAsync(
     'INSERT OR IGNORE INTO schema_migrations (version, applied_at) VALUES (?, ?)',
@@ -69,4 +95,23 @@ export async function migrateLocalDatabase() {
 
 export async function initializeLocalDatabase() {
   return migrateLocalDatabase();
+}
+
+export async function getPrivateRecord<T>(key: string): Promise<T | null> {
+  const database = await initializeLocalDatabase();
+  const record = await database.getFirstAsync<{ payload: string }>(
+    'SELECT payload FROM private_records WHERE record_key = ?',
+    key,
+  );
+  return record ? JSON.parse(record.payload) as T : null;
+}
+
+export async function setPrivateRecord(key: string, value: unknown): Promise<void> {
+  const database = await initializeLocalDatabase();
+  await database.runAsync(
+    'INSERT OR REPLACE INTO private_records (record_key, payload, updated_at) VALUES (?, ?, ?)',
+    key,
+    JSON.stringify(value),
+    new Date().toISOString(),
+  );
 }
