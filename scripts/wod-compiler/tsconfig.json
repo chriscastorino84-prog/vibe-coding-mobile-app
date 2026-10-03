@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "strict": true,
+    "types": ["node"],
+    "skipLibCheck": true,
+    "allowImportingTsExtensions": true,
+    "noEmit": true
+  },
+  "include": ["compile.ts", "compile.test.ts", "../../packages/fitness-applied-tools/src/wodConversionEngine.ts", "../../packages/fitness-applied-tools/src/workoutGenerator.ts"]
+}

@@ -18,3 +18,7 @@ scripts/exercise-catalog/.env.*
 Thumbs.db
 *.tmp
 *.swp
+
+# WOD compiler inputs (downloaded, see scripts/wod-compiler/README.md)
+data/
+scripts/wod-compiler/node_modules/
