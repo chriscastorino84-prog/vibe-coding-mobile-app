@@ -34,7 +34,7 @@ export type WodColumnarRecord = {
   warnings: string[];
 };
 
-export type WodFormat = 'for_time' | 'amrap' | 'emom' | 'tabata' | 'interval' | 'strength' | 'max_load' | 'skill' | 'unknown';
+export type WodFormat = 'for_time' | 'amrap' | 'emom' | 'death_by' | 'tabata' | 'interval' | 'strength' | 'max_load' | 'skill' | 'unknown';
 export type WodScore = 'time' | 'rounds_reps' | 'reps' | 'load' | 'distance' | 'none';
 export type WodMeasure = 'reps' | 'distance' | 'calories' | 'seconds' | 'load';
 export type WodTimerMode = 'none' | 'countdown' | 'stopwatch' | 'interval';
@@ -51,6 +51,11 @@ export type WodLexiconMovement = {
 };
 
 export type WodLexicon = { movements: WodLexiconMovement[] };
+
+/** A glossary category: terms and the column value they map to. */
+export type WodGlossaryEntry = { terms: string[]; value: string; note?: string; unit?: string };
+/** The semantic glossary (scripts/wod-compiler/glossary.json): CrossFit terms that are not movements, by column. */
+export type WodGlossary = Partial<Record<'format' | 'score' | 'structure' | 'modifier' | 'load' | 'unit' | 'equipment' | 'slang' | 'name', WodGlossaryEntry[]>>;
 
 export type WodQuantity = {
   value: number;
@@ -77,6 +82,8 @@ export type WodLine = {
   modifiers: string[];
   load?: WodLoad;
   recognised: boolean;
+  /** For notes: what the note is (buy-in, cash-out, then, instruction). */
+  role?: string;
 };
 
 export type WodParsed = {
@@ -96,6 +103,8 @@ export type WodParsed = {
   trackingInputs: WodTrackingInput[];
   lines: WodLine[];
   loads: WodLoad;
+  /** Workout-level tags: partner, rx, buy-in, cash-out, ladder… */
+  tags: string[];
   warnings: string[];
   confidence: 'high' | 'medium' | 'low';
 };
@@ -150,6 +159,92 @@ function matchers(lexicon: WodLexicon): AliasEntry[] {
 }
 
 type Hit = { movement: WodLexiconMovement; index: number; length: number };
+
+const glossaryCache = new WeakMap<WodGlossary, Map<string, RegExp[]>>();
+/** One regex per glossary category, built once. Terms are whole words; '#', '×' and the division marks are literal. */
+function glossaryRegexes(glossary: WodGlossary | undefined, category: keyof WodGlossary): Array<{ re: RegExp; entry: WodGlossaryEntry }> {
+  if (!glossary || !glossary[category]) return [];
+  let cache = glossaryCache.get(glossary);
+  if (!cache) {
+    cache = new Map();
+    glossaryCache.set(glossary, cache);
+  }
+  const key = String(category);
+  const out: Array<{ re: RegExp; entry: WodGlossaryEntry }> = [];
+  for (const entry of glossary[category] ?? []) {
+    const alts = entry.terms
+      .filter((t) => t.trim())
+      .map((t) => t.toLowerCase().replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/\s+/g, '\\s+'))
+      .sort((a, b) => b.length - a.length);
+    if (!alts.length) continue;
+    const re = new RegExp(`(?<![a-z0-9])(?:${alts.join('|')})(?![a-z0-9])`, 'i');
+    out.push({ re, entry });
+  }
+  cache.set(key, out.map((o) => o.re));
+  return out;
+}
+
+/** The glossary value for the first category entry whose terms appear in the text. */
+function glossaryHit(glossary: WodGlossary | undefined, category: keyof WodGlossary, text: string): WodGlossaryEntry | undefined {
+  for (const { re, entry } of glossaryRegexes(glossary, category)) if (re.test(text)) return entry;
+  return undefined;
+}
+
+/** Every glossary value whose terms appear in the text. */
+function glossaryAll(glossary: WodGlossary | undefined, category: keyof WodGlossary, text: string): string[] {
+  const out: string[] = [];
+  for (const { re, entry } of glossaryRegexes(glossary, category)) if (re.test(text) && !out.includes(entry.value)) out.push(entry.value);
+  return out;
+}
+
+/**
+ * Box shorthand → the long form the parser reads.
+ *   135#            → 135 lb          5 RFT            → 5 rounds for time
+ *   AMRAP 12        → AMRAP in 12 minutes               12 min AMRAP → AMRAP in 12 minutes
+ *   EMOM 12 / E2MOM 10 / OTM 10 → every N minutes for M minutes
+ *   2×50/35 lb      → 50/35 lb, double                  1.5 pood      → 1.5 pood (24 kg)
+ *   ♀ 35-lb … ♂ 50-lb … (CrossFit.com) → pulled out as the women's and men's settings
+ */
+export function normaliseShorthand(text: string): { text: string; men?: string; women?: string } {
+  let t = text;
+  let men: string | undefined;
+  let women: string | undefined;
+  // CrossFit.com division lines at the end of a workout.
+  const divisions = t.match(/\s*♀\s*([^♂]+?)\s*♂\s*(.+?)(?=\s*(?:post|compare|submit|$))/i) ?? t.match(/\s*♂\s*([^♀]+?)\s*♀\s*(.+?)(?=\s*(?:post|compare|submit|$))/i);
+  if (divisions) {
+    const first = divisions[0].trim().startsWith('♀');
+    women = (first ? divisions[1] : divisions[2]).replace(/\s*\([^)]*kg\)/gi, '').trim().replace(/[.,]$/, '');
+    men = (first ? divisions[2] : divisions[1]).replace(/\s*\([^)]*kg\)/gi, '').trim().replace(/[.,]$/, '');
+    t = t.replace(divisions[0], ' ');
+  }
+  t = t
+    .replace(/(\d[\d,.]*(?:\s*\/\s*\d[\d,.]*)?)\s*#/g, '$1 lb')
+    .replace(/\b(\d+(?:\.\d+)?)\s*(?:pood|pd)s?\b/gi, (_m, n: string) => `${n} pood (${Math.round(Number(n) * 16)} kg)`)
+    .replace(/\b2\s*[x×]\s*(\d[\d,.]*(?:\s*\/\s*\d[\d,.]*)?\s*-?\s*(?:lb|lbs|kg|pood)\b)/gi, 'double, $1')
+    .replace(/\(\s*(\d[\d,.]*)\s*\/\s*(\d[\d,.]*)\s*\)/g, (_m, a: string, b: string) => (Number(a) >= 15 && Number(b) >= 10 ? `(${a}/${b} lb)` : _m))
+    .replace(/\b(\d+)\s*rft\b:?/gi, '$1 rounds for time of:')
+    .replace(/\brft\b/gi, 'rounds for time')
+    .replace(/\bafap\b/gi, 'for time')
+    .replace(/\b(\d+)[\s-]*(?:min(?:ute)?s?)\s+amrap\b:?/gi, 'AMRAP in $1 minutes of:')
+    .replace(/\bamrap\s*[x×]?\s*(\d+)\b(?!\s*(?:reps?|rounds?))\s*(?:min(?:ute)?s?)?:?/gi, 'AMRAP in $1 minutes of:')
+    .replace(/\be(\d+)mom\b\s*(?:[x×]|for)?\s*(\d+)?\s*(?:min(?:ute)?s?|rounds?|sets?)?:?/gi, (_m, every: string, n: string | undefined) => (n ? `every ${every} minutes for ${Number(n) * Number(every)} minutes:` : `every ${every} minutes:`))
+    .replace(/\b(?:emom|otm)\b\s*(?:[x×]|for)?\s*(\d+)\s*(?:min(?:ute)?s?)?:?/gi, 'every minute on the minute for $1 minutes:')
+    .replace(/\b(\d+)[\s-]*(?:min(?:ute)?s?)\s+(?:emom|otm)\b:?/gi, 'every minute on the minute for $1 minutes:')
+    .replace(/\bevery\s+(\d+)\s*(?:min|minutes?)\s*[x×]\s*(\d+)\b/gi, 'every $1 minutes for $2 sets')
+    .replace(/\b(?:tc|time cap)\s*:?\s*(\d+)(?::00)?\s*(?:min(?:ute)?s?)?\b/gi, 'time cap: $1 minutes')
+    .replace(/\bdeath[\s-]*by\b:?/gi, 'death by')
+    .replace(/\bnft\b:?/gi, 'not for time:')
+    // "@ 80% of 1RM", "@ 70% 1RM", "at 60% of bodyweight" → a load modifier the line keeps.
+    .replace(/(?:@|\bat)\s*(\d+(?:\.\d+)?)\s*%\s*(?:of\s+)?(?:your\s+)?(\d?\s*rm|1-rep max|one rep max|bodyweight|bw|max)\b/gi, (_m, pct: string, of: string) => {
+      const basis = /bw|body/i.test(of) ? 'bodyweight' : /^\d\s*rm$/i.test(of) ? of.replace(/\s+/g, '').toUpperCase() : '1RM';
+      return `(${pct}% of ${basis})`;
+    })
+    .replace(/\s*@\s*(\d[\d,.]*(?:\s*\/\s*\d[\d,.]*)?\s*-?\s*(?:lb|lbs|kg|pood)\b)/gi, ', $1')
+    // EMOM slots: "odd: … even: …" read like "Minute 1: … Minute 2: …".
+    .replace(/\b(odd|even)\s*(?:minutes?)?\s*:/gi, (_m, w: string) => ` ${w.toLowerCase() === 'odd' ? 'Odd minutes' : 'Even minutes'}: `)
+    .replace(/\b(buy[\s-]?in|cash[\s-]?out|buy[\s-]?out)\b\s*:?/gi, (_m, w: string) => `${/buy[\s-]?in/i.test(w) ? 'Buy-in' : 'Cash-out'}:`);
+  return { text: t.replace(/\s+/g, ' ').trim(), ...(men ? { men } : {}), ...(women ? { women } : {}) };
+}
 
 /** The longest alias that occurs in the text, with where it starts. */
 function recogniseMovement(text: string, lexicon?: WodLexicon): Hit | undefined {
@@ -215,6 +310,11 @@ function measureOf(unit: WodQuantity['unit'] | undefined, fallback: WodMeasure):
 
 const FORMAT_PHRASES: RegExp[] = [
   /\b\d+\s*rounds?\s*(?:for time|for max|of)\b[^:]*:?/i,
+  /\bdeath by\b:?/i,
+  /\bnot for time\b:?/i,
+  /\bfor quality\b:?/i,
+  /\bevery \d+ minutes? for \d+ minutes?:?/i,
+  /\bevery minute on the minute for \d+ minutes?:?/i,
   /\bfor time\b:?/i,
   /\bfor total reps\b:?/i,
   /\bfor max (?:load|reps|distance|calories)\b:?/i,
@@ -234,10 +334,12 @@ const FORMAT_PHRASES: RegExp[] = [
 /** Split the body into candidate lines: at each count, each verb-first distance, each "Rest", "Then", and sentence boundaries. */
 function splitBody(body: string): string[] {
   const breakers = [
-    String.raw`(?<![\d,/.(])(?<!\b(?:run|row|swim|bike|ski|ruck|lunge|walk|crawl|rest|minute|minutes|at|weight|sub|every|each)\s)(?!\d[\d,.]*(?:\s*/\s*\d[\d,.]*)?\s*-?\s*(?:lb|lbs|kg|pounds?)\b)(?=\b\d[\d,]*(?:\.\d+)?(?:\s*/\s*\d[\d,]*)?\s*-?\s*(?:${UNIT}\b|\s+[a-z]))`,
+    String.raw`(?<![\d,/.(])(?<!\b(?:run|row|swim|bike|ski|ruck|lunge|walk|crawl|rest|minute|minutes|at|weight|sub|every|each|cap|cap:|alternate|alternating|switch|add|subtract|drop|increase|decrease|remove)\s)(?!\d[\d,.]*(?:\s*/\s*\d[\d,.]*)?\s*-?\s*(?:lb|lbs|kg|pounds?)\b)(?=\b\d[\d,]*(?:\.\d+)?(?:\s*/\s*\d[\d,]*)?\s*-?\s*(?:${UNIT}\b|\s+[a-z]))`,
     String.raw`(?=\b(?:run|row|swim|bike|ski|ruck|lunge|walk)\s+\d[\d,]*(?:\.\d+)?(?:\s*/\s*\d[\d,]*)?\s*-?\s*(?:m|meters?|metres?|km|kilometers?|miles?|mi|ft\.?|feet|yards?|yd|cal\.?|calories?)\b)`,
     String.raw`(?=\brest\b)`,
     String.raw`(?=\bthen\b)`,
+    String.raw`(?=\b(?:odd|even) minutes?\b)`,
+    String.raw`(?=\b(?:buy-in|cash-out):)`,
     String.raw`(?=\btabata\b)`,
     String.raw`(?=\bmax[- ]reps?\b)`,
     String.raw`(?=\bmax (?:distance|calories|load)\b)`,
@@ -249,11 +351,15 @@ function splitBody(body: string): string[] {
     .replace(/\b(one|two|three|four|five|six|seven|eight|nine|ten)\s+(rounds?|sets?|reps?|minutes?)\b/gi, (_m, w: string, n: string) => `${WORD_NUMBERS[w.toLowerCase()]} ${n}`)
     .replace(/\bminutes?\s+\d+(?:\s*-\s*\d+)?\s*:/gi, ' ; ')
     .replace(/\bat\s+\d{1,2}:\d{2}\s*:/gi, ' ; ');
-  // Protect rep schemes ("5-5-5 reps") so their digits do not start new lines.
-  const protectedBody = prepared.replace(/\b(\d+(?:-\d+)+)(?:\s*(reps?)\b)?/gi, (_m, scheme: string, reps: string | undefined) => `SCHEME_${scheme.replace(/-/g, 'x')}_${reps ?? 'reps'}`);
+  // Protect rep schemes ("5-5-5 reps") and parentheticals ("(2 x 15 feet)") so their digits do not start new lines.
+  const parens: string[] = [];
+  const protectedBody = prepared
+    .replace(/\(([^()]*)\)/g, (m) => { parens.push(m); return `PAREN_${parens.length - 1}_`; })
+    .replace(/\b(\d+(?:-\d+)+)(?:\s*(reps?)\b)?/gi, (_m, scheme: string, reps: string | undefined) => `SCHEME_${scheme.replace(/-/g, 'x')}_${reps ?? 'reps'}`);
   return protectedBody
     .split(re)
     .map((s) => s.replace(/SCHEME_([\dx]+)_(reps?)/g, (_m, scheme: string, reps: string) => `${scheme.replace(/x/g, '-')} ${reps}`))
+    .map((s) => s.replace(/PAREN_(\d+)_/g, (_m, i: string) => parens[Number(i)]))
     .map((s) => s.replace(/^[\s,;:.]+|[\s,;:.]+$/g, ''))
     .filter((s) => s.length > 0);
 }
@@ -367,16 +473,24 @@ function loadFor(movement: WodLexiconMovement | undefined, rawLine: string, menI
 
 /* ---------- the parser ---------- */
 
-export type ParseWodOptions = { lexicon?: WodLexicon; menSetting?: string; womenSetting?: string };
+export type ParseWodOptions = { lexicon?: WodLexicon; glossary?: WodGlossary; menSetting?: string; womenSetting?: string };
 
 export function parseWodDetailed(prescription: string, options: ParseWodOptions = {}): WodParsed {
   const WORDS: Record<string, string> = { one: '1', two: '2', three: '3', four: '4', five: '5', six: '6', seven: '7', eight: '8', nine: '9', ten: '10' };
-  const text = prescription.trim().replace(/\s+/g, ' ')
-    .replace(/\b(one|two|three|four|five|six|seven|eight|nine|ten)\s+(rounds?|sets?|reps?|minutes?|miles?)\b/gi, (_m, w: string, n: string) => `${WORDS[w.toLowerCase()]} ${n}`);
+  const shorthand = normaliseShorthand(prescription.trim().replace(/\s+/g, ' '));
+  const text = shorthand.text
+    .replace(/\b(one|two|three|four|five|six|seven|eight|nine|ten)\s+(rounds?|sets?|reps?|minutes?|miles?)\b/gi, (_m, w: string, n: string) => `${WORDS[w.toLowerCase()]} ${n}`)
+    // CrossFit.com sign-offs are not part of the workout.
+    .replace(/\b(?:post (?:time|times|rounds|reps|load|loads|score|results)[^.]*\.?|compare to \d{6}\.?|submit your score[^.]*\.?)/gi, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
   if (!text) throw new Error('WOD prescription must not be empty.');
-  const { lexicon } = options;
+  const { lexicon, glossary } = options;
+  const menSetting = options.menSetting || shorthand.men || '';
+  const womenSetting = options.womenSetting || shorthand.women || '';
   const warnings: string[] = [];
   const lower = text.toLowerCase();
+  const tags: string[] = [];
 
   /* --- name: short proper-noun lead-in before the first format phrase --- */
   let name: string | undefined;
@@ -402,9 +516,12 @@ export function parseWodDetailed(prescription: string, options: ParseWodOptions 
   const emom = /\bemom\b|\bevery minute\b|\bevery (?:\d+(?:\.\d+)?|other) (?:minutes?|min|seconds?|sec)\b/i.test(lower);
   const onClock = /\b(?:on a|with an?) \d+-minute (?:running )?clock\b|\bin \d+ minutes?, complete\b|\bfor reps\b:?/i.test(lower);
   const tabata = /\btabata\b/i.test(lower);
-  const forTime = /\bfor time\b/i.test(lower);
+  const deathBy = /\bdeath by\b/i.test(lower);
+  const glossaryFormat = glossaryHit(glossary, 'format', lower)?.value;
+  const forTime = (/\bfor time\b/i.test(lower) && !/\bnot for time\b/i.test(lower)) || /\bchipper\b/i.test(lower);
   const forTotalReps = /\bfor total reps\b/i.test(lower);
-  const forMaxLoad = /\bfor max load\b|\bfor load\b|\bheavy\b/i.test(lower);
+  const forMaxLoad = /\bfor max load\b|\bfor load\b|\bheavy\b|\bahap\b|\bas heavy as possible\b|\b\d+\s*rm\b|\brep max\b|\bbuild to\b|\bwork up to\b/i.test(lower);
+  const forQuality = /\bfor quality\b|\bnot for time\b|\bnft\b/i.test(lower);
   const forMaxDistance = /\bfor max distance\b/i.test(lower);
   const forMaxReps = /\bfor max reps\b/i.test(lower);
   const practice = /^(?:practice|skill work|work on|spend \d+ minutes)\b/i.test(lower) || /\bpractice\b/i.test(lower) && !forTime && !amrap && !emom;
@@ -422,13 +539,16 @@ export function parseWodDetailed(prescription: string, options: ParseWodOptions 
 
   let format: WodFormat = 'unknown';
   if (tabata) format = 'tabata';
+  else if (deathBy) format = 'death_by';
   else if (amrap) format = 'amrap';
   else if (emom && !/^(?:[a-z ,]*\b)?for time\b/i.test(lower)) format = forMaxLoad || /\bcomplex\b/.test(lower) ? 'max_load' : 'emom';
   else if (forTime || repSchemeForTime) format = 'for_time';
   else if (forTotalReps || forMaxReps || forMaxDistance || onClock) format = 'interval';
+  else if (forQuality) format = 'skill';
   else if (strengthScheme && !rounds) format = 'strength';
-  else if (forMaxLoad) format = 'max_load';
+  else if (forMaxLoad) format = 'strength';
   else if (practice) format = 'skill';
+  else if (glossaryFormat && glossaryFormat !== 'unknown') format = glossaryFormat as WodFormat;
   else if (rounds) format = 'for_time';
   else if (/\b(\d+)\s*x\s*(\d+)\b/i.test(lower) || /\b\d+ sets?\b/i.test(lower)) format = 'strength';
 
@@ -451,6 +571,10 @@ export function parseWodDetailed(prescription: string, options: ParseWodOptions 
       score = 'rounds_reps';
       timer = capSeconds ? { mode: 'countdown', durationSeconds: capSeconds } : { mode: 'countdown' };
       if (!capSeconds) warnings.push('AMRAP without a time cap in the text.');
+      break;
+    case 'death_by':
+      score = 'rounds_reps';
+      timer = { mode: 'interval', intervalSeconds: intervalSeconds ?? 60, rounds: 30 };
       break;
     case 'emom':
       score = forMaxLoad ? 'load' : 'reps';
@@ -482,13 +606,13 @@ export function parseWodDetailed(prescription: string, options: ParseWodOptions 
       warnings.push('Format not recognised; the prescription is kept as written for review.');
   }
 
-  const repScheme = (repSchemeForTime?.[1] ?? (format === 'strength' ? strengthScheme?.[1] : undefined))?.split('-').map(num);
+  let repScheme = (repSchemeForTime?.[1] ?? (format === 'strength' ? strengthScheme?.[1] : undefined))?.split('-').map(num);
   const compact = text.match(/\b(\d+)\s*x\s*(\d+)\b/i);
   const sets = format === 'strength' ? (repScheme?.length ?? (compact ? num(compact[1]) : extractNumber(/\b(\d+)\s*sets?\b/i, text))) : undefined;
 
   /* --- loads --- */
-  const menItems = parseSetting(options.menSetting ?? '');
-  const womenItems = parseSetting(options.womenSetting ?? '');
+  const menItems = parseSetting(menSetting);
+  const womenItems = parseSetting(womenSetting);
 
   /* --- lines --- */
   const lead = headerStart > 0 && !name ? text.slice(0, headerStart) : '';
@@ -496,7 +620,8 @@ export function parseWodDetailed(prescription: string, options: ParseWodOptions 
   const lines: WodLine[] = [];
   let order = 0;
 
-  if (format === 'skill') {
+  const skillAsOneLine = format === 'skill' && !forQuality;
+  if (skillAsOneLine) {
     const minutes = extractNumber(/\b(?:for|spend)\s+(\d+)\s*(?:minutes?|min)\b/i, text);
     const hit = recogniseMovement(text.replace(/\bpractice\b/i, ''), lexicon);
     lines.push({
@@ -512,7 +637,10 @@ export function parseWodDetailed(prescription: string, options: ParseWodOptions 
     if (minutes && !timer.durationSeconds) timer = { mode: 'countdown', durationSeconds: minutes * 60 };
   }
 
-  const rawLines = format === 'skill' ? [] : splitBody(body).flatMap((segment) => {
+  // Footnotes ("*After each round, add 3 reps …") are instructions, not lines of work.
+  const footnotes: string[] = [];
+  const bodyText = body.replace(/\*+\s*([^*]+?)(?:(?<=\.)\s+(?=[A-Z♀♂])|$)/g, (_m, note: string) => { footnotes.push(note.trim()); return ' '; });
+  const rawLines = skillAsOneLine ? [] : splitBody(bodyText).flatMap((segment) => {
     const hasCount = QTY_WITH_UNIT.test(segment) || QTY_PLAIN.test(segment) || VERB_FIRST.test(segment) || /^(?:rest|then|tabata|max)/i.test(segment);
     return hasCount ? [segment] : splitByLexicon(segment, lexicon);
   });
@@ -520,8 +648,14 @@ export function parseWodDetailed(prescription: string, options: ParseWodOptions 
   const queue = [...rawLines];
   while (queue.length) {
     const raw = queue.shift() as string;
-    const s = raw.trim().replace(/^[*•-]\s*/, '');
+    let s = raw.trim().replace(/^[*•-]\s*/, '');
     if (!s) continue;
+    // A structure clause in front of the work ("With a partner, YGIG: 100-90-… cal ski") is a note; the work follows it.
+    const leadClause = s.match(/^([A-Za-z][^:\d]{0,48}?):\s*(?=\S)/);
+    if (leadClause && !recogniseMovement(leadClause[1], lexicon) && !/^(?:buy-in|cash-out|rest|then|minute|odd|even|time cap|cap|note|score|post)\b/i.test(leadClause[1]) && /\d/.test(s.slice(leadClause[0].length))) {
+      lines.push({ order: ++order, kind: 'note', name: leadClause[1].trim(), raw: leadClause[0].trim(), modifiers: [], recognised: true, role: 'structure' });
+      s = s.slice(leadClause[0].length);
+    }
     const low = s.toLowerCase();
 
     // Rest
@@ -532,14 +666,28 @@ export function parseWodDetailed(prescription: string, options: ParseWodOptions 
       lines.push({ order: ++order, kind: 'rest', name: 'Rest', raw: s, modifiers: qualifier ? [qualifier] : [], recognised: true, ...(secs ? { quantity: { value: secs, measure: 'seconds', unit: 's' } } : {}) });
       continue;
     }
+    // Buy-in / cash-out: the part before or after the main work.
+    const bookend = s.match(/^(Buy-in|Cash-out):?\s*(.*)$/i);
+    if (bookend) {
+      const role = bookend[1].toLowerCase();
+      if (!tags.includes(role)) tags.push(role);
+      lines.push({ order: ++order, kind: 'note', name: bookend[1], raw: s, modifiers: [], recognised: true, role });
+      if (bookend[2].trim()) queue.unshift(bookend[2].trim());
+      continue;
+    }
     // Structure markers: "then", "5 rounds of", "then, 3 rounds of"
-    const structure = low.match(/^(?:then,?\s*)?(\d+)\s*(?:\d+-minute\s+)?rounds?(?:,?\s*each[^,]*,?)?\s*(?:of|for time|for max \w+)?\b:?$/) ?? low.match(/^then\b[:,]?$/) ?? low.match(/^rounds?(?:,?\s*each[^,]*,?)?\s*of\b:?$/);
+    const structure = low.match(/^(?:then,?\s*)?(\d+)\s*(?:\d+-minute\s+)?(?:rounds?|sets?|supersets?)(?:,?\s*each[^,]*,?)?\s*(?:of|for time|for max \w+)?\b:?$/) ?? low.match(/^then\b[:,]?$/) ?? low.match(/^(?:rounds?|sets?)(?:,?\s*each[^,]*,?)?\s*of\b:?$/) ?? low.match(/^(?:odd|even) minutes?\b:?$/);
+    if (structure && /^(?:odd|even)/.test(low)) {
+      lines.push({ order: ++order, kind: 'note', name: s.replace(/[:,]+$/, ''), raw: s, modifiers: [], recognised: true, role: 'interval-slot' });
+      continue;
+    }
     if (structure) {
-      lines.push({ order: ++order, kind: 'note', name: s.replace(/[:,]+$/, ''), raw: s, modifiers: [], recognised: true });
+      lines.push({ order: ++order, kind: 'note', name: s.replace(/[:,]+$/, ''), raw: s, modifiers: [], recognised: true, role: 'then' });
       continue;
     }
     // Then / notes / instructions that are not movements
-    if (/^(?:then|partition|if you|wear|time cap|note|score|post|compare|for the|place|perform|the \w+ (?:is|are)|each (?:round|set)|between|after|before|at the)/.test(low) && !recogniseMovement(s, lexicon)) {
+    if (/^(?:time cap|cap)\b/.test(low)) continue; // already read into timeCapSeconds
+    if (/^(?:then|partition|if you|wear|note|score|post|compare|for the|place|perform|the \w+ (?:is|are)|each (?:round|set)|between|after|before|at the|alternate|alternating|switch|share|split the|one partner|partner [ab12]|teams? of|you go i go|ygig|in any order|any order)/.test(low) && !recogniseMovement(s, lexicon)) {
       lines.push({ order: ++order, kind: 'note', name: s, raw: s, modifiers: [], recognised: false });
       continue;
     }
@@ -587,6 +735,9 @@ export function parseWodDetailed(prescription: string, options: ParseWodOptions 
     const scheme = remainder.match(/\b(\d+(?:-\d+)+)\s*reps?\b/i);
     const lineScheme = scheme ? scheme[1].split('-').map(num) : undefined;
     if (scheme) remainder = remainder.replace(scheme[0], '').trim();
+    // "100-90-…-10 cal ski erg": the ladder counts calories (or metres), not reps.
+    const ladderUnit = scheme ? remainder.match(/^(cal(?:orie)?s?|meters?|metres?|m)\b\.?\s*/i) : null;
+    if (ladderUnit) remainder = remainder.slice(ladderUnit[0].length);
     if (!quantity && !lineScheme && format === 'strength' && compact) {
       remainder = remainder.replace(/\b\d+\s*x\s*\d+\b/i, '').trim();
     }
@@ -603,7 +754,7 @@ export function parseWodDetailed(prescription: string, options: ParseWodOptions 
     const hit = recogniseMovement(remainder, lexicon);
     const previousMovement = [...lines].reverse().find((l) => l.kind === 'movement');
     // "until you complete the row", "partition as needed": an instruction that names a movement, not a line of work.
-    if (hit && !quantity && !lineScheme && (/\b(?:until|as needed|of your choice|you complete|if you|instead of|in place of|between|after each|before each|at the start|at the top|each minute|every minute)\b|^(?:partition|wear|use|perform|complete|then|score|post|note)\b/i.test(remainder))) {
+    if (hit && !quantity && !lineScheme && (/\b(?:until|as needed|of your choice|you complete|if you|instead of|in place of|between|after each|before each|at the start|at the top|each minute|every minute)\b|^(?:partition|wear|use|perform|complete|then|score|post|note|alternate|switch|share|split)\b/i.test(remainder))) {
       lines.push({ order: ++order, kind: 'note', name: remainder, raw: s, modifiers: [], recognised: true });
       continue;
     }
@@ -629,11 +780,17 @@ export function parseWodDetailed(prescription: string, options: ParseWodOptions 
       continue;
     }
     const modifiers = MODIFIER_WORDS.filter((w) => new RegExp(`\\b${w}\\b`, 'i').test(normaliseText(remainder)) && !(hit && normaliseText(hit.movement.name).includes(w)));
+    for (const g of glossaryAll(glossary, 'modifier', normaliseText(remainder))) {
+      if (['strict', 'kipping', 'alternating', 'hang', 'power', 'squat', 'split', 'muscle', 'max', 'single arm', 'russian', 'american', 'high hang'].includes(g)) continue; // part of the movement name, or already handled
+      if (hit && normaliseText(hit.movement.name).includes(g)) continue;
+      if (!modifiers.includes(g)) modifiers.push(g);
+    }
     const movement = hit?.movement;
     const measure: WodMeasure = quantity?.measure ?? movement?.measure ?? 'reps';
     const qty = quantity ? { ...quantity, measure: quantity.unit ? quantity.measure : movement?.measure === 'seconds' && !quantity.unit ? 'reps' : measure } : undefined;
     const load = inlineLoad ?? loadFor(movement, remainder, menItems, womenItems);
     if (parenModifier) modifiers.push(parenModifier);
+    if (ladderUnit) modifiers.push(/^cal/i.test(ladderUnit[1]) ? 'calories' : 'meters');
     const displayName = movement ? movement.name : remainder.replace(/\s+/g, ' ').trim();
     if (!displayName) continue;
     lines.push({
@@ -650,9 +807,20 @@ export function parseWodDetailed(prescription: string, options: ParseWodOptions 
     });
   }
 
+  for (const note of footnotes) lines.push({ order: ++order, kind: 'note', name: note.replace(/[.]+$/, ''), raw: `*${note}`, modifiers: [], recognised: true, role: 'instruction' });
+
   const movementLines = lines.filter((l) => l.kind === 'movement');
-  if (format === 'unknown' && movementLines.length && movementLines.some((l) => l.quantity || l.repScheme)) {
-    format = movementLines.every((l) => l.repScheme) ? 'strength' : 'for_time';
+  // A rep ladder written once ("21-15-9: thrusters, pull-ups" or "100-90-…-10 cal ski, burpees") belongs to every line.
+  if (!repScheme && format !== 'strength') {
+    const ladders = movementLines.filter((l) => l.repScheme);
+    if (ladders.length === 1 && movementLines.length > 1 && movementLines.every((l) => l.repScheme || !l.quantity)) {
+      repScheme = ladders[0].repScheme;
+      delete ladders[0].repScheme;
+      if (!tags.includes('ladder')) tags.push('ladder');
+    }
+  }
+  if (format === 'unknown' && movementLines.length && (repScheme || movementLines.some((l) => l.quantity || l.repScheme))) {
+    format = !repScheme && movementLines.every((l) => l.repScheme) ? 'strength' : 'for_time';
     score = format === 'strength' ? 'load' : 'time';
     timer = format === 'strength' ? { mode: 'none' } : { mode: 'stopwatch' };
     warnings.splice(warnings.indexOf('Format not recognised; the prescription is kept as written for review.'), 1);
@@ -675,6 +843,15 @@ export function parseWodDetailed(prescription: string, options: ParseWodOptions 
   if (movementLines.some((l) => l.quantity?.measure === 'distance' || l.quantity?.measure === 'calories')) needs('distance');
   if (!trackingInputs.length) needs('reps');
 
+  for (const t of glossaryAll(glossary, 'structure', lower)) {
+    if ((t === 'partner' || t === 'rep-scheme') && !tags.includes(t)) tags.push(t === 'rep-scheme' ? 'ladder' : t);
+  }
+  if (/\brx\b|\brx'd\b|\bas prescribed\b/i.test(lower) && !tags.includes('rx')) tags.push('rx');
+  if (tags.includes('partner')) warnings.push('Partner or team workout: the runner runs it as one athlete.');
+  if (format === 'death_by') {
+    for (const l of movementLines) l.modifiers.push('add one rep each minute');
+    if (!tags.includes('ladder')) tags.push('ladder');
+  }
   const multiPart = lines.some((l) => l.kind === 'note' && /^then\b/i.test(l.name));
   if (multiPart) warnings.push('Multi-part workout ("then"): the clock runs it as one block; the parts are listed in order.');
   const confidence: WodParsed['confidence'] = format === 'unknown' || !movementLines.length ? 'low' : unrecognised.length || multiPart ? 'medium' : 'high';
@@ -685,7 +862,7 @@ export function parseWodDetailed(prescription: string, options: ParseWodOptions 
     format,
     score,
     ...(capSeconds ? { timeCapSeconds: capSeconds } : {}),
-    ...(rounds !== undefined && format !== 'strength' ? { rounds } : {}),
+    ...(rounds !== undefined && format !== 'strength' ? { rounds } : format === 'skill' && roundsOfIntervals !== undefined && /\b\d+\s*sets?\s*of\b/i.test(lower) ? { rounds: roundsOfIntervals } : {}),
     ...(repScheme ? { repScheme } : {}),
     ...(sets !== undefined ? { sets } : {}),
     ...(intervalSeconds !== undefined ? { intervalSeconds } : {}),
@@ -694,7 +871,8 @@ export function parseWodDetailed(prescription: string, options: ParseWodOptions 
     timer,
     trackingInputs,
     lines,
-    loads: { ...(options.menSetting ? { men: options.menSetting } : {}), ...(options.womenSetting ? { women: options.womenSetting } : {}) },
+    loads: { ...(menSetting ? { men: menSetting } : {}), ...(womenSetting ? { women: womenSetting } : {}) },
+    tags,
     warnings,
     confidence,
   };

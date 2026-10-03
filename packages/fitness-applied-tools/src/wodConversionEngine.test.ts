@@ -109,3 +109,92 @@ describe('WOD conversion engine, detailed', () => {
     expect(p.lines[1].load).toBeUndefined();
   });
 });
+
+import { normaliseShorthand, type WodGlossary } from './wodConversionEngine';
+
+const glossary = JSON.parse(readFileSync(new URL('../../../scripts/wod-compiler/glossary.json', import.meta.url), 'utf8')) as WodGlossary;
+const parse = (text: string) => parseWodDetailed(text, { lexicon, glossary });
+const ids = (p: ReturnType<typeof parse>) => p.lines.filter((l) => l.kind === 'movement').map((l) => l.movementId);
+
+describe('WOD conversion engine, box shorthand and the glossary', () => {
+  it('expands whiteboard shorthand into the long form', () => {
+    expect(normaliseShorthand('5 RFT: 10 T2B 15 KBS 53/35# 400m run').text).toBe('5 rounds for time of: 10 T2B 15 KBS 53/35 lb 400m run');
+    expect(normaliseShorthand('AMRAP 12: 5 C2B').text).toBe('AMRAP in 12 minutes of: 5 C2B');
+    expect(normaliseShorthand('12 min AMRAP 5 C2B').text).toBe('AMRAP in 12 minutes of: 5 C2B');
+    expect(normaliseShorthand('E2MOM 10: 3 power cleans').text).toBe('every 2 minutes for 20 minutes: 3 power cleans');
+    expect(normaliseShorthand('EMOM 12 odd: 15 cal row even: 12 burpees').text).toBe('every minute on the minute for 12 minutes: Odd minutes: 15 cal row Even minutes: 12 burpees');
+    expect(normaliseShorthand('21 KB swings (1.5 pood)').text).toBe('21 KB swings (1.5 pood (24 kg))');
+    expect(normaliseShorthand('10 DB thrusters 2x50/35 lb').text).toBe('10 DB thrusters double, 50/35 lb');
+    expect(normaliseShorthand('Back squat 5x5 @ 80% of 1RM').text).toBe('Back squat 5x5 (80% of 1RM)');
+    expect(normaliseShorthand('NFT: 3 sets of 10 GHD sit-ups').text).toBe('not for time: 3 sets of 10 GHD sit-ups');
+    expect(normaliseShorthand('Buy in: 20 burpees TC 12').text).toBe('Buy-in: 20 burpees time cap: 12 minutes');
+  });
+
+  it('pulls CrossFit.com division lines out as the men\'s and women\'s settings', () => {
+    const n = normaliseShorthand('3 rounds for time of: 10 deadlifts ♀ 155-lb (70-kg) barbell ♂ 225-lb (102-kg) barbell Post time to comments.');
+    expect(n.women).toBe('155-lb barbell');
+    expect(n.men).toBe('225-lb barbell');
+    expect(n.text).toBe('3 rounds for time of: 10 deadlifts Post time to comments.');
+  });
+
+  it('reads abbreviations through the lexicon aliases', () => {
+    const p = parse('5 RFT: 10 T2B 15 KBS 53/35# 400m run');
+    expect(p).toMatchObject({ format: 'for_time', rounds: 5, score: 'time', confidence: 'high' });
+    expect(ids(p)).toEqual(['toes-to-bar', 'kettlebell-swing', 'run']);
+    expect(p.lines[1].load).toEqual({ men: '53 lb', women: '35 lb' });
+    expect(p.lines[2].quantity).toEqual({ value: 400, measure: 'distance', unit: 'm' });
+    expect(ids(parse('AMRAP 12: 5 C2B 10 HSPU 15 DL 185/125'))).toEqual(['chest-to-bar-pull-up', 'handstand-push-up', 'deadlift']);
+  });
+
+  it('knows death by, buy-in and cash-out, EMOM slots and not-for-time work', () => {
+    const death = parse('Death by 10m shuttle runs');
+    expect(death).toMatchObject({ format: 'death_by', score: 'rounds_reps', timer: { mode: 'interval', intervalSeconds: 60, rounds: 30 }, tags: ['ladder'] });
+    expect(death.lines[0].modifiers).toContain('add one rep each minute');
+
+    const bookends = parse('Buy-in: 20 burpees Then 3 RFT: 10 DB thrusters 2x50/35 lb 10 BBJO 24/20" Cash-out: 100 DUs');
+    expect(bookends).toMatchObject({ format: 'for_time', rounds: 3, tags: ['buy-in', 'cash-out'] });
+    expect(bookends.lines.map((l) => l.role ?? l.movementId)).toEqual(['buy-in', 'burpee', 'then', 'dumbbell-thruster', 'burpee-box-jump-over', 'cash-out', 'double-under']);
+    expect(bookends.lines[3].load).toEqual({ men: '50 lb', women: '35 lb' });
+
+    const emom = parse('EMOM 12 odd: 15 cal row even: 12 burpees');
+    expect(emom).toMatchObject({ format: 'emom', intervalCount: 12, timeCapSeconds: 720 });
+    expect(emom.lines.map((l) => l.role ?? l.movementId)).toEqual(['interval-slot', 'row', 'interval-slot', 'burpee']);
+    expect(emom.lines[1].quantity).toMatchObject({ value: 15, measure: 'calories' });
+
+    const nft = parse('Not for time: 3 sets of 10 GHD sit-ups 10 hip extensions 10 banded face pulls');
+    expect(nft).toMatchObject({ format: 'skill', score: 'none', rounds: 3 });
+    expect(nft.name).toBeUndefined();
+    expect(ids(nft)).toEqual(['ghd-sit-up', 'hip-extension', 'face-pull']);
+    expect(nft.lines.find((l) => l.movementId === 'face-pull')?.modifiers).toEqual(['banded']);
+  });
+
+  it('keeps percentages, footnotes and time caps off the movement lines', () => {
+    const squat = parse('Back squat 5x5 @ 80% of 1RM Rest 2 minutes between sets');
+    expect(squat).toMatchObject({ format: 'strength', score: 'load' });
+    expect(squat.lines[0]).toMatchObject({ movementId: 'back-squat', modifiers: ['80% of 1RM'] });
+    expect(squat.lines[1]).toMatchObject({ kind: 'rest', quantity: { value: 120 } });
+
+    const open = parse('Complete as many rounds and reps as possible in 15 minutes of: 3 lateral burpees over the dumbbell 3 dumbbell hang clean-to-overheads 30-foot walking lunge (2 x 15 feet) *After completing each round, add 3 reps to the burpees and hang clean-to-overheads. ♀ 35-lb (15-kg) dumbbell ♂ 50-lb (22.5-kg) dumbbell Post time or reps completed to comments.');
+    expect(open).toMatchObject({ format: 'amrap', timeCapSeconds: 900, confidence: 'high' });
+    expect(ids(open)).toEqual(['burpee-over-dumbbell', 'dumbbell-clean-and-jerk', 'lunge']);
+    expect(open.lines[0].load).toEqual({ men: '50-lb dumbbell', women: '35-lb dumbbell' });
+    expect(open.lines[2].quantity).toMatchObject({ value: 30, unit: 'ft' });
+    expect(open.lines[3]).toMatchObject({ kind: 'note', role: 'instruction', name: 'After completing each round, add 3 reps to the burpees and hang clean-to-overheads' });
+
+    const capped = parse('For time: 21 pull-ups 42 double-unders 21 thrusters (weight 1) 15 bar muscle-ups 30 double-unders 15 thrusters (weight 3) Time cap: 12 minutes');
+    expect(capped.timeCapSeconds).toBe(720);
+    expect(capped.lines.at(-1)).toMatchObject({ movementId: 'thruster', modifiers: ['weight 3'] });
+    expect(capped.lines.filter((l) => l.kind === 'note')).toEqual([]);
+  });
+
+  it('shares a rep ladder across the lines and tags partner work', () => {
+    const p = parse('With a partner, YGIG: 100-90-80-70-60-50-40-30-20-10 Cal ski erg Burpees Alternate 10 reps at a time until done');
+    expect(p).toMatchObject({ format: 'for_time', repScheme: [100, 90, 80, 70, 60, 50, 40, 30, 20, 10] });
+    expect(p.tags).toEqual(expect.arrayContaining(['ladder', 'partner']));
+    expect(ids(p)).toEqual(['ski', 'burpee']);
+    expect(p.lines[0]).toMatchObject({ kind: 'note', role: 'structure', name: 'With a partner, YGIG' });
+    expect(p.lines[1].modifiers).toEqual(['calories']);
+    expect(p.lines[1].repScheme).toBeUndefined();
+    expect(p.warnings.some((w) => w.startsWith('Partner'))).toBe(true);
+  });
+});

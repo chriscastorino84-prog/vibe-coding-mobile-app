@@ -7,136 +7,3427 @@
     "measure is what a line of this movement counts by default: reps, distance, calories, seconds or load."
   ],
   "movements": [
-    { "id": "air-squat", "name": "Air squat", "pattern": "gymnastics", "equipment": [], "measure": "reps", "aliases": ["air squat", "squat", "bodyweight squat", "body weight squat"], "catalog": "Bodyweight_Squat", "note": "Hips below the knees at the bottom, hips fully open at the top. No weight." },
-    { "id": "back-squat", "name": "Back squat", "pattern": "weightlifting", "equipment": ["barbell"], "measure": "reps", "aliases": ["back squat", "body weight back squat", "bodyweight back squat"], "catalog": "Barbell_Full_Squat", "note": "Bar on the back. Hips below the knees at the bottom." },
-    { "id": "front-squat", "name": "Front squat", "pattern": "weightlifting", "equipment": ["barbell"], "measure": "reps", "aliases": ["front squat", "bodyweight front squat", "body weight front squat"], "catalog": "Front_Squat_Clean_Grip", "note": "Bar racked on the shoulders, elbows high. Hips below the knees." },
-    { "id": "overhead-squat", "name": "Overhead squat", "pattern": "weightlifting", "equipment": ["barbell"], "measure": "reps", "aliases": ["overhead squat"], "catalog": "Overhead_Squat", "note": "Bar locked out overhead the whole way down and up." },
-    { "id": "goblet-squat", "name": "Goblet squat", "pattern": "weightlifting", "equipment": ["kettlebell", "dumbbell"], "measure": "reps", "aliases": ["goblet squat"], "catalog": "Goblet_Squat", "note": "Weight held at the chest. Hips below the knees." },
-    { "id": "dumbbell-front-squat", "name": "Dumbbell front squat", "pattern": "weightlifting", "equipment": ["dumbbell"], "measure": "reps", "aliases": ["dumbbell front squat", "db front squat"], "catalog": "Dumbbell_Squat", "note": "Dumbbells on the shoulders. Hips below the knees." },
-    { "id": "pistol", "name": "Single-leg squat", "pattern": "gymnastics", "equipment": [], "measure": "reps", "aliases": ["single leg squat", "pistol", "one legged squat", "one leg squat"], "catalog": "Kettlebell_Pistol_Squat", "note": "One leg, hip below the knee, the other leg out in front. Alternate unless told otherwise." },
-    { "id": "jumping-squat", "name": "Jumping squat", "pattern": "gymnastics", "equipment": [], "measure": "reps", "aliases": ["jumping squat", "jump squat", "squat jump"], "catalog": "Freehand_Jump_Squat", "note": "Full squat, then leave the floor." },
-    { "id": "wall-ball", "name": "Wall-ball shot", "pattern": "weightlifting", "equipment": ["medicine ball"], "measure": "reps", "aliases": ["wall ball shot", "wall ball", "wallball"], "catalog": null, "note": "Squat with the ball at the chest, stand and throw it to the target. Catch and go again." },
-    { "id": "thruster", "name": "Thruster", "pattern": "weightlifting", "equipment": ["barbell"], "measure": "reps", "aliases": ["thruster", "squat clean thruster"], "catalog": "Kettlebell_Thruster", "note": "Front squat straight into a push press. One movement, no pause." },
-    { "id": "dumbbell-thruster", "name": "Dumbbell thruster", "pattern": "weightlifting", "equipment": ["dumbbell"], "measure": "reps", "aliases": ["dumbbell thruster", "db thruster"], "catalog": "Kettlebell_Thruster", "note": "Front squat with the dumbbells, drive them overhead on the way up." },
-    { "id": "deadlift", "name": "Deadlift", "pattern": "weightlifting", "equipment": ["barbell"], "measure": "reps", "aliases": ["deadlift", "bodyweight deadlift", "body weight deadlift"], "catalog": "Barbell_Deadlift", "note": "Bar from the floor to standing tall, hips and knees locked." },
-    { "id": "dumbbell-deadlift", "name": "Dumbbell deadlift", "pattern": "weightlifting", "equipment": ["dumbbell"], "measure": "reps", "aliases": ["dumbbell deadlift", "db deadlift"], "catalog": "Barbell_Deadlift", "note": "Dumbbells from the floor to standing tall." },
-    { "id": "sumo-deadlift-high-pull", "name": "Sumo deadlift high pull", "pattern": "weightlifting", "equipment": ["barbell", "kettlebell"], "measure": "reps", "aliases": ["sumo deadlift high pull", "sdhp"], "catalog": "Kettlebell_Sumo_High_Pull", "note": "Wide stance, pull from the floor to under the chin, elbows high." },
-    { "id": "romanian-deadlift", "name": "Romanian deadlift", "pattern": "weightlifting", "equipment": ["barbell"], "measure": "reps", "aliases": ["romanian deadlift", "rdl"], "catalog": "Romanian_Deadlift", "note": "Hinge at the hips with a soft knee, bar close to the legs." },
-    { "id": "clean", "name": "Clean", "pattern": "weightlifting", "equipment": ["barbell"], "measure": "reps", "aliases": ["clean", "squat clean", "full clean"], "catalog": "Clean", "note": "Floor to the shoulders, received in a full squat." },
-    { "id": "power-clean", "name": "Power clean", "pattern": "weightlifting", "equipment": ["barbell"], "measure": "reps", "aliases": ["power clean"], "catalog": "Power_Clean", "note": "Floor to the shoulders, received above a parallel squat." },
-    { "id": "hang-clean", "name": "Hang clean", "pattern": "weightlifting", "equipment": ["barbell"], "measure": "reps", "aliases": ["hang clean", "hang squat clean"], "catalog": "Hang_Clean", "note": "Starts from the hang, above the knee. Received in a full squat." },
-    { "id": "hang-power-clean", "name": "Hang power clean", "pattern": "weightlifting", "equipment": ["barbell"], "measure": "reps", "aliases": ["hang power clean"], "catalog": "Hang_Clean", "note": "From the hang to the shoulders, received above parallel." },
-    { "id": "clean-and-jerk", "name": "Clean and jerk", "pattern": "weightlifting", "equipment": ["barbell"], "measure": "reps", "aliases": ["clean and jerk", "clean & jerk", "hang clean and jerk", "power clean and jerk"], "catalog": "Clean_and_Jerk", "note": "Clean to the shoulders, then jerk overhead to lockout." },
-    { "id": "dumbbell-clean", "name": "Dumbbell clean", "pattern": "weightlifting", "equipment": ["dumbbell"], "measure": "reps", "aliases": ["dumbbell clean", "db clean", "dumbbell hang clean", "dumbbell squat clean", "dumbbell hang squat clean", "dumbbell power clean", "dumbbell hang power clean"], "catalog": "Dumbbell_Clean", "note": "Dumbbells to the shoulders. Squat or power as written." },
-    { "id": "dumbbell-clean-and-jerk", "name": "Dumbbell clean and jerk", "pattern": "weightlifting", "equipment": ["dumbbell"], "measure": "reps", "aliases": ["dumbbell clean and jerk", "db clean and jerk"], "catalog": "One-Arm_Kettlebell_Clean_and_Jerk", "note": "Dumbbell to the shoulder, then overhead." },
-    { "id": "medicine-ball-clean", "name": "Medicine-ball clean", "pattern": "weightlifting", "equipment": ["medicine ball"], "measure": "reps", "aliases": ["medicine ball clean", "med ball clean"], "catalog": null, "note": "Ball from the floor to the shoulders, received in a squat." },
-    { "id": "snatch", "name": "Snatch", "pattern": "weightlifting", "equipment": ["barbell"], "measure": "reps", "aliases": ["snatch", "squat snatch", "full snatch"], "catalog": "Snatch", "note": "Floor to overhead in one pull, received in a full squat." },
-    { "id": "power-snatch", "name": "Power snatch", "pattern": "weightlifting", "equipment": ["barbell"], "measure": "reps", "aliases": ["power snatch"], "catalog": "Power_Snatch", "note": "Floor to overhead in one pull, received above parallel." },
-    { "id": "hang-snatch", "name": "Hang snatch", "pattern": "weightlifting", "equipment": ["barbell"], "measure": "reps", "aliases": ["hang snatch", "hang squat snatch"], "catalog": "Hang_Snatch", "note": "From the hang to overhead, received in a full squat." },
-    { "id": "hang-power-snatch", "name": "Hang power snatch", "pattern": "weightlifting", "equipment": ["barbell"], "measure": "reps", "aliases": ["hang power snatch"], "catalog": "Hang_Snatch", "note": "From the hang to overhead, received above parallel." },
-    { "id": "dumbbell-snatch", "name": "Dumbbell snatch", "pattern": "weightlifting", "equipment": ["dumbbell"], "measure": "reps", "aliases": ["dumbbell snatch", "db snatch", "dumbbell power snatch", "dumbbell hang snatch", "dumbbell squat snatch", "dumbbell hang power snatch"], "catalog": "One-Arm_Kettlebell_Snatch", "note": "One dumbbell, floor to overhead in one pull. Alternate arms unless told otherwise." },
-    { "id": "kettlebell-snatch", "name": "Kettlebell snatch", "pattern": "weightlifting", "equipment": ["kettlebell"], "measure": "reps", "aliases": ["kettlebell snatch", "kb snatch"], "catalog": "One-Arm_Kettlebell_Snatch", "note": "One kettlebell, swing to overhead in one pull." },
-    { "id": "snatch-balance", "name": "Snatch balance", "pattern": "weightlifting", "equipment": ["barbell"], "measure": "reps", "aliases": ["snatch balance"], "catalog": "Snatch_Balance", "note": "Bar on the back, drop under it into an overhead squat." },
-    { "id": "snatch-pull", "name": "Snatch pull", "pattern": "weightlifting", "equipment": ["barbell"], "measure": "reps", "aliases": ["snatch pull", "snatch deadlift"], "catalog": "Snatch_Pull", "note": "The pull of the snatch without going under the bar." },
-    { "id": "clean-pull", "name": "Clean pull", "pattern": "weightlifting", "equipment": ["barbell"], "measure": "reps", "aliases": ["clean pull", "clean deadlift"], "catalog": "Clean_Pull", "note": "The pull of the clean without going under the bar." },
-    { "id": "shoulder-press", "name": "Shoulder press", "pattern": "weightlifting", "equipment": ["barbell"], "measure": "reps", "aliases": ["shoulder press", "strict press", "press", "overhead press"], "catalog": "Barbell_Shoulder_Press", "note": "Shoulders to overhead with no help from the legs." },
-    { "id": "push-press", "name": "Push press", "pattern": "weightlifting", "equipment": ["barbell"], "measure": "reps", "aliases": ["push press"], "catalog": "Push_Press", "note": "A dip and drive from the legs, then press to lockout." },
-    { "id": "push-jerk", "name": "Push jerk", "pattern": "weightlifting", "equipment": ["barbell"], "measure": "reps", "aliases": ["push jerk", "jerk"], "catalog": "Split_Jerk", "note": "Dip, drive, and drop under the bar to catch it locked out." },
-    { "id": "split-jerk", "name": "Split jerk", "pattern": "weightlifting", "equipment": ["barbell"], "measure": "reps", "aliases": ["split jerk"], "catalog": "Split_Jerk", "note": "Dip, drive, and split the feet under the bar." },
-    { "id": "shoulder-to-overhead", "name": "Shoulder-to-overhead", "pattern": "weightlifting", "equipment": ["barbell"], "measure": "reps", "aliases": ["shoulder to overhead", "shoulders to overhead", "s2oh"], "catalog": "Push_Press", "note": "Any way from the shoulders to lockout: press, push press or jerk." },
-    { "id": "dumbbell-shoulder-to-overhead", "name": "Dumbbell shoulder-to-overhead", "pattern": "weightlifting", "equipment": ["dumbbell"], "measure": "reps", "aliases": ["dumbbell shoulder to overhead", "dumbbell push press", "dumbbell push jerk", "dumbbell shoulder press", "dumbbell press", "db push press", "db shoulder to overhead"], "catalog": "Dumbbell_Shoulder_Press", "note": "Dumbbells from the shoulders to lockout, any way." },
-    { "id": "ground-to-overhead", "name": "Ground-to-overhead", "pattern": "weightlifting", "equipment": ["barbell"], "measure": "reps", "aliases": ["ground to overhead", "g2oh"], "catalog": "Clean_and_Jerk", "note": "Floor to lockout overhead, any way: snatch or clean and jerk." },
-    { "id": "bench-press", "name": "Bench press", "pattern": "weightlifting", "equipment": ["barbell", "bench"], "measure": "reps", "aliases": ["bench press"], "catalog": "Barbell_Bench_Press_-_Medium_Grip", "note": "Bar to the chest and back to lockout, lying on the bench." },
-    { "id": "dumbbell-bench-press", "name": "Dumbbell bench press", "pattern": "weightlifting", "equipment": ["dumbbell", "bench"], "measure": "reps", "aliases": ["dumbbell bench press", "db bench press"], "catalog": "Dumbbell_Bench_Press", "note": "Dumbbells to the chest and back to lockout." },
-    { "id": "floor-press", "name": "Floor press", "pattern": "weightlifting", "equipment": ["barbell"], "measure": "reps", "aliases": ["floor press"], "catalog": "Floor_Press", "note": "Bench press lying on the floor; elbows touch down each rep." },
-    { "id": "kettlebell-swing", "name": "Kettlebell swing", "pattern": "weightlifting", "equipment": ["kettlebell"], "measure": "reps", "aliases": ["kettlebell swing", "kb swing", "american kettlebell swing"], "catalog": "One-Arm_Kettlebell_Swings", "note": "Hinge and swing the bell to overhead. Russian swings stop at eye level." },
-    { "id": "russian-kettlebell-swing", "name": "Russian kettlebell swing", "pattern": "weightlifting", "equipment": ["kettlebell"], "measure": "reps", "aliases": ["russian kettlebell swing", "russian swing"], "catalog": "One-Arm_Kettlebell_Swings", "note": "Hinge and swing the bell to eye level." },
-    { "id": "turkish-get-up", "name": "Turkish get-up", "pattern": "weightlifting", "equipment": ["kettlebell", "dumbbell"], "measure": "reps", "aliases": ["turkish get up", "get up"], "catalog": "Kettlebell_Turkish_Get-Up_Lunge_style", "note": "Lying to standing with the weight locked out overhead the whole way." },
-    { "id": "weighted-dip", "name": "Weighted dip", "pattern": "gymnastics", "equipment": ["dip bars"], "measure": "reps", "aliases": ["weighted dip"], "catalog": "Parallel_Bar_Dip", "note": "Dip on the bars with added weight." },
-    { "id": "dumbbell-row", "name": "Dumbbell row", "pattern": "weightlifting", "equipment": ["dumbbell"], "measure": "reps", "aliases": ["single arm dumbbell row", "dumbbell row", "one arm dumbbell row", "db row"], "catalog": "Bent_Over_Two-Dumbbell_Row", "note": "Bent over, pull the dumbbell to the hip." },
-    { "id": "bent-over-row", "name": "Bent-over row", "pattern": "weightlifting", "equipment": ["barbell"], "measure": "reps", "aliases": ["bent over row", "barbell row"], "catalog": "Bent_Over_Barbell_Row", "note": "Bent over, pull the bar to the body." },
-    { "id": "good-morning", "name": "Good morning", "pattern": "weightlifting", "equipment": ["barbell"], "measure": "reps", "aliases": ["good morning"], "catalog": "Good_Morning", "note": "Bar on the back, hinge at the hips with a flat back." },
-    { "id": "pull-up", "name": "Pull-up", "pattern": "gymnastics", "equipment": ["pull-up bar"], "measure": "reps", "aliases": ["pull up", "kipping pull up", "butterfly pull up"], "catalog": "Pullups", "note": "Chin over the bar at the top, arms straight at the bottom." },
-    { "id": "strict-pull-up", "name": "Strict pull-up", "pattern": "gymnastics", "equipment": ["pull-up bar"], "measure": "reps", "aliases": ["strict pull up"], "catalog": "Pullups", "note": "Chin over the bar with no kip or swing." },
-    { "id": "chest-to-bar-pull-up", "name": "Chest-to-bar pull-up", "pattern": "gymnastics", "equipment": ["pull-up bar"], "measure": "reps", "aliases": ["chest to bar pull up", "chest to bar", "c2b pull up", "c2b", "strict l chest to bar pull up"], "catalog": "Pullups", "note": "Chest touches the bar at the top." },
-    { "id": "weighted-pull-up", "name": "Weighted pull-up", "pattern": "gymnastics", "equipment": ["pull-up bar"], "measure": "reps", "aliases": ["weighted pull up"], "catalog": "Weighted_Pull_Ups", "note": "Strict pull-up with added weight." },
-    { "id": "l-pull-up", "name": "L pull-up", "pattern": "gymnastics", "equipment": ["pull-up bar"], "measure": "reps", "aliases": ["l pull up", "l sit pull up"], "catalog": "Pullups", "note": "Pull-up with the legs held straight out in front." },
-    { "id": "jumping-pull-up", "name": "Jumping pull-up", "pattern": "gymnastics", "equipment": ["pull-up bar"], "measure": "reps", "aliases": ["jumping pull up"], "catalog": "Pullups", "note": "Jump to help the chin over the bar." },
-    { "id": "burpee-pull-up", "name": "Burpee pull-up", "pattern": "gymnastics", "equipment": ["pull-up bar"], "measure": "reps", "aliases": ["burpee pull up"], "catalog": "Pullups", "note": "A burpee, then jump to the bar for a pull-up." },
-    { "id": "chin-up", "name": "Chin-up", "pattern": "gymnastics", "equipment": ["pull-up bar"], "measure": "reps", "aliases": ["chin up"], "catalog": "Chin-Up", "note": "Pull-up with the palms facing you." },
-    { "id": "ring-row", "name": "Ring row", "pattern": "gymnastics", "equipment": ["rings"], "measure": "reps", "aliases": ["ring row"], "catalog": "Bodyweight_Mid_Row", "note": "Lean back under the rings and pull the chest to them." },
-    { "id": "push-up", "name": "Push-up", "pattern": "gymnastics", "equipment": [], "measure": "reps", "aliases": ["push up", "pushup", "dumbbell push up", "strict push up"], "catalog": "Pushups", "note": "Chest to the floor, arms locked out at the top, body straight." },
-    { "id": "hand-release-push-up", "name": "Hand-release push-up", "pattern": "gymnastics", "equipment": [], "measure": "reps", "aliases": ["hand release push up"], "catalog": "Pushups", "note": "Lift the hands off the floor at the bottom of each rep." },
-    { "id": "ring-push-up", "name": "Ring push-up", "pattern": "gymnastics", "equipment": ["rings"], "measure": "reps", "aliases": ["ring push up"], "catalog": "Pushups", "note": "Push-up with the hands on rings." },
-    { "id": "handstand-push-up", "name": "Handstand push-up", "pattern": "gymnastics", "equipment": ["wall"], "measure": "reps", "aliases": ["handstand push up", "hspu", "kipping handstand push up"], "catalog": "Handstand_Push-Ups", "note": "Upside down against the wall, head to the floor and back to lockout." },
-    { "id": "strict-handstand-push-up", "name": "Strict handstand push-up", "pattern": "gymnastics", "equipment": ["wall"], "measure": "reps", "aliases": ["strict handstand push up", "strict hspu", "chest to wall handstand push up"], "catalog": "Handstand_Push-Ups", "note": "Handstand push-up with no kip." },
-    { "id": "deficit-handstand-push-up", "name": "Deficit handstand push-up", "pattern": "gymnastics", "equipment": ["wall"], "measure": "reps", "aliases": ["deficit handstand push up", "deficit hspu"], "catalog": "Handstand_Push-Ups", "note": "Hands raised so the head goes below them." },
-    { "id": "handstand-walk", "name": "Handstand walk", "pattern": "gymnastics", "equipment": [], "measure": "distance", "aliases": ["handstand walk"], "catalog": null, "note": "Walk on the hands for the distance." },
-    { "id": "handstand-hold", "name": "Handstand hold", "pattern": "gymnastics", "equipment": ["wall"], "measure": "seconds", "aliases": ["handstand hold", "handstand"], "catalog": null, "note": "Hold a handstand for the time." },
-    { "id": "shoulder-tap", "name": "Handstand shoulder tap", "pattern": "gymnastics", "equipment": [], "measure": "reps", "aliases": ["shoulder tap", "freestanding shoulder tap", "freestanding shoulder taps in a handstand", "handstand shoulder tap"], "catalog": null, "note": "In a handstand, tap one shoulder with the opposite hand." },
-    { "id": "wall-walk", "name": "Wall walk", "pattern": "gymnastics", "equipment": ["wall"], "measure": "reps", "aliases": ["wall walk"], "catalog": null, "note": "From a push-up position, walk the feet up the wall and the hands in, then back down." },
-    { "id": "ring-dip", "name": "Ring dip", "pattern": "gymnastics", "equipment": ["rings"], "measure": "reps", "aliases": ["ring dip"], "catalog": "Ring_Dips", "note": "Dip on the rings, shoulders below the elbows at the bottom." },
-    { "id": "dip", "name": "Dip", "pattern": "gymnastics", "equipment": ["dip bars"], "measure": "reps", "aliases": ["dip", "bar dip", "parallel bar dip"], "catalog": "Parallel_Bar_Dip", "note": "Dip on the bars, shoulders below the elbows at the bottom." },
-    { "id": "muscle-up", "name": "Muscle-up", "pattern": "gymnastics", "equipment": ["rings"], "measure": "reps", "aliases": ["muscle up", "ring muscle up", "kipping muscle up"], "catalog": "Kipping_Muscle_Up", "note": "Pull-up straight into a dip on the rings, to lockout." },
-    { "id": "strict-muscle-up", "name": "Strict muscle-up", "pattern": "gymnastics", "equipment": ["rings"], "measure": "reps", "aliases": ["strict muscle up", "strict ring muscle up", "weighted muscle up"], "catalog": "Muscle_Up", "note": "Muscle-up with no kip." },
-    { "id": "bar-muscle-up", "name": "Bar muscle-up", "pattern": "gymnastics", "equipment": ["pull-up bar"], "measure": "reps", "aliases": ["bar muscle up", "bmu"], "catalog": "Muscle_Up", "note": "Pull-up over the bar straight into a dip to lockout." },
-    { "id": "toes-to-bar", "name": "Toes-to-bar", "pattern": "gymnastics", "equipment": ["pull-up bar"], "measure": "reps", "aliases": ["toes to bar", "t2b", "strict toes to bar"], "catalog": null, "note": "Hanging from the bar, both feet touch the bar between the hands." },
-    { "id": "knees-to-elbows", "name": "Knees-to-elbows", "pattern": "gymnastics", "equipment": ["pull-up bar"], "measure": "reps", "aliases": ["knees to elbow", "knee to elbow", "k2e"], "catalog": null, "note": "Hanging from the bar, both knees touch the elbows." },
-    { "id": "hanging-knee-raise", "name": "Hanging knee raise", "pattern": "gymnastics", "equipment": ["pull-up bar"], "measure": "reps", "aliases": ["hanging knee raise", "knee raise"], "catalog": "Hanging_Leg_Raise", "note": "Hanging from the bar, knees above the hips." },
-    { "id": "sit-up", "name": "Sit-up", "pattern": "gymnastics", "equipment": [], "measure": "reps", "aliases": ["sit up", "abmat sit up", "ab mat sit up"], "catalog": "Sit-Up", "note": "Shoulders touch the floor at the bottom, hands touch the feet at the top." },
-    { "id": "ghd-sit-up", "name": "GHD sit-up", "pattern": "gymnastics", "equipment": ["ghd"], "measure": "reps", "aliases": ["ghd sit up", "ghd situp"], "catalog": null, "note": "On the GHD, hands touch the floor behind, then sit up to touch the pad or the feet." },
-    { "id": "v-up", "name": "V-up", "pattern": "gymnastics", "equipment": [], "measure": "reps", "aliases": ["v up"], "catalog": null, "note": "Lying flat, fold so the hands touch the feet above the hips." },
-    { "id": "back-extension", "name": "Back extension", "pattern": "gymnastics", "equipment": ["ghd"], "measure": "reps", "aliases": ["back extension", "ghd back extension"], "catalog": "Hyperextensions_Back_Extensions", "note": "On the GHD, round down and extend the back to flat." },
-    { "id": "hip-extension", "name": "Hip extension", "pattern": "gymnastics", "equipment": ["ghd"], "measure": "reps", "aliases": ["hip extension", "ghd hip extension"], "catalog": "Hyperextensions_Back_Extensions", "note": "On the GHD, hinge at the hips with a flat back and come up to level." },
-    { "id": "hip-and-back-extension", "name": "Hip and back extension", "pattern": "gymnastics", "equipment": ["ghd"], "measure": "reps", "aliases": ["hip and back extension"], "catalog": "Hyperextensions_Back_Extensions", "note": "A hip extension and a back extension in one rep." },
-    { "id": "glute-ham-raise", "name": "Glute-ham raise", "pattern": "gymnastics", "equipment": ["ghd"], "measure": "reps", "aliases": ["glute ham raise", "ghr", "ghd raise"], "catalog": "Glute_Ham_Raise", "note": "On the GHD, lower the body with the hamstrings and pull back up." },
-    { "id": "l-sit", "name": "L-sit", "pattern": "gymnastics", "equipment": ["parallettes"], "measure": "seconds", "aliases": ["l sit", "l sit hold"], "catalog": null, "note": "Supported on the hands, legs straight out in front, hold." },
-    { "id": "plank", "name": "Plank hold", "pattern": "gymnastics", "equipment": [], "measure": "seconds", "aliases": ["plank hold", "plank"], "catalog": "Plank", "note": "Hold a straight body on the forearms or hands." },
-    { "id": "hollow-hold", "name": "Hollow hold", "pattern": "gymnastics", "equipment": [], "measure": "seconds", "aliases": ["hollow hold", "hollow rock", "hollow body hold"], "catalog": null, "note": "On the back, low back pressed down, arms and legs off the floor. Hold or rock." },
-    { "id": "burpee", "name": "Burpee", "pattern": "gymnastics", "equipment": [], "measure": "reps", "aliases": ["burpee", "strict burpee", "inverted burpee"], "catalog": null, "note": "Chest to the floor, back up, jump and clap overhead." },
-    { "id": "bar-facing-burpee", "name": "Bar-facing burpee", "pattern": "gymnastics", "equipment": ["barbell"], "measure": "reps", "aliases": ["bar facing burpee", "burpee over the bar", "lateral burpee over the bar", "lateral burpee"], "catalog": null, "note": "Burpee facing the bar, then jump over it." },
-    { "id": "burpee-over-dumbbell", "name": "Burpee over the dumbbell", "pattern": "gymnastics", "equipment": ["dumbbell"], "measure": "reps", "aliases": ["lateral burpee over the dumbbell", "burpee over the dumbbell", "burpee over dumbbell"], "catalog": null, "note": "Burpee beside the dumbbell, then jump over it." },
-    { "id": "burpee-over-rower", "name": "Burpee over the rower", "pattern": "gymnastics", "equipment": ["rower"], "measure": "reps", "aliases": ["burpee over the rower", "burpee over rower"], "catalog": null, "note": "Burpee beside the rower, then step or jump over it." },
-    { "id": "burpee-box-jump", "name": "Burpee box jump", "pattern": "gymnastics", "equipment": ["box"], "measure": "reps", "aliases": ["burpee box jump"], "catalog": "Box_Jump_Multiple_Response", "note": "A burpee, then jump onto the box." },
-    { "id": "burpee-box-jump-over", "name": "Burpee box jump-over", "pattern": "gymnastics", "equipment": ["box"], "measure": "reps", "aliases": ["burpee box jump over"], "catalog": "Box_Jump_Multiple_Response", "note": "A burpee, then jump onto and over the box." },
-    { "id": "burpee-to-target", "name": "Burpee to a target", "pattern": "gymnastics", "equipment": [], "measure": "reps", "aliases": ["burpee to a target", "burpee to target", "target burpee"], "catalog": null, "note": "A burpee that ends with a jump to touch the target." },
-    { "id": "dumbbell-burpee-deadlift", "name": "Dumbbell burpee deadlift", "pattern": "weightlifting", "equipment": ["dumbbell"], "measure": "reps", "aliases": ["dumbbell burpee deadlift", "burpee deadlift"], "catalog": null, "note": "A burpee with the hands on the dumbbells, then stand them up in a deadlift." },
-    { "id": "box-jump", "name": "Box jump", "pattern": "gymnastics", "equipment": ["box"], "measure": "reps", "aliases": ["box jump"], "catalog": "Box_Jump_Multiple_Response", "note": "Jump onto the box and stand tall on top." },
-    { "id": "box-jump-over", "name": "Box jump-over", "pattern": "gymnastics", "equipment": ["box"], "measure": "reps", "aliases": ["box jump over"], "catalog": "Box_Jump_Multiple_Response", "note": "Jump onto the box and over to the other side." },
-    { "id": "box-step-up", "name": "Box step-up", "pattern": "gymnastics", "equipment": ["box"], "measure": "reps", "aliases": ["box step up", "step up", "weighted step up", "weighted box step up"], "catalog": "Dumbbell_Step_Ups", "note": "Step onto the box and stand tall on top." },
-    { "id": "dumbbell-box-step-up", "name": "Dumbbell box step-up", "pattern": "weightlifting", "equipment": ["dumbbell", "box"], "measure": "reps", "aliases": ["dumbbell box step up", "db box step up", "dumbbell step up"], "catalog": "Dumbbell_Step_Ups", "note": "Step onto the box holding the dumbbells." },
-    { "id": "dumbbell-box-step-over", "name": "Dumbbell box step-over", "pattern": "weightlifting", "equipment": ["dumbbell", "box"], "measure": "reps", "aliases": ["dumbbell box step over", "db box step over", "box step over"], "catalog": "Dumbbell_Step_Ups", "note": "Step up onto the box and down the other side holding the dumbbells." },
-    { "id": "broad-jump", "name": "Broad jump", "pattern": "gymnastics", "equipment": [], "measure": "reps", "aliases": ["broad jump", "standing broad jump"], "catalog": null, "note": "Two-foot jump forward for distance." },
-    { "id": "lunge", "name": "Lunge", "pattern": "gymnastics", "equipment": [], "measure": "reps", "aliases": ["lunge", "walking lunge", "walking lunge step", "alternating lunge", "reverse lunge", "jumping lunge"], "catalog": "Bodyweight_Walking_Lunge", "note": "Back knee touches the floor, stand tall between steps." },
-    { "id": "dumbbell-lunge", "name": "Dumbbell lunge", "pattern": "weightlifting", "equipment": ["dumbbell"], "measure": "reps", "aliases": ["dumbbell walking lunge", "dumbbell lunge", "lunge with dumbbell", "dumbbell front rack lunge", "front rack lunge", "dumbbell overhead lunge", "db lunge"], "catalog": "Dumbbell_Lunges", "note": "Lunge holding the dumbbells where the workout says." },
-    { "id": "barbell-lunge", "name": "Barbell lunge", "pattern": "weightlifting", "equipment": ["barbell"], "measure": "reps", "aliases": ["barbell lunge", "barbell walking lunge", "overhead walking lunge", "overhead lunge", "back rack lunge", "front rack barbell lunge"], "catalog": "Barbell_Walking_Lunge", "note": "Lunge with the bar on the back, the front rack or overhead." },
-    { "id": "double-under", "name": "Double-under", "pattern": "monostructural", "equipment": ["jump rope"], "measure": "reps", "aliases": ["double under", "du"], "catalog": "Rope_Jumping", "note": "The rope passes under the feet twice per jump." },
-    { "id": "double-under-crossover", "name": "Double-under crossover", "pattern": "monostructural", "equipment": ["jump rope"], "measure": "reps", "aliases": ["double under crossover", "crossover"], "catalog": "Rope_Jumping", "note": "A double-under with the arms crossed." },
-    { "id": "triple-under", "name": "Triple-under", "pattern": "monostructural", "equipment": ["jump rope"], "measure": "reps", "aliases": ["triple under"], "catalog": "Rope_Jumping", "note": "The rope passes under the feet three times per jump." },
-    { "id": "single-under", "name": "Single-under", "pattern": "monostructural", "equipment": ["jump rope"], "measure": "reps", "aliases": ["single under", "jump rope"], "catalog": "Rope_Jumping", "note": "One pass of the rope per jump." },
-    { "id": "run", "name": "Run", "pattern": "monostructural", "equipment": [], "measure": "distance", "aliases": ["run", "running", "sprint", "shuttle run", "shuttle sprint"], "catalog": null, "note": "Run the distance. Out and back, or on a track." },
-    { "id": "row", "name": "Row", "pattern": "monostructural", "equipment": ["rower"], "measure": "distance", "aliases": ["row", "rowing"], "catalog": "Rowing_Stationary", "note": "On the rower, for the distance or the calories written." },
-    { "id": "bike", "name": "Bike", "pattern": "monostructural", "equipment": ["bike"], "measure": "calories", "aliases": ["bike", "echo bike", "assault bike", "air bike", "calories on the echo bike", "calories on the bike", "bike erg", "biking"], "catalog": "Air_Bike", "note": "On the bike, for the calories or distance written." },
-    { "id": "ski", "name": "Ski", "pattern": "monostructural", "equipment": ["ski erg"], "measure": "calories", "aliases": ["ski", "ski erg", "skierg"], "catalog": null, "note": "On the ski erg, for the calories or distance written." },
-    { "id": "swim", "name": "Swim", "pattern": "monostructural", "equipment": [], "measure": "distance", "aliases": ["swim", "swimming"], "catalog": null, "note": "Swim the distance." },
-    { "id": "ruck", "name": "Ruck", "pattern": "monostructural", "equipment": ["ruck"], "measure": "distance", "aliases": ["ruck", "rucking"], "catalog": null, "note": "Walk or run the distance with the loaded pack." },
-    { "id": "rope-climb", "name": "Rope climb", "pattern": "gymnastics", "equipment": ["rope"], "measure": "reps", "aliases": ["rope climb", "rope climb to"], "catalog": "Rope_Climb", "note": "Climb to the top and touch. Legs allowed unless it says legless." },
-    { "id": "legless-rope-climb", "name": "Legless rope climb", "pattern": "gymnastics", "equipment": ["rope"], "measure": "reps", "aliases": ["legless rope climb", "legless rope climb to"], "catalog": "Rope_Climb", "note": "Climb with the arms only." },
-    { "id": "farmers-carry", "name": "Farmers carry", "pattern": "strongman", "equipment": ["dumbbell", "kettlebell"], "measure": "distance", "aliases": ["farmers carry", "farmer carry", "dumbbell farmers carry", "farmers walk", "kettlebell farmers carry"], "catalog": "Farmers_Walk", "note": "Walk the distance with a weight in each hand." },
-    { "id": "sandbag-carry", "name": "Sandbag carry", "pattern": "strongman", "equipment": ["sandbag"], "measure": "distance", "aliases": ["sandbag carry", "bear hug carry"], "catalog": "Sandbag_Load", "note": "Carry the sandbag the distance." },
-    { "id": "sandbag-clean", "name": "Sandbag clean", "pattern": "strongman", "equipment": ["sandbag"], "measure": "reps", "aliases": ["sandbag clean", "sandbag to shoulder", "sandbag over shoulder"], "catalog": "Sandbag_Load", "note": "Sandbag from the floor to the shoulder." },
-    { "id": "sled-push", "name": "Sled push", "pattern": "strongman", "equipment": ["sled"], "measure": "distance", "aliases": ["sled push", "prowler push"], "catalog": "Sled_Push", "note": "Push the sled the distance." },
-    { "id": "sled-pull", "name": "Sled pull", "pattern": "strongman", "equipment": ["sled"], "measure": "distance", "aliases": ["sled pull", "sled drag"], "catalog": "Sled_Drag_-_Harness", "note": "Pull the sled the distance." },
-    { "id": "tire-flip", "name": "Tire flip", "pattern": "strongman", "equipment": ["tire"], "measure": "reps", "aliases": ["tire flip"], "catalog": "Tire_Flip", "note": "Flip the tire end over end." },
-    { "id": "bear-crawl", "name": "Bear crawl", "pattern": "gymnastics", "equipment": [], "measure": "distance", "aliases": ["bear crawl"], "catalog": null, "note": "Crawl on hands and feet, knees off the floor." },
-    { "id": "pegboard", "name": "Pegboard ascent", "pattern": "gymnastics", "equipment": ["pegboard"], "measure": "reps", "aliases": ["pegboard ascent", "pegboard"], "catalog": null, "note": "Climb the pegboard to the top." },
-    { "id": "rope-jump-skip", "name": "Single-leg skip", "pattern": "monostructural", "equipment": ["jump rope"], "measure": "reps", "aliases": ["single leg skip"], "catalog": "Rope_Jumping", "note": "Skip rope on one leg." },
-    { "id": "dumbbell-overhead-squat", "name": "Dumbbell overhead squat", "pattern": "weightlifting", "equipment": ["dumbbell"], "measure": "reps", "aliases": ["dumbbell overhead squat", "db overhead squat", "single arm overhead squat"], "catalog": "One-Arm_Overhead_Kettlebell_Squats", "note": "Squat with one dumbbell locked out overhead." },
-    { "id": "devils-press", "name": "Devil's press", "pattern": "weightlifting", "equipment": ["dumbbell"], "measure": "reps", "aliases": ["devils press", "devil press"], "catalog": null, "note": "A burpee on the dumbbells straight into a double dumbbell snatch." },
-    { "id": "man-maker", "name": "Man-maker", "pattern": "weightlifting", "equipment": ["dumbbell"], "measure": "reps", "aliases": ["man maker"], "catalog": null, "note": "Push-up on the dumbbells, row each arm, then a clean and press." },
-    { "id": "renegade-row", "name": "Renegade row", "pattern": "weightlifting", "equipment": ["dumbbell"], "measure": "reps", "aliases": ["renegade row"], "catalog": "Alternating_Renegade_Row", "note": "In a push-up position on the dumbbells, row one, then the other." },
-    { "id": "cindy-round", "name": "Round of Cindy", "pattern": "gymnastics", "equipment": ["pull-up bar"], "measure": "reps", "aliases": ["round of cindy", "round of strict cindy", "cindy"], "catalog": null, "note": "One round is 5 pull-ups, 10 push-ups and 15 squats. Strict Cindy uses strict pull-ups." },
-    { "id": "skills-practice", "name": "Skill practice", "pattern": "skill", "equipment": [], "measure": "seconds", "aliases": ["practice", "slips", "skill work"], "catalog": null, "note": "Work on the skill at an easy pace. Not for time." },
-    { "id": "rest", "name": "Rest", "pattern": "rest", "equipment": [], "measure": "seconds", "aliases": ["rest"], "catalog": null, "note": "Rest the time written before the next part." }
+    {
+      "id": "air-squat",
+      "name": "Air squat",
+      "pattern": "gymnastics",
+      "equipment": [],
+      "measure": "reps",
+      "aliases": [
+        "air squat",
+        "squat",
+        "bodyweight squat",
+        "body weight squat",
+        "sq",
+        "bodyweight squats"
+      ],
+      "catalog": "Bodyweight_Squat",
+      "note": "Hips below the knees at the bottom, hips fully open at the top. No weight."
+    },
+    {
+      "id": "back-squat",
+      "name": "Back squat",
+      "pattern": "weightlifting",
+      "equipment": [
+        "barbell"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "back squat",
+        "body weight back squat",
+        "bodyweight back squat",
+        "bs",
+        "bsq",
+        "back rack squat"
+      ],
+      "catalog": "Barbell_Full_Squat",
+      "note": "Bar on the back. Hips below the knees at the bottom."
+    },
+    {
+      "id": "front-squat",
+      "name": "Front squat",
+      "pattern": "weightlifting",
+      "equipment": [
+        "barbell"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "front squat",
+        "bodyweight front squat",
+        "body weight front squat",
+        "fs",
+        "fsq"
+      ],
+      "catalog": "Front_Squat_Clean_Grip",
+      "note": "Bar racked on the shoulders, elbows high. Hips below the knees."
+    },
+    {
+      "id": "overhead-squat",
+      "name": "Overhead squat",
+      "pattern": "weightlifting",
+      "equipment": [
+        "barbell"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "overhead squat",
+        "ohs",
+        "ohsq"
+      ],
+      "catalog": "Overhead_Squat",
+      "note": "Bar locked out overhead the whole way down and up."
+    },
+    {
+      "id": "goblet-squat",
+      "name": "Goblet squat",
+      "pattern": "weightlifting",
+      "equipment": [
+        "kettlebell",
+        "dumbbell"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "goblet squat",
+        "kettlebell goblet squat",
+        "dumbbell goblet squat",
+        "kb goblet squat",
+        "db goblet squat",
+        "kettlebell squat",
+        "kb squat"
+      ],
+      "catalog": "Goblet_Squat",
+      "note": "Weight held at the chest. Hips below the knees."
+    },
+    {
+      "id": "dumbbell-front-squat",
+      "name": "Dumbbell front squat",
+      "pattern": "weightlifting",
+      "equipment": [
+        "dumbbell"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "dumbbell front squat",
+        "db front squat",
+        "dual dumbbell front squat",
+        "double dumbbell front squat",
+        "dumbbell squat",
+        "db squat",
+        "single dumbbell front squat",
+        "kettlebell front squat",
+        "double kettlebell front squat",
+        "kb front squat"
+      ],
+      "catalog": "Dumbbell_Squat",
+      "note": "Dumbbells on the shoulders. Hips below the knees."
+    },
+    {
+      "id": "pistol",
+      "name": "Single-leg squat",
+      "pattern": "gymnastics",
+      "equipment": [],
+      "measure": "reps",
+      "aliases": [
+        "single leg squat",
+        "pistol",
+        "one legged squat",
+        "one leg squat",
+        "pistol squat",
+        "single leg pistol",
+        "pistols"
+      ],
+      "catalog": "Kettlebell_Pistol_Squat",
+      "note": "One leg, hip below the knee, the other leg out in front. Alternate unless told otherwise."
+    },
+    {
+      "id": "jumping-squat",
+      "name": "Jumping squat",
+      "pattern": "gymnastics",
+      "equipment": [],
+      "measure": "reps",
+      "aliases": [
+        "jumping squat",
+        "jump squat",
+        "squat jump",
+        "jsq"
+      ],
+      "catalog": "Freehand_Jump_Squat",
+      "note": "Full squat, then leave the floor."
+    },
+    {
+      "id": "wall-ball",
+      "name": "Wall-ball shot",
+      "pattern": "weightlifting",
+      "equipment": [
+        "medicine ball"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "wall ball shot",
+        "wall ball",
+        "wallball",
+        "wb",
+        "wall ball shots",
+        "wall balls",
+        "medicine ball wall ball",
+        "med ball wall ball"
+      ],
+      "catalog": null,
+      "note": "Squat with the ball at the chest, stand and throw it to the target. Catch and go again."
+    },
+    {
+      "id": "thruster",
+      "name": "Thruster",
+      "pattern": "weightlifting",
+      "equipment": [
+        "barbell"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "thruster",
+        "squat clean thruster",
+        "th",
+        "barbell thruster",
+        "cluster"
+      ],
+      "catalog": "Kettlebell_Thruster",
+      "note": "Front squat straight into a push press. One movement, no pause."
+    },
+    {
+      "id": "dumbbell-thruster",
+      "name": "Dumbbell thruster",
+      "pattern": "weightlifting",
+      "equipment": [
+        "dumbbell"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "dumbbell thruster",
+        "db thruster",
+        "db thrusters",
+        "dual dumbbell thruster",
+        "double dumbbell thruster",
+        "single dumbbell thruster",
+        "single arm dumbbell thruster"
+      ],
+      "catalog": "Kettlebell_Thruster",
+      "note": "Front squat with the dumbbells, drive them overhead on the way up."
+    },
+    {
+      "id": "deadlift",
+      "name": "Deadlift",
+      "pattern": "weightlifting",
+      "equipment": [
+        "barbell"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "deadlift",
+        "bodyweight deadlift",
+        "body weight deadlift",
+        "dl",
+        "barbell deadlift",
+        "conventional deadlift",
+        "axle deadlift",
+        "trap bar deadlift",
+        "deficit deadlift"
+      ],
+      "catalog": "Barbell_Deadlift",
+      "note": "Bar from the floor to standing tall, hips and knees locked."
+    },
+    {
+      "id": "dumbbell-deadlift",
+      "name": "Dumbbell deadlift",
+      "pattern": "weightlifting",
+      "equipment": [
+        "dumbbell"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "dumbbell deadlift",
+        "db deadlift",
+        "single dumbbell deadlift",
+        "dual dumbbell deadlift"
+      ],
+      "catalog": "Barbell_Deadlift",
+      "note": "Dumbbells from the floor to standing tall."
+    },
+    {
+      "id": "sumo-deadlift-high-pull",
+      "name": "Sumo deadlift high pull",
+      "pattern": "weightlifting",
+      "equipment": [
+        "barbell",
+        "kettlebell"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "sumo deadlift high pull",
+        "sdhp",
+        "sdlhp",
+        "sumo deadlift high-pull",
+        "sumo deadlift highpull",
+        "kettlebell sumo deadlift high pull"
+      ],
+      "catalog": "Kettlebell_Sumo_High_Pull",
+      "note": "Wide stance, pull from the floor to under the chin, elbows high."
+    },
+    {
+      "id": "romanian-deadlift",
+      "name": "Romanian deadlift",
+      "pattern": "weightlifting",
+      "equipment": [
+        "barbell"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "romanian deadlift",
+        "rdl",
+        "romanian dead lift",
+        "stiff leg deadlift",
+        "stiff legged deadlift",
+        "dumbbell romanian deadlift"
+      ],
+      "catalog": "Romanian_Deadlift",
+      "note": "Hinge at the hips with a soft knee, bar close to the legs."
+    },
+    {
+      "id": "clean",
+      "name": "Clean",
+      "pattern": "weightlifting",
+      "equipment": [
+        "barbell"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "clean",
+        "squat clean",
+        "full clean",
+        "cl",
+        "cln",
+        "high hang squat clean",
+        "hhcl",
+        "split clean"
+      ],
+      "catalog": "Clean",
+      "note": "Floor to the shoulders, received in a full squat."
+    },
+    {
+      "id": "power-clean",
+      "name": "Power clean",
+      "pattern": "weightlifting",
+      "equipment": [
+        "barbell"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "power clean",
+        "pc",
+        "pcl",
+        "high hang power clean",
+        "hhpcl",
+        "muscle clean",
+        "mcl"
+      ],
+      "catalog": "Power_Clean",
+      "note": "Floor to the shoulders, received above a parallel squat."
+    },
+    {
+      "id": "hang-clean",
+      "name": "Hang clean",
+      "pattern": "weightlifting",
+      "equipment": [
+        "barbell"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "hang clean",
+        "hang squat clean",
+        "hc",
+        "hcl",
+        "hsc"
+      ],
+      "catalog": "Hang_Clean",
+      "note": "Starts from the hang, above the knee. Received in a full squat."
+    },
+    {
+      "id": "hang-power-clean",
+      "name": "Hang power clean",
+      "pattern": "weightlifting",
+      "equipment": [
+        "barbell"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "hang power clean",
+        "hpc",
+        "hpcl"
+      ],
+      "catalog": "Hang_Clean",
+      "note": "From the hang to the shoulders, received above parallel."
+    },
+    {
+      "id": "clean-and-jerk",
+      "name": "Clean and jerk",
+      "pattern": "weightlifting",
+      "equipment": [
+        "barbell"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "clean and jerk",
+        "clean & jerk",
+        "hang clean and jerk",
+        "power clean and jerk",
+        "c&j",
+        "cl & j",
+        "c and j",
+        "clean and push jerk",
+        "power clean and split jerk",
+        "hang clean and push jerk",
+        "squat clean and jerk"
+      ],
+      "catalog": "Clean_and_Jerk",
+      "note": "Clean to the shoulders, then jerk overhead to lockout."
+    },
+    {
+      "id": "dumbbell-clean",
+      "name": "Dumbbell clean",
+      "pattern": "weightlifting",
+      "equipment": [
+        "dumbbell"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "dumbbell clean",
+        "db clean",
+        "dumbbell hang clean",
+        "dumbbell squat clean",
+        "dumbbell hang squat clean",
+        "dumbbell power clean",
+        "dumbbell hang power clean",
+        "dual dumbbell clean",
+        "double dumbbell clean",
+        "single arm dumbbell clean",
+        "kettlebell clean",
+        "kb clean",
+        "dumbbell high hang clean"
+      ],
+      "catalog": "Dumbbell_Clean",
+      "note": "Dumbbells to the shoulders. Squat or power as written."
+    },
+    {
+      "id": "dumbbell-clean-and-jerk",
+      "name": "Dumbbell clean and jerk",
+      "pattern": "weightlifting",
+      "equipment": [
+        "dumbbell"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "dumbbell clean and jerk",
+        "db clean and jerk",
+        "dumbbell clean & jerk",
+        "db c&j",
+        "dual dumbbell clean and jerk",
+        "single arm dumbbell clean and jerk",
+        "kettlebell clean and jerk",
+        "kb clean and jerk",
+        "dumbbell hang clean to overhead",
+        "hang clean to overhead",
+        "dumbbell clean and press",
+        "dumbbell clean to overhead"
+      ],
+      "catalog": "One-Arm_Kettlebell_Clean_and_Jerk",
+      "note": "Dumbbell to the shoulder, then overhead."
+    },
+    {
+      "id": "medicine-ball-clean",
+      "name": "Medicine-ball clean",
+      "pattern": "weightlifting",
+      "equipment": [
+        "medicine ball"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "medicine ball clean",
+        "med ball clean",
+        "mb clean",
+        "wall ball clean"
+      ],
+      "catalog": null,
+      "note": "Ball from the floor to the shoulders, received in a squat."
+    },
+    {
+      "id": "snatch",
+      "name": "Snatch",
+      "pattern": "weightlifting",
+      "equipment": [
+        "barbell"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "snatch",
+        "squat snatch",
+        "full snatch",
+        "sn",
+        "high hang squat snatch",
+        "hhsn",
+        "split snatch"
+      ],
+      "catalog": "Snatch",
+      "note": "Floor to overhead in one pull, received in a full squat."
+    },
+    {
+      "id": "power-snatch",
+      "name": "Power snatch",
+      "pattern": "weightlifting",
+      "equipment": [
+        "barbell"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "power snatch",
+        "psn",
+        "high hang power snatch",
+        "hhpsn",
+        "muscle snatch",
+        "msn"
+      ],
+      "catalog": "Power_Snatch",
+      "note": "Floor to overhead in one pull, received above parallel."
+    },
+    {
+      "id": "hang-snatch",
+      "name": "Hang snatch",
+      "pattern": "weightlifting",
+      "equipment": [
+        "barbell"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "hang snatch",
+        "hang squat snatch",
+        "hsn"
+      ],
+      "catalog": "Hang_Snatch",
+      "note": "From the hang to overhead, received in a full squat."
+    },
+    {
+      "id": "hang-power-snatch",
+      "name": "Hang power snatch",
+      "pattern": "weightlifting",
+      "equipment": [
+        "barbell"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "hang power snatch",
+        "hpsn",
+        "hps"
+      ],
+      "catalog": "Hang_Snatch",
+      "note": "From the hang to overhead, received above parallel."
+    },
+    {
+      "id": "dumbbell-snatch",
+      "name": "Dumbbell snatch",
+      "pattern": "weightlifting",
+      "equipment": [
+        "dumbbell"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "dumbbell snatch",
+        "db snatch",
+        "dumbbell power snatch",
+        "dumbbell hang snatch",
+        "dumbbell squat snatch",
+        "dumbbell hang power snatch",
+        "single arm dumbbell snatch",
+        "dumbbell alternating snatch"
+      ],
+      "catalog": "One-Arm_Kettlebell_Snatch",
+      "note": "One dumbbell, floor to overhead in one pull. Alternate arms unless told otherwise."
+    },
+    {
+      "id": "kettlebell-snatch",
+      "name": "Kettlebell snatch",
+      "pattern": "weightlifting",
+      "equipment": [
+        "kettlebell"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "kettlebell snatch",
+        "kb snatch",
+        "one arm kettlebell snatch",
+        "single arm kettlebell snatch"
+      ],
+      "catalog": "One-Arm_Kettlebell_Snatch",
+      "note": "One kettlebell, swing to overhead in one pull."
+    },
+    {
+      "id": "snatch-balance",
+      "name": "Snatch balance",
+      "pattern": "weightlifting",
+      "equipment": [
+        "barbell"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "snatch balance"
+      ],
+      "catalog": "Snatch_Balance",
+      "note": "Bar on the back, drop under it into an overhead squat."
+    },
+    {
+      "id": "snatch-pull",
+      "name": "Snatch pull",
+      "pattern": "weightlifting",
+      "equipment": [
+        "barbell"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "snatch pull",
+        "snatch deadlift",
+        "snatch high pull",
+        "snatch grip deadlift"
+      ],
+      "catalog": "Snatch_Pull",
+      "note": "The pull of the snatch without going under the bar."
+    },
+    {
+      "id": "clean-pull",
+      "name": "Clean pull",
+      "pattern": "weightlifting",
+      "equipment": [
+        "barbell"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "clean pull",
+        "clean deadlift",
+        "clean high pull",
+        "clean grip deadlift"
+      ],
+      "catalog": "Clean_Pull",
+      "note": "The pull of the clean without going under the bar."
+    },
+    {
+      "id": "shoulder-press",
+      "name": "Shoulder press",
+      "pattern": "weightlifting",
+      "equipment": [
+        "barbell"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "shoulder press",
+        "strict press",
+        "press",
+        "overhead press",
+        "sp",
+        "mp",
+        "military press",
+        "strict shoulder press",
+        "strict overhead press",
+        "barbell press"
+      ],
+      "catalog": "Barbell_Shoulder_Press",
+      "note": "Shoulders to overhead with no help from the legs."
+    },
+    {
+      "id": "push-press",
+      "name": "Push press",
+      "pattern": "weightlifting",
+      "equipment": [
+        "barbell"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "push press",
+        "pp"
+      ],
+      "catalog": "Push_Press",
+      "note": "A dip and drive from the legs, then press to lockout."
+    },
+    {
+      "id": "push-jerk",
+      "name": "Push jerk",
+      "pattern": "weightlifting",
+      "equipment": [
+        "barbell"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "push jerk",
+        "jerk",
+        "pj",
+        "power jerk"
+      ],
+      "catalog": "Split_Jerk",
+      "note": "Dip, drive, and drop under the bar to catch it locked out."
+    },
+    {
+      "id": "split-jerk",
+      "name": "Split jerk",
+      "pattern": "weightlifting",
+      "equipment": [
+        "barbell"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "split jerk",
+        "sj"
+      ],
+      "catalog": "Split_Jerk",
+      "note": "Dip, drive, and split the feet under the bar."
+    },
+    {
+      "id": "shoulder-to-overhead",
+      "name": "Shoulder-to-overhead",
+      "pattern": "weightlifting",
+      "equipment": [
+        "barbell"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "shoulder to overhead",
+        "shoulders to overhead",
+        "s2oh",
+        "sto",
+        "barbell shoulder to overhead",
+        "sh2oh"
+      ],
+      "catalog": "Push_Press",
+      "note": "Any way from the shoulders to lockout: press, push press or jerk."
+    },
+    {
+      "id": "dumbbell-shoulder-to-overhead",
+      "name": "Dumbbell shoulder-to-overhead",
+      "pattern": "weightlifting",
+      "equipment": [
+        "dumbbell"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "dumbbell shoulder to overhead",
+        "dumbbell push press",
+        "dumbbell push jerk",
+        "dumbbell shoulder press",
+        "dumbbell press",
+        "db push press",
+        "db shoulder to overhead",
+        "db s2oh",
+        "dumbbell s2oh",
+        "dual dumbbell push press",
+        "double dumbbell push press",
+        "dual dumbbell shoulder to overhead",
+        "dumbbell strict press",
+        "single arm dumbbell push press",
+        "single arm dumbbell press",
+        "kettlebell press",
+        "kb press",
+        "kettlebell push press",
+        "kettlebell strict press",
+        "dumbbell overhead press",
+        "arnold press"
+      ],
+      "catalog": "Dumbbell_Shoulder_Press",
+      "note": "Dumbbells from the shoulders to lockout, any way."
+    },
+    {
+      "id": "ground-to-overhead",
+      "name": "Ground-to-overhead",
+      "pattern": "weightlifting",
+      "equipment": [
+        "barbell"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "ground to overhead",
+        "g2oh",
+        "gto",
+        "dumbbell ground to overhead",
+        "dumbbell g2oh",
+        "sandbag ground to overhead"
+      ],
+      "catalog": "Clean_and_Jerk",
+      "note": "Floor to lockout overhead, any way: snatch or clean and jerk."
+    },
+    {
+      "id": "bench-press",
+      "name": "Bench press",
+      "pattern": "weightlifting",
+      "equipment": [
+        "barbell",
+        "bench"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "bench press",
+        "bp",
+        "barbell bench press",
+        "close grip bench press"
+      ],
+      "catalog": "Barbell_Bench_Press_-_Medium_Grip",
+      "note": "Bar to the chest and back to lockout, lying on the bench."
+    },
+    {
+      "id": "dumbbell-bench-press",
+      "name": "Dumbbell bench press",
+      "pattern": "weightlifting",
+      "equipment": [
+        "dumbbell",
+        "bench"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "dumbbell bench press",
+        "db bench press",
+        "db bench",
+        "dumbbell floor press",
+        "db floor press"
+      ],
+      "catalog": "Dumbbell_Bench_Press",
+      "note": "Dumbbells to the chest and back to lockout."
+    },
+    {
+      "id": "floor-press",
+      "name": "Floor press",
+      "pattern": "weightlifting",
+      "equipment": [
+        "barbell"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "floor press",
+        "barbell floor press"
+      ],
+      "catalog": "Floor_Press",
+      "note": "Bench press lying on the floor; elbows touch down each rep."
+    },
+    {
+      "id": "kettlebell-swing",
+      "name": "Kettlebell swing",
+      "pattern": "weightlifting",
+      "equipment": [
+        "kettlebell"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "kettlebell swing",
+        "kb swing",
+        "american kettlebell swing",
+        "kbs",
+        "akbs",
+        "akb",
+        "kettle bell swing",
+        "american swing"
+      ],
+      "catalog": "One-Arm_Kettlebell_Swings",
+      "note": "Hinge and swing the bell to overhead. Russian swings stop at eye level."
+    },
+    {
+      "id": "russian-kettlebell-swing",
+      "name": "Russian kettlebell swing",
+      "pattern": "weightlifting",
+      "equipment": [
+        "kettlebell"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "russian kettlebell swing",
+        "russian swing",
+        "rkbs",
+        "rkb",
+        "kettlebell swing to eye level"
+      ],
+      "catalog": "One-Arm_Kettlebell_Swings",
+      "note": "Hinge and swing the bell to eye level."
+    },
+    {
+      "id": "turkish-get-up",
+      "name": "Turkish get-up",
+      "pattern": "weightlifting",
+      "equipment": [
+        "kettlebell",
+        "dumbbell"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "turkish get up",
+        "get up",
+        "tgu",
+        "turkish getup",
+        "kettlebell get up",
+        "dumbbell turkish get up"
+      ],
+      "catalog": "Kettlebell_Turkish_Get-Up_Lunge_style",
+      "note": "Lying to standing with the weight locked out overhead the whole way."
+    },
+    {
+      "id": "weighted-dip",
+      "name": "Weighted dip",
+      "pattern": "gymnastics",
+      "equipment": [
+        "dip bars"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "weighted dip",
+        "weighted ring dip"
+      ],
+      "catalog": "Parallel_Bar_Dip",
+      "note": "Dip on the bars with added weight."
+    },
+    {
+      "id": "dumbbell-row",
+      "name": "Dumbbell row",
+      "pattern": "weightlifting",
+      "equipment": [
+        "dumbbell"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "single arm dumbbell row",
+        "dumbbell row",
+        "one arm dumbbell row",
+        "db row",
+        "bent over dumbbell row",
+        "gorilla row",
+        "kettlebell row",
+        "kb row",
+        "single arm row"
+      ],
+      "catalog": "Bent_Over_Two-Dumbbell_Row",
+      "note": "Bent over, pull the dumbbell to the hip."
+    },
+    {
+      "id": "bent-over-row",
+      "name": "Bent-over row",
+      "pattern": "weightlifting",
+      "equipment": [
+        "barbell"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "bent over row",
+        "barbell row",
+        "bor",
+        "bent over barbell row",
+        "pendlay row",
+        "barbell bent over row"
+      ],
+      "catalog": "Bent_Over_Barbell_Row",
+      "note": "Bent over, pull the bar to the body."
+    },
+    {
+      "id": "good-morning",
+      "name": "Good morning",
+      "pattern": "weightlifting",
+      "equipment": [
+        "barbell"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "good morning",
+        "barbell good morning"
+      ],
+      "catalog": "Good_Morning",
+      "note": "Bar on the back, hinge at the hips with a flat back."
+    },
+    {
+      "id": "pull-up",
+      "name": "Pull-up",
+      "pattern": "gymnastics",
+      "equipment": [
+        "pull-up bar"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "pull up",
+        "kipping pull up",
+        "butterfly pull up",
+        "pullup",
+        "chin over bar pull up",
+        "kipping pullup",
+        "butterfly pullup",
+        "banded pull up",
+        "band assisted pull up"
+      ],
+      "catalog": "Pullups",
+      "note": "Chin over the bar at the top, arms straight at the bottom."
+    },
+    {
+      "id": "strict-pull-up",
+      "name": "Strict pull-up",
+      "pattern": "gymnastics",
+      "equipment": [
+        "pull-up bar"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "strict pull up",
+        "strict pullup",
+        "dead hang pull up"
+      ],
+      "catalog": "Pullups",
+      "note": "Chin over the bar with no kip or swing."
+    },
+    {
+      "id": "chest-to-bar-pull-up",
+      "name": "Chest-to-bar pull-up",
+      "pattern": "gymnastics",
+      "equipment": [
+        "pull-up bar"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "chest to bar pull up",
+        "chest to bar",
+        "c2b pull up",
+        "c2b",
+        "strict l chest to bar pull up",
+        "ctb",
+        "chest to bar pullup",
+        "kipping chest to bar pull up",
+        "butterfly chest to bar pull up",
+        "strict chest to bar pull up"
+      ],
+      "catalog": "Pullups",
+      "note": "Chest touches the bar at the top."
+    },
+    {
+      "id": "weighted-pull-up",
+      "name": "Weighted pull-up",
+      "pattern": "gymnastics",
+      "equipment": [
+        "pull-up bar"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "weighted pull up",
+        "weighted pullup"
+      ],
+      "catalog": "Weighted_Pull_Ups",
+      "note": "Strict pull-up with added weight."
+    },
+    {
+      "id": "l-pull-up",
+      "name": "L pull-up",
+      "pattern": "gymnastics",
+      "equipment": [
+        "pull-up bar"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "l pull up",
+        "l sit pull up",
+        "l pullup"
+      ],
+      "catalog": "Pullups",
+      "note": "Pull-up with the legs held straight out in front."
+    },
+    {
+      "id": "jumping-pull-up",
+      "name": "Jumping pull-up",
+      "pattern": "gymnastics",
+      "equipment": [
+        "pull-up bar"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "jumping pull up",
+        "jumping pullup"
+      ],
+      "catalog": "Pullups",
+      "note": "Jump to help the chin over the bar."
+    },
+    {
+      "id": "burpee-pull-up",
+      "name": "Burpee pull-up",
+      "pattern": "gymnastics",
+      "equipment": [
+        "pull-up bar"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "burpee pull up"
+      ],
+      "catalog": "Pullups",
+      "note": "A burpee, then jump to the bar for a pull-up."
+    },
+    {
+      "id": "chin-up",
+      "name": "Chin-up",
+      "pattern": "gymnastics",
+      "equipment": [
+        "pull-up bar"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "chin up",
+        "chinup"
+      ],
+      "catalog": "Chin-Up",
+      "note": "Pull-up with the palms facing you."
+    },
+    {
+      "id": "ring-row",
+      "name": "Ring row",
+      "pattern": "gymnastics",
+      "equipment": [
+        "rings"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "ring row",
+        "rr",
+        "body row",
+        "inverted row",
+        "bodyweight row",
+        "australian pull up"
+      ],
+      "catalog": "Bodyweight_Mid_Row",
+      "note": "Lean back under the rings and pull the chest to them."
+    },
+    {
+      "id": "push-up",
+      "name": "Push-up",
+      "pattern": "gymnastics",
+      "equipment": [],
+      "measure": "reps",
+      "aliases": [
+        "push up",
+        "pushup",
+        "dumbbell push up",
+        "strict push up",
+        "kipping push up",
+        "knee push up",
+        "incline push up",
+        "decline push up",
+        "deficit push up",
+        "wide push up",
+        "diamond push up"
+      ],
+      "catalog": "Pushups",
+      "note": "Chest to the floor, arms locked out at the top, body straight."
+    },
+    {
+      "id": "hand-release-push-up",
+      "name": "Hand-release push-up",
+      "pattern": "gymnastics",
+      "equipment": [],
+      "measure": "reps",
+      "aliases": [
+        "hand release push up",
+        "hrpu",
+        "hr push up",
+        "hand release pushup"
+      ],
+      "catalog": "Pushups",
+      "note": "Lift the hands off the floor at the bottom of each rep."
+    },
+    {
+      "id": "ring-push-up",
+      "name": "Ring push-up",
+      "pattern": "gymnastics",
+      "equipment": [
+        "rings"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "ring push up",
+        "ring pushup"
+      ],
+      "catalog": "Pushups",
+      "note": "Push-up with the hands on rings."
+    },
+    {
+      "id": "handstand-push-up",
+      "name": "Handstand push-up",
+      "pattern": "gymnastics",
+      "equipment": [
+        "wall"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "handstand push up",
+        "hspu",
+        "kipping handstand push up",
+        "handstand pushup",
+        "kipping hspu",
+        "hs push up",
+        "wall facing handstand push up",
+        "free standing handstand push up",
+        "freestanding handstand push up"
+      ],
+      "catalog": "Handstand_Push-Ups",
+      "note": "Upside down against the wall, head to the floor and back to lockout."
+    },
+    {
+      "id": "strict-handstand-push-up",
+      "name": "Strict handstand push-up",
+      "pattern": "gymnastics",
+      "equipment": [
+        "wall"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "strict handstand push up",
+        "strict hspu",
+        "chest to wall handstand push up",
+        "shspu",
+        "strict hs push up"
+      ],
+      "catalog": "Handstand_Push-Ups",
+      "note": "Handstand push-up with no kip."
+    },
+    {
+      "id": "deficit-handstand-push-up",
+      "name": "Deficit handstand push-up",
+      "pattern": "gymnastics",
+      "equipment": [
+        "wall"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "deficit handstand push up",
+        "deficit hspu",
+        "deficit strict handstand push up",
+        "kipping deficit handstand push up",
+        "deficit handstand pushup"
+      ],
+      "catalog": "Handstand_Push-Ups",
+      "note": "Hands raised so the head goes below them."
+    },
+    {
+      "id": "handstand-walk",
+      "name": "Handstand walk",
+      "pattern": "gymnastics",
+      "equipment": [],
+      "measure": "distance",
+      "aliases": [
+        "handstand walk",
+        "hsw",
+        "handstand walking",
+        "hs walk",
+        "handstand walk obstacle"
+      ],
+      "catalog": null,
+      "note": "Walk on the hands for the distance."
+    },
+    {
+      "id": "handstand-hold",
+      "name": "Handstand hold",
+      "pattern": "gymnastics",
+      "equipment": [
+        "wall"
+      ],
+      "measure": "seconds",
+      "aliases": [
+        "handstand hold",
+        "handstand",
+        "hsh",
+        "wall facing handstand hold",
+        "freestanding handstand hold",
+        "handstand pirouette"
+      ],
+      "catalog": null,
+      "note": "Hold a handstand for the time."
+    },
+    {
+      "id": "shoulder-tap",
+      "name": "Handstand shoulder tap",
+      "pattern": "gymnastics",
+      "equipment": [],
+      "measure": "reps",
+      "aliases": [
+        "shoulder tap",
+        "freestanding shoulder tap",
+        "freestanding shoulder taps in a handstand",
+        "handstand shoulder tap",
+        "handstand shoulder taps",
+        "plank shoulder tap"
+      ],
+      "catalog": null,
+      "note": "In a handstand, tap one shoulder with the opposite hand."
+    },
+    {
+      "id": "wall-walk",
+      "name": "Wall walk",
+      "pattern": "gymnastics",
+      "equipment": [
+        "wall"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "wall walk"
+      ],
+      "catalog": null,
+      "note": "From a push-up position, walk the feet up the wall and the hands in, then back down."
+    },
+    {
+      "id": "ring-dip",
+      "name": "Ring dip",
+      "pattern": "gymnastics",
+      "equipment": [
+        "rings"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "ring dip",
+        "strict ring dip",
+        "kipping ring dip"
+      ],
+      "catalog": "Ring_Dips",
+      "note": "Dip on the rings, shoulders below the elbows at the bottom."
+    },
+    {
+      "id": "dip",
+      "name": "Dip",
+      "pattern": "gymnastics",
+      "equipment": [
+        "dip bars"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "dip",
+        "bar dip",
+        "parallel bar dip",
+        "parallette dip",
+        "bench dip",
+        "station dip"
+      ],
+      "catalog": "Parallel_Bar_Dip",
+      "note": "Dip on the bars, shoulders below the elbows at the bottom."
+    },
+    {
+      "id": "muscle-up",
+      "name": "Muscle-up",
+      "pattern": "gymnastics",
+      "equipment": [
+        "rings"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "muscle up",
+        "ring muscle up",
+        "kipping muscle up",
+        "mu",
+        "mup",
+        "rmu",
+        "muscleup",
+        "kipping ring muscle up"
+      ],
+      "catalog": "Kipping_Muscle_Up",
+      "note": "Pull-up straight into a dip on the rings, to lockout."
+    },
+    {
+      "id": "strict-muscle-up",
+      "name": "Strict muscle-up",
+      "pattern": "gymnastics",
+      "equipment": [
+        "rings"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "strict muscle up",
+        "strict ring muscle up",
+        "weighted muscle up",
+        "strict mu",
+        "strict rmu"
+      ],
+      "catalog": "Muscle_Up",
+      "note": "Muscle-up with no kip."
+    },
+    {
+      "id": "bar-muscle-up",
+      "name": "Bar muscle-up",
+      "pattern": "gymnastics",
+      "equipment": [
+        "pull-up bar"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "bar muscle up",
+        "bmu",
+        "bar mu",
+        "kipping bar muscle up",
+        "strict bar muscle up"
+      ],
+      "catalog": "Muscle_Up",
+      "note": "Pull-up over the bar straight into a dip to lockout."
+    },
+    {
+      "id": "toes-to-bar",
+      "name": "Toes-to-bar",
+      "pattern": "gymnastics",
+      "equipment": [
+        "pull-up bar"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "toes to bar",
+        "t2b",
+        "strict toes to bar",
+        "ttb",
+        "kipping toes to bar",
+        "toe to bar",
+        "toes to ring",
+        "strict toes to ring",
+        "toes 2 bar"
+      ],
+      "catalog": null,
+      "note": "Hanging from the bar, both feet touch the bar between the hands."
+    },
+    {
+      "id": "knees-to-elbows",
+      "name": "Knees-to-elbows",
+      "pattern": "gymnastics",
+      "equipment": [
+        "pull-up bar"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "knees to elbow",
+        "knee to elbow",
+        "k2e",
+        "kte",
+        "strict knees to elbow",
+        "knees to chest",
+        "knee raise to elbow"
+      ],
+      "catalog": null,
+      "note": "Hanging from the bar, both knees touch the elbows."
+    },
+    {
+      "id": "hanging-knee-raise",
+      "name": "Hanging knee raise",
+      "pattern": "gymnastics",
+      "equipment": [
+        "pull-up bar"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "hanging knee raise",
+        "knee raise",
+        "knee tuck",
+        "hanging leg raise",
+        "leg raise"
+      ],
+      "catalog": "Hanging_Leg_Raise",
+      "note": "Hanging from the bar, knees above the hips."
+    },
+    {
+      "id": "sit-up",
+      "name": "Sit-up",
+      "pattern": "gymnastics",
+      "equipment": [],
+      "measure": "reps",
+      "aliases": [
+        "sit up",
+        "abmat sit up",
+        "ab mat sit up",
+        "situp",
+        "abmat situp",
+        "ab mat situp",
+        "butterfly sit up"
+      ],
+      "catalog": "Sit-Up",
+      "note": "Shoulders touch the floor at the bottom, hands touch the feet at the top."
+    },
+    {
+      "id": "ghd-sit-up",
+      "name": "GHD sit-up",
+      "pattern": "gymnastics",
+      "equipment": [
+        "ghd"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "ghd sit up",
+        "ghd situp",
+        "ghdsu",
+        "ghd sit up to parallel"
+      ],
+      "catalog": null,
+      "note": "On the GHD, hands touch the floor behind, then sit up to touch the pad or the feet."
+    },
+    {
+      "id": "v-up",
+      "name": "V-up",
+      "pattern": "gymnastics",
+      "equipment": [],
+      "measure": "reps",
+      "aliases": [
+        "v up",
+        "vup",
+        "tuck up"
+      ],
+      "catalog": null,
+      "note": "Lying flat, fold so the hands touch the feet above the hips."
+    },
+    {
+      "id": "back-extension",
+      "name": "Back extension",
+      "pattern": "gymnastics",
+      "equipment": [
+        "ghd"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "back extension",
+        "ghd back extension",
+        "hyperextension",
+        "hyper extension"
+      ],
+      "catalog": "Hyperextensions_Back_Extensions",
+      "note": "On the GHD, round down and extend the back to flat."
+    },
+    {
+      "id": "hip-extension",
+      "name": "Hip extension",
+      "pattern": "gymnastics",
+      "equipment": [
+        "ghd"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "hip extension",
+        "ghd hip extension"
+      ],
+      "catalog": "Hyperextensions_Back_Extensions",
+      "note": "On the GHD, hinge at the hips with a flat back and come up to level."
+    },
+    {
+      "id": "hip-and-back-extension",
+      "name": "Hip and back extension",
+      "pattern": "gymnastics",
+      "equipment": [
+        "ghd"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "hip and back extension"
+      ],
+      "catalog": "Hyperextensions_Back_Extensions",
+      "note": "A hip extension and a back extension in one rep."
+    },
+    {
+      "id": "glute-ham-raise",
+      "name": "Glute-ham raise",
+      "pattern": "gymnastics",
+      "equipment": [
+        "ghd"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "glute ham raise",
+        "ghr",
+        "ghd raise",
+        "nordic curl",
+        "nordic hamstring curl"
+      ],
+      "catalog": "Glute_Ham_Raise",
+      "note": "On the GHD, lower the body with the hamstrings and pull back up."
+    },
+    {
+      "id": "l-sit",
+      "name": "L-sit",
+      "pattern": "gymnastics",
+      "equipment": [
+        "parallettes"
+      ],
+      "measure": "seconds",
+      "aliases": [
+        "l sit",
+        "l sit hold",
+        "l sit on ring",
+        "parallette l sit"
+      ],
+      "catalog": null,
+      "note": "Supported on the hands, legs straight out in front, hold."
+    },
+    {
+      "id": "plank",
+      "name": "Plank hold",
+      "pattern": "gymnastics",
+      "equipment": [],
+      "measure": "seconds",
+      "aliases": [
+        "plank hold",
+        "plank",
+        "front plank",
+        "forearm plank",
+        "side plank",
+        "side plank hold",
+        "rkc plank"
+      ],
+      "catalog": "Plank",
+      "note": "Hold a straight body on the forearms or hands."
+    },
+    {
+      "id": "hollow-hold",
+      "name": "Hollow hold",
+      "pattern": "gymnastics",
+      "equipment": [],
+      "measure": "seconds",
+      "aliases": [
+        "hollow hold",
+        "hollow rock",
+        "hollow body hold",
+        "hollow body",
+        "hollow body rock"
+      ],
+      "catalog": null,
+      "note": "On the back, low back pressed down, arms and legs off the floor. Hold or rock."
+    },
+    {
+      "id": "burpee",
+      "name": "Burpee",
+      "pattern": "gymnastics",
+      "equipment": [],
+      "measure": "reps",
+      "aliases": [
+        "burpee",
+        "strict burpee",
+        "inverted burpee",
+        "up down",
+        "sprawl",
+        "no push up burpee",
+        "burpee to plate",
+        "6 inch target burpee",
+        "burpee broad jump"
+      ],
+      "catalog": null,
+      "note": "Chest to the floor, back up, jump and clap overhead."
+    },
+    {
+      "id": "bar-facing-burpee",
+      "name": "Bar-facing burpee",
+      "pattern": "gymnastics",
+      "equipment": [
+        "barbell"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "bar facing burpee",
+        "burpee over the bar",
+        "lateral burpee over the bar",
+        "lateral burpee",
+        "bfb",
+        "lateral burpee over bar",
+        "burpee over bar",
+        "lateral bar burpee"
+      ],
+      "catalog": null,
+      "note": "Burpee facing the bar, then jump over it."
+    },
+    {
+      "id": "burpee-over-dumbbell",
+      "name": "Burpee over the dumbbell",
+      "pattern": "gymnastics",
+      "equipment": [
+        "dumbbell"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "lateral burpee over the dumbbell",
+        "burpee over the dumbbell",
+        "burpee over dumbbell",
+        "lateral burpee over dumbbell",
+        "dumbbell burpee",
+        "db burpee"
+      ],
+      "catalog": null,
+      "note": "Burpee beside the dumbbell, then jump over it."
+    },
+    {
+      "id": "burpee-over-rower",
+      "name": "Burpee over the rower",
+      "pattern": "gymnastics",
+      "equipment": [
+        "rower"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "burpee over the rower",
+        "burpee over rower",
+        "burpee over the erg",
+        "burpee over erg"
+      ],
+      "catalog": null,
+      "note": "Burpee beside the rower, then step or jump over it."
+    },
+    {
+      "id": "burpee-box-jump",
+      "name": "Burpee box jump",
+      "pattern": "gymnastics",
+      "equipment": [
+        "box"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "burpee box jump",
+        "bbj"
+      ],
+      "catalog": "Box_Jump_Multiple_Response",
+      "note": "A burpee, then jump onto the box."
+    },
+    {
+      "id": "burpee-box-jump-over",
+      "name": "Burpee box jump-over",
+      "pattern": "gymnastics",
+      "equipment": [
+        "box"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "burpee box jump over",
+        "bbjo",
+        "burpee over box"
+      ],
+      "catalog": "Box_Jump_Multiple_Response",
+      "note": "A burpee, then jump onto and over the box."
+    },
+    {
+      "id": "burpee-to-target",
+      "name": "Burpee to a target",
+      "pattern": "gymnastics",
+      "equipment": [],
+      "measure": "reps",
+      "aliases": [
+        "burpee to a target",
+        "burpee to target",
+        "target burpee",
+        "burpee to 6-inch target",
+        "burpee to 6 inch target"
+      ],
+      "catalog": null,
+      "note": "A burpee that ends with a jump to touch the target."
+    },
+    {
+      "id": "dumbbell-burpee-deadlift",
+      "name": "Dumbbell burpee deadlift",
+      "pattern": "weightlifting",
+      "equipment": [
+        "dumbbell"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "dumbbell burpee deadlift",
+        "burpee deadlift"
+      ],
+      "catalog": null,
+      "note": "A burpee with the hands on the dumbbells, then stand them up in a deadlift."
+    },
+    {
+      "id": "box-jump",
+      "name": "Box jump",
+      "pattern": "gymnastics",
+      "equipment": [
+        "box"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "box jump",
+        "bj",
+        "seated box jump",
+        "weighted box jump",
+        "lateral box jump"
+      ],
+      "catalog": "Box_Jump_Multiple_Response",
+      "note": "Jump onto the box and stand tall on top."
+    },
+    {
+      "id": "box-jump-over",
+      "name": "Box jump-over",
+      "pattern": "gymnastics",
+      "equipment": [
+        "box"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "box jump over",
+        "bjo",
+        "lateral box jump over",
+        "box over"
+      ],
+      "catalog": "Box_Jump_Multiple_Response",
+      "note": "Jump onto the box and over to the other side."
+    },
+    {
+      "id": "box-step-up",
+      "name": "Box step-up",
+      "pattern": "gymnastics",
+      "equipment": [
+        "box"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "box step up",
+        "step up",
+        "weighted step up",
+        "weighted box step up",
+        "box step"
+      ],
+      "catalog": "Dumbbell_Step_Ups",
+      "note": "Step onto the box and stand tall on top."
+    },
+    {
+      "id": "dumbbell-box-step-up",
+      "name": "Dumbbell box step-up",
+      "pattern": "weightlifting",
+      "equipment": [
+        "dumbbell",
+        "box"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "dumbbell box step up",
+        "db box step up",
+        "dumbbell step up",
+        "db step up",
+        "dual dumbbell box step up",
+        "single dumbbell box step up",
+        "front rack dumbbell step up",
+        "kettlebell box step up",
+        "sandbag step up",
+        "sandbag box step up"
+      ],
+      "catalog": "Dumbbell_Step_Ups",
+      "note": "Step onto the box holding the dumbbells."
+    },
+    {
+      "id": "dumbbell-box-step-over",
+      "name": "Dumbbell box step-over",
+      "pattern": "weightlifting",
+      "equipment": [
+        "dumbbell",
+        "box"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "dumbbell box step over",
+        "db box step over",
+        "box step over",
+        "dumbbell step over",
+        "sandbag box step over",
+        "sandbag step over",
+        "dual dumbbell box step over"
+      ],
+      "catalog": "Dumbbell_Step_Ups",
+      "note": "Step up onto the box and down the other side holding the dumbbells."
+    },
+    {
+      "id": "broad-jump",
+      "name": "Broad jump",
+      "pattern": "gymnastics",
+      "equipment": [],
+      "measure": "reps",
+      "aliases": [
+        "broad jump",
+        "standing broad jump",
+        "standing long jump",
+        "long jump"
+      ],
+      "catalog": null,
+      "note": "Two-foot jump forward for distance."
+    },
+    {
+      "id": "lunge",
+      "name": "Lunge",
+      "pattern": "gymnastics",
+      "equipment": [],
+      "measure": "reps",
+      "aliases": [
+        "lunge",
+        "walking lunge",
+        "walking lunge step",
+        "alternating lunge",
+        "reverse lunge",
+        "jumping lunge",
+        "wl",
+        "forward lunge",
+        "bodyweight lunge",
+        "lunge step",
+        "lateral lunge",
+        "curtsy lunge",
+        "split squat",
+        "bulgarian split squat",
+        "rear foot elevated split squat"
+      ],
+      "catalog": "Bodyweight_Walking_Lunge",
+      "note": "Back knee touches the floor, stand tall between steps."
+    },
+    {
+      "id": "dumbbell-lunge",
+      "name": "Dumbbell lunge",
+      "pattern": "weightlifting",
+      "equipment": [
+        "dumbbell"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "dumbbell walking lunge",
+        "dumbbell lunge",
+        "lunge with dumbbell",
+        "dumbbell front rack lunge",
+        "front rack lunge",
+        "dumbbell overhead lunge",
+        "db lunge",
+        "frl",
+        "dumbbell front rack walking lunge",
+        "dumbbell overhead walking lunge",
+        "dual dumbbell lunge",
+        "double dumbbell lunge",
+        "dumbbell reverse lunge",
+        "kettlebell lunge",
+        "kettlebell front rack lunge",
+        "kb lunge",
+        "goblet lunge",
+        "goblet walking lunge",
+        "farmers carry lunge",
+        "suitcase lunge",
+        "overhead dumbbell lunge",
+        "single arm overhead lunge"
+      ],
+      "catalog": "Dumbbell_Lunges",
+      "note": "Lunge holding the dumbbells where the workout says."
+    },
+    {
+      "id": "barbell-lunge",
+      "name": "Barbell lunge",
+      "pattern": "weightlifting",
+      "equipment": [
+        "barbell"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "barbell lunge",
+        "barbell walking lunge",
+        "overhead walking lunge",
+        "overhead lunge",
+        "back rack lunge",
+        "front rack barbell lunge",
+        "brl",
+        "ohl",
+        "back rack walking lunge",
+        "front rack walking lunge",
+        "barbell overhead lunge",
+        "barbell back rack lunge",
+        "barbell front rack lunge",
+        "back rack reverse lunge",
+        "front rack reverse lunge"
+      ],
+      "catalog": "Barbell_Walking_Lunge",
+      "note": "Lunge with the bar on the back, the front rack or overhead."
+    },
+    {
+      "id": "double-under",
+      "name": "Double-under",
+      "pattern": "monostructural",
+      "equipment": [
+        "jump rope"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "double under",
+        "du",
+        "dus",
+        "dub",
+        "dbl under"
+      ],
+      "catalog": "Rope_Jumping",
+      "note": "The rope passes under the feet twice per jump."
+    },
+    {
+      "id": "double-under-crossover",
+      "name": "Double-under crossover",
+      "pattern": "monostructural",
+      "equipment": [
+        "jump rope"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "double under crossover",
+        "crossover",
+        "crossover double under",
+        "du crossover"
+      ],
+      "catalog": "Rope_Jumping",
+      "note": "A double-under with the arms crossed."
+    },
+    {
+      "id": "triple-under",
+      "name": "Triple-under",
+      "pattern": "monostructural",
+      "equipment": [
+        "jump rope"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "triple under",
+        "tu"
+      ],
+      "catalog": "Rope_Jumping",
+      "note": "The rope passes under the feet three times per jump."
+    },
+    {
+      "id": "single-under",
+      "name": "Single-under",
+      "pattern": "monostructural",
+      "equipment": [
+        "jump rope"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "single under",
+        "jump rope",
+        "single",
+        "jump rope single",
+        "skip",
+        "skipping",
+        "rope skip",
+        "jump rope skip"
+      ],
+      "catalog": "Rope_Jumping",
+      "note": "One pass of the rope per jump."
+    },
+    {
+      "id": "run",
+      "name": "Run",
+      "pattern": "monostructural",
+      "equipment": [],
+      "measure": "distance",
+      "aliases": [
+        "run",
+        "running",
+        "sprint",
+        "jog",
+        "air runner",
+        "assault runner",
+        "aar",
+        "treadmill run",
+        "trueform run",
+        "hill sprint",
+        "run or row"
+      ],
+      "catalog": null,
+      "note": "Run the distance. Out and back, or on a track."
+    },
+    {
+      "id": "row",
+      "name": "Row",
+      "pattern": "monostructural",
+      "equipment": [
+        "rower"
+      ],
+      "measure": "distance",
+      "aliases": [
+        "row",
+        "rowing",
+        "c2 row",
+        "erg row",
+        "row erg",
+        "row cal",
+        "cal row",
+        "calorie row",
+        "rowing calorie",
+        "row for calories",
+        "row for distance",
+        "concept2 row",
+        "concept 2 row",
+        "calories row"
+      ],
+      "catalog": "Rowing_Stationary",
+      "note": "On the rower, for the distance or the calories written."
+    },
+    {
+      "id": "bike",
+      "name": "Bike",
+      "pattern": "monostructural",
+      "equipment": [
+        "bike"
+      ],
+      "measure": "calories",
+      "aliases": [
+        "bike",
+        "echo bike",
+        "assault bike",
+        "air bike",
+        "calories on the echo bike",
+        "calories on the bike",
+        "bike erg",
+        "biking",
+        "assault bike calorie",
+        "echo bike calorie",
+        "bike calorie",
+        "cal bike",
+        "calorie bike",
+        "aab",
+        "air assault bike",
+        "airdyne",
+        "bike erg calorie",
+        "bikeerg",
+        "bike cal",
+        "echo bike cal",
+        "assault bike cal",
+        "c2 bike",
+        "cal assault bike",
+        "cal echo bike",
+        "calories on the assault bike",
+        "calories on the bike erg",
+        "bike for calories",
+        "fan bike"
+      ],
+      "catalog": "Air_Bike",
+      "note": "On the bike, for the calories or distance written."
+    },
+    {
+      "id": "ski",
+      "name": "Ski",
+      "pattern": "monostructural",
+      "equipment": [
+        "ski erg"
+      ],
+      "measure": "calories",
+      "aliases": [
+        "ski",
+        "ski erg",
+        "skierg",
+        "ski erg calorie",
+        "ski cal",
+        "cal ski",
+        "calorie ski",
+        "calories on the ski erg",
+        "ski for calories",
+        "skierg calorie",
+        "ski erg cal",
+        "cal ski erg",
+        "calories ski"
+      ],
+      "catalog": null,
+      "note": "On the ski erg, for the calories or distance written."
+    },
+    {
+      "id": "swim",
+      "name": "Swim",
+      "pattern": "monostructural",
+      "equipment": [],
+      "measure": "distance",
+      "aliases": [
+        "swim",
+        "swimming",
+        "pool swim",
+        "open water swim",
+        "swim or run"
+      ],
+      "catalog": null,
+      "note": "Swim the distance."
+    },
+    {
+      "id": "ruck",
+      "name": "Ruck",
+      "pattern": "monostructural",
+      "equipment": [
+        "ruck"
+      ],
+      "measure": "distance",
+      "aliases": [
+        "ruck",
+        "rucking",
+        "ruck march",
+        "ruck run",
+        "weighted walk",
+        "vest walk"
+      ],
+      "catalog": null,
+      "note": "Walk or run the distance with the loaded pack."
+    },
+    {
+      "id": "rope-climb",
+      "name": "Rope climb",
+      "pattern": "gymnastics",
+      "equipment": [
+        "rope"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "rope climb",
+        "rope climb to",
+        "rc",
+        "rope ascent",
+        "15 ft rope climb",
+        "15-ft rope climb",
+        "l sit rope climb",
+        "modified rope climb",
+        "seated rope climb",
+        "lying to standing rope climb",
+        "rope climb basket",
+        "rope climb wrapping"
+      ],
+      "catalog": "Rope_Climb",
+      "note": "Climb to the top and touch. Legs allowed unless it says legless."
+    },
+    {
+      "id": "legless-rope-climb",
+      "name": "Legless rope climb",
+      "pattern": "gymnastics",
+      "equipment": [
+        "rope"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "legless rope climb",
+        "legless rope climb to",
+        "legless rope ascent",
+        "legless rc"
+      ],
+      "catalog": "Rope_Climb",
+      "note": "Climb with the arms only."
+    },
+    {
+      "id": "farmers-carry",
+      "name": "Farmers carry",
+      "pattern": "strongman",
+      "equipment": [
+        "dumbbell",
+        "kettlebell"
+      ],
+      "measure": "distance",
+      "aliases": [
+        "farmers carry",
+        "farmer carry",
+        "dumbbell farmers carry",
+        "farmers walk",
+        "kettlebell farmers carry",
+        "farmer walk",
+        "dumbbell farmers walk",
+        "kettlebell farmers walk",
+        "farmers carry walk",
+        "suitcase carry",
+        "front rack carry",
+        "front rack walk",
+        "dumbbell front rack carry",
+        "kettlebell front rack carry",
+        "overhead carry",
+        "overhead walk",
+        "dumbbell overhead carry",
+        "kettlebell overhead carry",
+        "waiters walk",
+        "waiter walk",
+        "zercher carry",
+        "double kettlebell front rack carry"
+      ],
+      "catalog": "Farmers_Walk",
+      "note": "Walk the distance with a weight in each hand."
+    },
+    {
+      "id": "sandbag-carry",
+      "name": "Sandbag carry",
+      "pattern": "strongman",
+      "equipment": [
+        "sandbag"
+      ],
+      "measure": "distance",
+      "aliases": [
+        "sandbag carry",
+        "bear hug carry",
+        "sandbag walk",
+        "sandbag bear hug carry",
+        "d-ball carry",
+        "dball carry",
+        "sandbag run",
+        "sandbag hold",
+        "sandbag bear hug hold",
+        "sandbag bearhug carry"
+      ],
+      "catalog": "Sandbag_Load",
+      "note": "Carry the sandbag the distance."
+    },
+    {
+      "id": "sandbag-clean",
+      "name": "Sandbag clean",
+      "pattern": "strongman",
+      "equipment": [
+        "sandbag"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "sandbag clean",
+        "sandbag to shoulder",
+        "sandbag over shoulder",
+        "sandbag over the shoulder",
+        "d-ball over the shoulder",
+        "d-ball over shoulder",
+        "dball over shoulder",
+        "d ball over shoulder",
+        "d-ball clean",
+        "dball clean",
+        "d ball clean",
+        "atlas stone to shoulder",
+        "stone to shoulder",
+        "stone over shoulder",
+        "sandbag toss",
+        "sandbag throw",
+        "sandbag over the bar",
+        "sandbag over bar",
+        "sandbag ground to shoulder",
+        "sandbag get up",
+        "sandbag over the yoke",
+        "heavy ball over shoulder",
+        "slam ball over shoulder",
+        "medicine ball over shoulder"
+      ],
+      "catalog": "Sandbag_Load",
+      "note": "Sandbag from the floor to the shoulder."
+    },
+    {
+      "id": "sled-push",
+      "name": "Sled push",
+      "pattern": "strongman",
+      "equipment": [
+        "sled"
+      ],
+      "measure": "distance",
+      "aliases": [
+        "sled push",
+        "prowler push",
+        "prowler",
+        "sled push and pull"
+      ],
+      "catalog": "Sled_Push",
+      "note": "Push the sled the distance."
+    },
+    {
+      "id": "sled-pull",
+      "name": "Sled pull",
+      "pattern": "strongman",
+      "equipment": [
+        "sled"
+      ],
+      "measure": "distance",
+      "aliases": [
+        "sled pull",
+        "sled drag",
+        "rope sled pull",
+        "sled pull with rope",
+        "backward sled drag",
+        "backwards sled drag",
+        "reverse sled drag",
+        "harness sled drag",
+        "sled row"
+      ],
+      "catalog": "Sled_Drag_-_Harness",
+      "note": "Pull the sled the distance."
+    },
+    {
+      "id": "tire-flip",
+      "name": "Tire flip",
+      "pattern": "strongman",
+      "equipment": [
+        "tire"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "tire flip",
+        "tyre flip"
+      ],
+      "catalog": "Tire_Flip",
+      "note": "Flip the tire end over end."
+    },
+    {
+      "id": "bear-crawl",
+      "name": "Bear crawl",
+      "pattern": "gymnastics",
+      "equipment": [],
+      "measure": "distance",
+      "aliases": [
+        "bear crawl",
+        "crab walk",
+        "crawl",
+        "inchworm",
+        "inch worm",
+        "duck walk",
+        "walkout",
+        "spider crawl",
+        "lateral bear crawl"
+      ],
+      "catalog": null,
+      "note": "Crawl on hands and feet, knees off the floor."
+    },
+    {
+      "id": "pegboard",
+      "name": "Pegboard ascent",
+      "pattern": "gymnastics",
+      "equipment": [
+        "pegboard"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "pegboard ascent",
+        "pegboard",
+        "pegboard climb",
+        "peg board ascent",
+        "peg board"
+      ],
+      "catalog": null,
+      "note": "Climb the pegboard to the top."
+    },
+    {
+      "id": "rope-jump-skip",
+      "name": "Single-leg skip",
+      "pattern": "monostructural",
+      "equipment": [
+        "jump rope"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "single leg skip",
+        "single leg double under"
+      ],
+      "catalog": "Rope_Jumping",
+      "note": "Skip rope on one leg."
+    },
+    {
+      "id": "dumbbell-overhead-squat",
+      "name": "Dumbbell overhead squat",
+      "pattern": "weightlifting",
+      "equipment": [
+        "dumbbell"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "dumbbell overhead squat",
+        "db overhead squat",
+        "single arm overhead squat",
+        "single arm dumbbell overhead squat",
+        "dual dumbbell overhead squat",
+        "kettlebell overhead squat",
+        "kb overhead squat"
+      ],
+      "catalog": "One-Arm_Overhead_Kettlebell_Squats",
+      "note": "Squat with one dumbbell locked out overhead."
+    },
+    {
+      "id": "devils-press",
+      "name": "Devil's press",
+      "pattern": "weightlifting",
+      "equipment": [
+        "dumbbell"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "devils press",
+        "devil press",
+        "devil's press",
+        "devil’s press",
+        "single arm devil press",
+        "single arm devils press",
+        "dumbbell devil press",
+        "devil press thruster",
+        "devils press thruster"
+      ],
+      "catalog": null,
+      "note": "A burpee on the dumbbells straight into a double dumbbell snatch."
+    },
+    {
+      "id": "man-maker",
+      "name": "Man-maker",
+      "pattern": "weightlifting",
+      "equipment": [
+        "dumbbell"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "man maker",
+        "manmaker",
+        "dumbbell man maker"
+      ],
+      "catalog": null,
+      "note": "Push-up on the dumbbells, row each arm, then a clean and press."
+    },
+    {
+      "id": "renegade-row",
+      "name": "Renegade row",
+      "pattern": "weightlifting",
+      "equipment": [
+        "dumbbell"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "renegade row",
+        "plank row",
+        "dumbbell plank row",
+        "push up row"
+      ],
+      "catalog": "Alternating_Renegade_Row",
+      "note": "In a push-up position on the dumbbells, row one, then the other."
+    },
+    {
+      "id": "cindy-round",
+      "name": "Round of Cindy",
+      "pattern": "gymnastics",
+      "equipment": [
+        "pull-up bar"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "round of cindy",
+        "round of strict cindy",
+        "cindy",
+        "cindy round"
+      ],
+      "catalog": null,
+      "note": "One round is 5 pull-ups, 10 push-ups and 15 squats. Strict Cindy uses strict pull-ups."
+    },
+    {
+      "id": "skills-practice",
+      "name": "Skill practice",
+      "pattern": "skill",
+      "equipment": [],
+      "measure": "seconds",
+      "aliases": [
+        "practice",
+        "slips",
+        "skill work",
+        "practice session",
+        "drill",
+        "work on",
+        "spend",
+        "accumulate",
+        "handstand practice",
+        "technique practice",
+        "mobility",
+        "mobility work",
+        "stretching",
+        "foam rolling",
+        "smr",
+        "warm-up",
+        "warm up",
+        "cfwu",
+        "cool down",
+        "cool-down",
+        "cooldown",
+        "accessory work",
+        "accessory"
+      ],
+      "catalog": null,
+      "note": "Work on the skill at an easy pace. Not for time."
+    },
+    {
+      "id": "rest",
+      "name": "Rest",
+      "pattern": "rest",
+      "equipment": [],
+      "measure": "seconds",
+      "aliases": [
+        "rest",
+        "recovery",
+        "recover",
+        "transition",
+        "easy walk",
+        "active recovery"
+      ],
+      "catalog": null,
+      "note": "Rest the time written before the next part."
+    },
+    {
+      "id": "kettlebell-deadlift",
+      "name": "Kettlebell deadlift",
+      "pattern": "weightlifting",
+      "equipment": [
+        "kettlebell"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "kettlebell deadlift",
+        "kb deadlift",
+        "kettlebell sumo deadlift",
+        "single arm kettlebell deadlift",
+        "double kettlebell deadlift",
+        "suitcase deadlift",
+        "kettlebell suitcase deadlift"
+      ],
+      "catalog": "Kettlebell_One-Legged_Deadlift",
+      "note": "Kettlebell from the floor to standing tall."
+    },
+    {
+      "id": "kettlebell-thruster",
+      "name": "Kettlebell thruster",
+      "pattern": "weightlifting",
+      "equipment": [
+        "kettlebell"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "kettlebell thruster",
+        "kb thruster",
+        "double kettlebell thruster",
+        "single arm kettlebell thruster",
+        "goblet thruster"
+      ],
+      "catalog": "Kettlebell_Thruster",
+      "note": "Front squat with the bell, drive it overhead on the way up."
+    },
+    {
+      "id": "sumo-deadlift",
+      "name": "Sumo deadlift",
+      "pattern": "weightlifting",
+      "equipment": [
+        "barbell"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "sumo deadlift",
+        "sdl",
+        "sumo dead lift"
+      ],
+      "catalog": "Sumo_Deadlift",
+      "note": "Wide stance, hands inside the knees, bar from the floor to standing."
+    },
+    {
+      "id": "zercher-squat",
+      "name": "Zercher squat",
+      "pattern": "weightlifting",
+      "equipment": [
+        "barbell"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "zercher squat",
+        "zercher"
+      ],
+      "catalog": "Barbell_Full_Squat",
+      "note": "Bar held in the crook of the elbows. Hips below the knees."
+    },
+    {
+      "id": "sots-press",
+      "name": "Sots press",
+      "pattern": "weightlifting",
+      "equipment": [
+        "barbell"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "sots press"
+      ],
+      "catalog": "Barbell_Shoulder_Press",
+      "note": "Press from the bottom of a squat, bar from behind the neck to lockout."
+    },
+    {
+      "id": "hip-thrust",
+      "name": "Hip thrust",
+      "pattern": "weightlifting",
+      "equipment": [
+        "barbell",
+        "bench"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "hip thrust",
+        "barbell hip thrust",
+        "glute bridge",
+        "barbell glute bridge",
+        "single leg glute bridge"
+      ],
+      "catalog": "Barbell_Hip_Thrust",
+      "note": "Shoulders on the bench, drive the hips up to level."
+    },
+    {
+      "id": "mountain-climber",
+      "name": "Mountain climber",
+      "pattern": "gymnastics",
+      "equipment": [],
+      "measure": "reps",
+      "aliases": [
+        "mountain climber",
+        "mc",
+        "cross body mountain climber"
+      ],
+      "catalog": "Mountain_Climbers",
+      "note": "In a plank, drive one knee in, then the other. One drive is a rep."
+    },
+    {
+      "id": "jumping-jack",
+      "name": "Jumping jack",
+      "pattern": "monostructural",
+      "equipment": [],
+      "measure": "reps",
+      "aliases": [
+        "jumping jack",
+        "jj",
+        "star jump",
+        "seal jack",
+        "plank jack"
+      ],
+      "catalog": null,
+      "note": "Feet out, arms up; feet in, arms down. That's one."
+    },
+    {
+      "id": "bar-hop",
+      "name": "Lateral bar hop",
+      "pattern": "gymnastics",
+      "equipment": [
+        "barbell"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "bar hop",
+        "lateral bar hop",
+        "lateral hop over the bar",
+        "jump over the bar",
+        "line hop",
+        "lateral hop",
+        "skater jump",
+        "skater"
+      ],
+      "catalog": null,
+      "note": "Jump side to side over the bar or the line, both feet together."
+    },
+    {
+      "id": "windshield-wiper",
+      "name": "Windshield wiper",
+      "pattern": "gymnastics",
+      "equipment": [
+        "pull-up bar"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "windshield wiper",
+        "wiper",
+        "hanging windshield wiper"
+      ],
+      "catalog": null,
+      "note": "Hanging with the legs up, swing them side to side like a wiper."
+    },
+    {
+      "id": "skin-the-cat",
+      "name": "Skin the cat",
+      "pattern": "gymnastics",
+      "equipment": [
+        "rings"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "skin the cat",
+        "forward roll from support",
+        "backward roll to support",
+        "swing to backward roll to support",
+        "pull over",
+        "bar pull over"
+      ],
+      "catalog": null,
+      "note": "On the rings or the bar, roll the body through the arms and back."
+    },
+    {
+      "id": "shoot-through",
+      "name": "Shoot-through",
+      "pattern": "gymnastics",
+      "equipment": [
+        "parallettes"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "shoot through",
+        "parallette shoot through"
+      ],
+      "catalog": null,
+      "note": "From a plank on the parallettes, swing the legs through to an L-sit and back."
+    },
+    {
+      "id": "slam-ball",
+      "name": "Slam ball",
+      "pattern": "weightlifting",
+      "equipment": [
+        "medicine ball"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "slam ball",
+        "ball slam",
+        "medicine ball slam",
+        "med ball slam",
+        "d-ball slam",
+        "dball slam",
+        "overhead slam",
+        "wall ball slam"
+      ],
+      "catalog": "Overhead_Slam",
+      "note": "Ball overhead, slam it into the floor, pick it up and go again."
+    },
+    {
+      "id": "medicine-ball-throw",
+      "name": "Medicine-ball throw",
+      "pattern": "weightlifting",
+      "equipment": [
+        "medicine ball"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "medicine ball throw",
+        "med ball throw",
+        "med ball toss",
+        "wall ball toss",
+        "chest pass",
+        "medicine ball chest pass",
+        "scoop toss",
+        "overhead throw",
+        "wall ball throw",
+        "partner wall ball"
+      ],
+      "catalog": "Medicine_Ball_Chest_Pass",
+      "note": "Throw the ball for the target or the distance written."
+    },
+    {
+      "id": "plate-overhead",
+      "name": "Plate ground-to-overhead",
+      "pattern": "weightlifting",
+      "equipment": [
+        "plate"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "plate ground to overhead",
+        "plate g2oh",
+        "plate overhead",
+        "plate raise",
+        "plate halo",
+        "plate press",
+        "plate overhead press",
+        "plate hold",
+        "plate front raise"
+      ],
+      "catalog": null,
+      "note": "Plate from the floor to locked out overhead."
+    },
+    {
+      "id": "kettlebell-halo",
+      "name": "Kettlebell halo",
+      "pattern": "weightlifting",
+      "equipment": [
+        "kettlebell"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "kettlebell halo",
+        "kb halo",
+        "halo",
+        "kettlebell around the world",
+        "around the world"
+      ],
+      "catalog": "Kettlebell_Halo",
+      "note": "Circle the bell around the head, close to it."
+    },
+    {
+      "id": "kettlebell-windmill",
+      "name": "Kettlebell windmill",
+      "pattern": "weightlifting",
+      "equipment": [
+        "kettlebell"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "kettlebell windmill",
+        "kb windmill",
+        "windmill"
+      ],
+      "catalog": "Kettlebell_Windmill",
+      "note": "Bell locked out overhead, hinge to touch the floor with the other hand, stand back up."
+    },
+    {
+      "id": "bear-complex",
+      "name": "Bear complex",
+      "pattern": "weightlifting",
+      "equipment": [
+        "barbell"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "bear complex",
+        "the bear",
+        "dumbbell bear complex"
+      ],
+      "catalog": "Clean_and_Jerk",
+      "note": "Power clean, front squat, push press, back squat, push press. That's one rep, unbroken."
+    },
+    {
+      "id": "shuttle-run",
+      "name": "Shuttle run",
+      "pattern": "monostructural",
+      "equipment": [],
+      "measure": "reps",
+      "aliases": [
+        "shuttle run",
+        "shuttle sprint",
+        "shuttle",
+        "suicide",
+        "down and back",
+        "25 ft shuttle",
+        "50 ft shuttle"
+      ],
+      "catalog": null,
+      "note": "Run to the mark and back. One length there and back is a rep unless written otherwise."
+    },
+    {
+      "id": "bike-sprint",
+      "name": "Bike sprint",
+      "pattern": "monostructural",
+      "equipment": [
+        "bike"
+      ],
+      "measure": "seconds",
+      "aliases": [
+        "bike sprint",
+        "assault bike sprint",
+        "echo bike sprint",
+        "max effort bike",
+        "bike max effort",
+        "max calorie bike",
+        "max cal bike",
+        "max calories bike",
+        "max calories on the bike"
+      ],
+      "catalog": "Air_Bike",
+      "note": "All out on the bike for the time written."
+    },
+    {
+      "id": "dumbbell-swing",
+      "name": "Dumbbell swing",
+      "pattern": "weightlifting",
+      "equipment": [
+        "dumbbell"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "dumbbell swing",
+        "db swing",
+        "single arm dumbbell swing"
+      ],
+      "catalog": "One-Arm_Kettlebell_Swings",
+      "note": "A kettlebell swing with a dumbbell held by one end."
+    },
+    {
+      "id": "goblet-carry",
+      "name": "Goblet carry",
+      "pattern": "strongman",
+      "equipment": [
+        "kettlebell",
+        "dumbbell"
+      ],
+      "measure": "distance",
+      "aliases": [
+        "goblet carry",
+        "goblet walk",
+        "goblet hold",
+        "bear hug walk"
+      ],
+      "catalog": "Farmers_Walk",
+      "note": "Walk the distance with the weight held at the chest."
+    },
+    {
+      "id": "weighted-plank",
+      "name": "Weighted plank",
+      "pattern": "gymnastics",
+      "equipment": [
+        "plate"
+      ],
+      "measure": "seconds",
+      "aliases": [
+        "weighted plank",
+        "weighted plank hold",
+        "plate plank",
+        "plank with plate"
+      ],
+      "catalog": "Plank",
+      "note": "Plank with a plate on the back for the time."
+    },
+    {
+      "id": "dead-hang",
+      "name": "Dead hang",
+      "pattern": "gymnastics",
+      "equipment": [
+        "pull-up bar"
+      ],
+      "measure": "seconds",
+      "aliases": [
+        "dead hang",
+        "bar hang",
+        "hang from the bar",
+        "active hang",
+        "passive hang",
+        "hang hold"
+      ],
+      "catalog": null,
+      "note": "Hang from the bar for the time, arms straight."
+    },
+    {
+      "id": "ring-support",
+      "name": "Ring support hold",
+      "pattern": "gymnastics",
+      "equipment": [
+        "rings"
+      ],
+      "measure": "seconds",
+      "aliases": [
+        "ring support",
+        "ring support hold",
+        "support hold",
+        "top of ring dip hold",
+        "ring turnout hold",
+        "ring hold"
+      ],
+      "catalog": null,
+      "note": "Locked out on top of the rings for the time."
+    },
+    {
+      "id": "wall-sit",
+      "name": "Wall sit",
+      "pattern": "gymnastics",
+      "equipment": [
+        "wall"
+      ],
+      "measure": "seconds",
+      "aliases": [
+        "wall sit",
+        "wall sit hold",
+        "wall squat hold",
+        "squat hold",
+        "goblet squat hold",
+        "bottom of squat hold"
+      ],
+      "catalog": null,
+      "note": "Back on the wall, thighs level, hold."
+    },
+    {
+      "id": "superman",
+      "name": "Superman",
+      "pattern": "gymnastics",
+      "equipment": [],
+      "measure": "reps",
+      "aliases": [
+        "superman",
+        "superman raise",
+        "superman rock",
+        "arch up",
+        "arch rock",
+        "arch raise",
+        "back arch"
+      ],
+      "catalog": "Superman",
+      "note": "On the stomach, lift arms and legs off the floor, hold or rock."
+    },
+    {
+      "id": "russian-twist",
+      "name": "Russian twist",
+      "pattern": "gymnastics",
+      "equipment": [],
+      "measure": "reps",
+      "aliases": [
+        "russian twist",
+        "medicine ball twist",
+        "plate twist",
+        "seated twist"
+      ],
+      "catalog": "Russian_Twist",
+      "note": "Seated, feet up, turn the shoulders side to side. Each side is a rep."
+    },
+    {
+      "id": "flutter-kick",
+      "name": "Flutter kick",
+      "pattern": "gymnastics",
+      "equipment": [],
+      "measure": "reps",
+      "aliases": [
+        "flutter kick",
+        "scissor kick",
+        "leg flutter",
+        "bicycle crunch",
+        "bicycle"
+      ],
+      "catalog": "Flutter_Kicks",
+      "note": "On the back, legs straight and off the floor, kick small and fast."
+    },
+    {
+      "id": "crunch",
+      "name": "Crunch",
+      "pattern": "gymnastics",
+      "equipment": [],
+      "measure": "reps",
+      "aliases": [
+        "crunch",
+        "ab crunch",
+        "abmat crunch",
+        "reverse crunch",
+        "toe touch",
+        "leg lift",
+        "lying leg raise"
+      ],
+      "catalog": "Crunches",
+      "note": "Shoulders off the floor, low back down. Not a full sit-up."
+    },
+    {
+      "id": "dumbbell-curl",
+      "name": "Dumbbell curl",
+      "pattern": "weightlifting",
+      "equipment": [
+        "dumbbell"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "dumbbell curl",
+        "db curl",
+        "bicep curl",
+        "biceps curl",
+        "hammer curl",
+        "barbell curl",
+        "curl"
+      ],
+      "catalog": "Dumbbell_Bicep_Curl",
+      "note": "Elbows at the sides, curl the weight to the shoulder."
+    },
+    {
+      "id": "tricep-extension",
+      "name": "Triceps extension",
+      "pattern": "weightlifting",
+      "equipment": [
+        "dumbbell"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "tricep extension",
+        "triceps extension",
+        "skull crusher",
+        "overhead tricep extension",
+        "overhead triceps extension",
+        "banded tricep extension",
+        "tricep pushdown",
+        "triceps pushdown"
+      ],
+      "catalog": "Dumbbell_One-Arm_Triceps_Extension",
+      "note": "Elbows fixed, straighten the arms."
+    },
+    {
+      "id": "lateral-raise",
+      "name": "Lateral raise",
+      "pattern": "weightlifting",
+      "equipment": [
+        "dumbbell"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "lateral raise",
+        "side raise",
+        "front raise",
+        "rear delt raise",
+        "rear delt fly",
+        "reverse fly",
+        "bent over raise",
+        "shoulder raise",
+        "y raise",
+        "t raise"
+      ],
+      "catalog": "Side_Lateral_Raise",
+      "note": "Light weight, arms straight, raise to shoulder height."
+    },
+    {
+      "id": "face-pull",
+      "name": "Face pull",
+      "pattern": "weightlifting",
+      "equipment": [
+        "band"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "face pull",
+        "banded face pull",
+        "band pull apart",
+        "banded pull apart"
+      ],
+      "catalog": "Face_Pull",
+      "note": "Pull the band or rope to the face, elbows high, squeeze the shoulder blades."
+    },
+    {
+      "id": "calf-raise",
+      "name": "Calf raise",
+      "pattern": "weightlifting",
+      "equipment": [],
+      "measure": "reps",
+      "aliases": [
+        "calf raise",
+        "standing calf raise",
+        "single leg calf raise",
+        "seated calf raise"
+      ],
+      "catalog": "Standing_Calf_Raises",
+      "note": "Up onto the toes, hold a beat, back down."
+    },
+    {
+      "id": "kettlebell-complex",
+      "name": "Kettlebell complex",
+      "pattern": "weightlifting",
+      "equipment": [
+        "kettlebell"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "kettlebell complex",
+        "kb complex",
+        "kettlebell clean and press",
+        "kb clean and press",
+        "kettlebell long cycle",
+        "long cycle"
+      ],
+      "catalog": "One-Arm_Kettlebell_Clean_and_Jerk",
+      "note": "The bell from the floor to the rack to overhead, as written."
+    },
+    {
+      "id": "sandbag-squat",
+      "name": "Sandbag squat",
+      "pattern": "strongman",
+      "equipment": [
+        "sandbag"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "sandbag squat",
+        "sandbag front squat",
+        "bear hug squat",
+        "d-ball squat",
+        "dball squat",
+        "sandbag zercher squat",
+        "sandbag back squat"
+      ],
+      "catalog": "Sandbag_Load",
+      "note": "Hug the bag at the chest and squat, hips below the knees."
+    },
+    {
+      "id": "sandbag-lunge",
+      "name": "Sandbag lunge",
+      "pattern": "strongman",
+      "equipment": [
+        "sandbag"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "sandbag lunge",
+        "sandbag walking lunge",
+        "bear hug lunge",
+        "sandbag front rack lunge",
+        "sandbag back rack lunge",
+        "sandbag reverse lunge"
+      ],
+      "catalog": "Sandbag_Load",
+      "note": "Lunge with the bag on the back, the shoulder or hugged at the chest."
+    },
+    {
+      "id": "yoke-carry",
+      "name": "Yoke carry",
+      "pattern": "strongman",
+      "equipment": [
+        "yoke"
+      ],
+      "measure": "distance",
+      "aliases": [
+        "yoke carry",
+        "yoke walk",
+        "yoke",
+        "zercher yoke carry"
+      ],
+      "catalog": "Rickshaw_Carry",
+      "note": "The yoke on the back, walk the distance."
+    },
+    {
+      "id": "axle-clean",
+      "name": "Axle clean",
+      "pattern": "strongman",
+      "equipment": [
+        "barbell"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "axle clean",
+        "axle clean and press",
+        "axle clean and jerk",
+        "axle press",
+        "log clean",
+        "log clean and press",
+        "log press",
+        "axle bar clean"
+      ],
+      "catalog": "Clean_and_Jerk",
+      "note": "The thick bar from the floor to the shoulders, then overhead if written."
+    },
+    {
+      "id": "wall-ball-sit-up",
+      "name": "Wall-ball sit-up",
+      "pattern": "gymnastics",
+      "equipment": [
+        "medicine ball"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "wall ball sit up",
+        "med ball sit up",
+        "medicine ball sit up",
+        "wall ball situp",
+        "ball sit up"
+      ],
+      "catalog": "Sit-Up",
+      "note": "Sit-up holding the ball, touch it to the floor behind and to the feet in front."
+    },
+    {
+      "id": "weighted-sit-up",
+      "name": "Weighted sit-up",
+      "pattern": "gymnastics",
+      "equipment": [
+        "kettlebell",
+        "dumbbell",
+        "plate"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "weighted sit up",
+        "kettlebell sit up",
+        "dumbbell sit up",
+        "plate sit up",
+        "weighted abmat sit up",
+        "weighted ghd sit up"
+      ],
+      "catalog": "Sit-Up",
+      "note": "Sit-up with the weight held at the chest or overhead."
+    },
+    {
+      "id": "box-jump-step-down",
+      "name": "Box jump, step down",
+      "pattern": "gymnastics",
+      "equipment": [
+        "box"
+      ],
+      "measure": "reps",
+      "aliases": [
+        "box jump step down",
+        "box jump with step down",
+        "jump up step down",
+        "step down box jump"
+      ],
+      "catalog": "Box_Jump_Multiple_Response",
+      "note": "Jump up, stand tall, step down."
+    },
+    {
+      "id": "hanging-l-sit",
+      "name": "Hanging L-sit",
+      "pattern": "gymnastics",
+      "equipment": [
+        "pull-up bar"
+      ],
+      "measure": "seconds",
+      "aliases": [
+        "hanging l sit",
+        "l sit hang",
+        "l hang hold",
+        "l hang"
+      ],
+      "catalog": null,
+      "note": "Hang from the bar with the legs held straight out in front."
+    },
+    {
+      "id": "bike-distance",
+      "name": "Bike for distance",
+      "pattern": "monostructural",
+      "equipment": [
+        "bike"
+      ],
+      "measure": "distance",
+      "aliases": [
+        "bike for distance",
+        "bike meter",
+        "bikeerg meter",
+        "bike erg meter",
+        "assault bike meter",
+        "echo bike meter",
+        "meter bike",
+        "mile bike",
+        "miles on the bike",
+        "bike erg for distance",
+        "bike erg distance"
+      ],
+      "catalog": "Air_Bike",
+      "note": "On the bike for the distance written."
+    },
+    {
+      "id": "ski-distance",
+      "name": "Ski for distance",
+      "pattern": "monostructural",
+      "equipment": [
+        "ski erg"
+      ],
+      "measure": "distance",
+      "aliases": [
+        "ski for distance",
+        "ski erg meter",
+        "skierg meter",
+        "meter ski",
+        "meter ski erg",
+        "ski erg for distance",
+        "ski meter"
+      ],
+      "catalog": null,
+      "note": "On the ski erg for the distance written."
+    },
+    {
+      "id": "up-down",
+      "name": "Up-down",
+      "pattern": "gymnastics",
+      "equipment": [],
+      "measure": "reps",
+      "aliases": [
+        "up-down",
+        "up downs",
+        "burpee no push up",
+        "half burpee",
+        "sprawl burpee"
+      ],
+      "catalog": null,
+      "note": "A burpee without the push-up: drop to the hands, kick out, back up, stand."
+    },
+    {
+      "id": "plank-up-down",
+      "name": "Plank up-down",
+      "pattern": "gymnastics",
+      "equipment": [],
+      "measure": "reps",
+      "aliases": [
+        "plank up down",
+        "plank up-down",
+        "up down plank",
+        "elbow to hand plank",
+        "commando"
+      ],
+      "catalog": "Plank",
+      "note": "From forearms to hands and back, one arm at a time."
+    },
+    {
+      "id": "step-through",
+      "name": "Kneeling to standing",
+      "pattern": "gymnastics",
+      "equipment": [],
+      "measure": "reps",
+      "aliases": [
+        "kneeling to standing",
+        "kneel to stand",
+        "get up and down",
+        "stand to kneel",
+        "sandbag get-up",
+        "burpee get up"
+      ],
+      "catalog": null,
+      "note": "Both knees to the floor and back to standing without the hands."
+    }
   ]
 }

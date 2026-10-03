@@ -11,6 +11,12 @@
 
     movements.json is the bridge: every CrossFit movement the engine can
     recognise, with the catalog exercise it corresponds to.
+    glossary.json is the semantic lexicon: box shorthand and gym slang for
+    formats, scores, structure, modifiers, loads and units.
+    muscles.json names the muscles each movement works (catalog vocabulary)
+    and how those names map onto the Muscle Visualizer API; the compiler
+    tallies them into one muscle map per workout (`muscles`, `visual`), and
+    visualize.ts turns the maps into pictures.
 
   Outputs (--out <dir>):
     wods-master.json       everything, for review and for both runtimes
@@ -21,19 +27,60 @@
 
   Usage:
     npx tsx compile.ts --wods ../../data/wods.csv --exercises ../../data/yuhonas-exercises.json \
+      [--lexicon movements.json] [--glossary glossary.json] [--muscles muscles.json] [--images <dir>] \
       --out ../../content/wods --license-approved --reviewer "Chris Castorino" --reviewed-at 2026-10-03
+
+    --images points at the folder visualize.ts wrote (its manifest.json ties
+    muscle keys to picture files); when given, each workout's `visual.images`
+    names its pictures.
 */
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
-import { parseWodDetailed, type WodLexicon, type WodParsed } from '../../packages/fitness-applied-tools/src/wodConversionEngine.js';
+import { parseWodDetailed, type WodGlossary, type WodLexicon, type WodParsed } from '../../packages/fitness-applied-tools/src/wodConversionEngine.js';
 import {
   generatePage,
   generateProgram,
+  muscleKey,
+  workoutMuscles,
   type MasterDataset,
   type MasterExercise,
   type MasterMovement,
   type MasterWorkout,
+  type MuscleSet,
+  type WorkoutVisual,
 } from '../../packages/fitness-applied-tools/src/workoutGenerator.js';
+
+/* ---------- muscle table ---------- */
+
+export type MuscleTable = {
+  name: string;
+  revision: string;
+  note?: string;
+  /** catalog muscle → visualizer names to try, in order */
+  catalog: Record<string, string[]>;
+  /** lexicon movement id → muscles, for movements with no catalog exercise */
+  movements: Record<string, MuscleSet>;
+};
+
+/** visualize.ts writes this next to the pictures: muscle key → files (relative to the images folder). */
+export type ImageManifest = {
+  provider: 'exercisedb-muscle-visualizer';
+  generatedAt: string;
+  /** The colours the pictures were drawn with (visualize.ts COLORS). */
+  colors?: { target: string; secondary: string };
+  images: Record<string, { male?: string; female?: string; target: string[]; secondary: string[] }>;
+};
+
+export function validateMuscleTable(table: MuscleTable, lexicon: WodLexicon, catalogMuscles: Set<string>): string[] {
+  const problems: string[] = [];
+  for (const m of catalogMuscles) if (!table.catalog[m]) problems.push(`catalog muscle "${m}" has no visualizer names in muscles.json`);
+  const ids = new Set(lexicon.movements.map((m) => m.id));
+  for (const [id, set] of Object.entries(table.movements)) {
+    if (!ids.has(id)) problems.push(`muscles.json names movement "${id}", which is not in the lexicon`);
+    for (const x of [...set.target, ...set.secondary]) if (!table.catalog[x]) problems.push(`movement "${id}" uses muscle "${x}", which is not a catalog muscle`);
+  }
+  return problems;
+}
 
 /* ---------- CSV ---------- */
 
@@ -153,6 +200,9 @@ export type CompileOptions = {
   wodsCsv: string;
   exercises: YuhonasRecord[];
   lexicon: WodLexicon;
+  glossary?: WodGlossary;
+  muscles?: MuscleTable;
+  images?: ImageManifest;
   license: { approved: boolean; reviewer?: string; reviewedAt?: string };
   now?: string;
 };
@@ -169,16 +219,27 @@ export function compile(options: CompileOptions): CompileResult {
     throw new Error('Compile blocked: an explicit license review approval (--license-approved) is required before producing marketplace content.');
   }
   const now = options.now ?? new Date().toISOString();
-  const lexicon = options.lexicon;
+  const { lexicon, glossary, muscles: muscleTable } = options;
 
   /* exercises: clean the catalog, keep the ones the lexicon points at */
   const catalog = new Map(options.exercises.map((e) => [e.id, cleanExercise(e)]));
+  const catalogMuscles = new Set(options.exercises.flatMap((e) => [...(e.primaryMuscles ?? []), ...(e.secondaryMuscles ?? [])]));
+  if (muscleTable) {
+    const problems = validateMuscleTable(muscleTable, lexicon, catalogMuscles);
+    if (problems.length) throw new Error(`muscles.json: ${problems.join('; ')}`);
+  }
   const movements: MasterMovement[] = lexicon.movements.map((m) => {
     const exercise = m.catalog ? catalog.get(m.catalog) ?? null : null;
     if (m.catalog && !exercise) throw new Error(`Lexicon movement "${m.id}" points at catalog exercise "${m.catalog}", which is not in the exercise file.`);
-    return { id: m.id, name: m.name, pattern: m.pattern, equipment: m.equipment, measure: m.measure, note: m.note ?? '', aliases: m.aliases, exercise };
+    // Muscles: the table's own entry wins (it can correct a catalog exercise), then the catalog exercise, then nothing.
+    const own = muscleTable?.movements[m.id];
+    const muscles: MuscleSet = own ? { target: [...own.target], secondary: [...own.secondary] }
+      : exercise ? { target: [...exercise.primaryMuscles], secondary: exercise.secondaryMuscles.filter((x) => !exercise.primaryMuscles.includes(x)) }
+        : { target: [], secondary: [] };
+    return { id: m.id, name: m.name, pattern: m.pattern, equipment: m.equipment, measure: m.measure, note: m.note ?? '', aliases: m.aliases, exercise, muscles };
   });
   const movementById = new Map(movements.map((m) => [m.id, m]));
+  const noMuscles = movements.filter((m) => !m.muscles.target.length && !['rest', 'skills-practice'].includes(m.id)).map((m) => m.id);
 
   /* workouts: clean, dedupe, parse */
   const rows = parseCsv(options.wodsCsv);
@@ -206,7 +267,7 @@ export function compile(options: CompileOptions): CompileResult {
     }
     let parsed: WodParsed;
     try {
-      parsed = parseWodDetailed(prescription, { lexicon, menSetting: cleanProse(row.men_setting ?? ''), womenSetting: cleanProse(row.women_setting ?? '') });
+      parsed = parseWodDetailed(prescription, { lexicon, glossary, menSetting: cleanProse(row.men_setting ?? ''), womenSetting: cleanProse(row.women_setting ?? '') });
     } catch (error) {
       dropped.push({ row: rowNumber, text: prescription.slice(0, 120), reason: error instanceof Error ? error.message : 'parse failed' });
       return;
@@ -226,6 +287,12 @@ export function compile(options: CompileOptions): CompileResult {
     slugs.add(slug);
     const equipment = [...new Set(movementLines.flatMap((l) => (l.movementId ? movementById.get(l.movementId)?.equipment ?? [] : [])))].sort();
     const patterns = [...new Set(movementLines.flatMap((l) => (l.movementId ? [movementById.get(l.movementId)?.pattern ?? ''] : [])))].filter(Boolean).sort();
+    const muscles = workoutMuscles(parsed.lines, movementById);
+    const visualKey = muscleKey(muscles);
+    const pictures = options.images?.images[visualKey];
+    const visual: WorkoutVisual | undefined = muscles.target.length
+      ? { provider: 'exercisedb-muscle-visualizer', key: visualKey, target: muscles.target, secondary: muscles.secondary, ...(pictures?.male || pictures?.female ? { images: { ...(pictures.male ? { male: pictures.male } : {}), ...(pictures.female ? { female: pictures.female } : {}) }, ...(options.images?.colors ? { colors: options.images.colors } : {}) } : {}) }
+      : undefined;
     for (const l of parsed.lines) {
       if (!l.recognised && l.kind !== 'rest') {
         const t = l.name.toLowerCase();
@@ -255,6 +322,9 @@ export function compile(options: CompileOptions): CompileResult {
       lines: parsed.lines,
       equipment,
       patterns,
+      tags: parsed.tags,
+      muscles,
+      ...(visual ? { visual } : {}),
       prescription,
       warnings: parsed.warnings,
       confidence: parsed.confidence,
@@ -269,6 +339,8 @@ export function compile(options: CompileOptions): CompileResult {
       wods: { ...WOD_SOURCE, count: workouts.length },
       exercises: { ...EXERCISE_SOURCE, count: catalog.size },
       lexicon: { name: 'fitness-applied/wod-movement-lexicon', revision: 'v1', count: movements.length },
+      ...(glossary ? { glossary: { name: 'fitness-applied/wod-glossary', revision: String((glossary as { schemaVersion?: string }).schemaVersion ?? 'v1'), count: (['format', 'score', 'structure', 'modifier', 'load', 'unit', 'equipment', 'slang', 'name'] as const).reduce((n, k) => n + (glossary[k]?.length ?? 0), 0) } } : {}),
+      ...(muscleTable ? { muscles: { name: muscleTable.name, revision: muscleTable.revision, count: Object.keys(muscleTable.catalog).length } } : {}),
     },
     movements,
     workouts,
@@ -280,6 +352,9 @@ export function compile(options: CompileOptions): CompileResult {
       untiedLoads: workouts.filter((w) => w.warnings.some((x) => x.startsWith('A load was given'))).map((w) => w.id),
       duplicates: [...duplicates.entries()].map(([kept, droppedRows]) => ({ kept, dropped: droppedRows })),
       dropped,
+      noMuscles,
+      muscleSets: new Set(workouts.filter((w) => w.visual).map((w) => w.visual!.key)).size,
+      pictured: workouts.filter((w) => w.visual?.images).length,
     },
   };
 
@@ -317,6 +392,8 @@ function reviewMarkdown(master: MasterDataset): string {
     `- Confidence: ${counts('confidence')}`,
     `- Movement lines recognised: ${hit} of ${recognised.length} (${Math.round((hit / Math.max(1, recognised.length)) * 100)}%)`,
     `- Lexicon movements: ${master.movements.length}, mapped to a catalog exercise: ${mapped}`,
+    `- Tags: ${tagCounts(master)}`,
+    `- Muscle maps: ${master.review.muscleSets} distinct muscle sets over ${master.workouts.filter((w) => w.visual).length} workouts; ${master.review.pictured} workouts have pictures`,
     ``,
     `## Unrecognised text (add to the lexicon, or leave as a note)`,
     ``,
@@ -344,8 +421,18 @@ function reviewMarkdown(master: MasterDataset): string {
     ``,
     ...master.movements.filter((m) => !m.exercise).map((m) => `- ${m.id}: ${m.note}`),
     ``,
+    `## Movements without muscles (${master.review.noMuscles.length}) — add them to muscles.json`,
+    ``,
+    ...master.review.noMuscles.map((id) => `- ${id}`),
+    ``,
   ];
   return lines.join('\n');
+}
+
+function tagCounts(master: MasterDataset): string {
+  const c = new Map<string, number>();
+  for (const w of master.workouts) for (const t of w.tags) c.set(t, (c.get(t) ?? 0) + 1);
+  return [...c.entries()].sort((a, b) => b[1] - a[1]).map(([k, v]) => `${k}: ${v}`).join(', ') || 'none';
 }
 
 /* ---------- CLI ---------- */
@@ -358,14 +445,23 @@ async function main(): Promise<void> {
   };
   const wodsPath = value('--wods');
   const exercisesPath = value('--exercises');
-  const lexiconPath = value('--lexicon') ?? new URL('./movements.json', import.meta.url).pathname;
+  const here = (name: string) => new URL(`./${name}`, import.meta.url).pathname;
+  const lexiconPath = value('--lexicon') ?? here('movements.json');
+  const glossaryPath = value('--glossary') ?? here('glossary.json');
+  const musclesPath = value('--muscles') ?? here('muscles.json');
+  const imagesDir = value('--images');
   const outDir = value('--out') ?? 'out';
-  if (!wodsPath || !exercisesPath) throw new Error('Usage: compile.ts --wods <wods.csv> --exercises <exercises.json> [--lexicon movements.json] --out <dir> --license-approved --reviewer <name> --reviewed-at <date>');
+  if (!wodsPath || !exercisesPath) throw new Error('Usage: compile.ts --wods <wods.csv> --exercises <exercises.json> [--lexicon movements.json] [--glossary glossary.json] [--muscles muscles.json] [--images <dir>] --out <dir> --license-approved --reviewer <name> --reviewed-at <date>');
 
+  const readJson = async <T,>(path: string): Promise<T> => JSON.parse(await readFile(resolve(path), 'utf8')) as T;
+  const manifest = imagesDir ? await readJson<ImageManifest>(resolve(imagesDir, 'manifest.json')).catch(() => undefined) : undefined;
   const result = compile({
     wodsCsv: await readFile(resolve(wodsPath), 'utf8'),
-    exercises: JSON.parse(await readFile(resolve(exercisesPath), 'utf8')) as YuhonasRecord[],
-    lexicon: JSON.parse(await readFile(resolve(lexiconPath), 'utf8')) as WodLexicon,
+    exercises: await readJson<YuhonasRecord[]>(exercisesPath),
+    lexicon: await readJson<WodLexicon>(lexiconPath),
+    glossary: await readJson<WodGlossary>(glossaryPath),
+    muscles: await readJson<MuscleTable>(musclesPath),
+    ...(manifest ? { images: manifest } : {}),
     license: { approved: args.includes('--license-approved'), reviewer: value('--reviewer'), reviewedAt: value('--reviewed-at') },
   });
 
@@ -378,6 +474,7 @@ async function main(): Promise<void> {
   const m = result.master;
   console.log(`Compiled ${m.workouts.length} workouts, ${m.movements.length} movements (${m.movements.filter((x) => x.exercise).length} with catalog exercises) → ${resolve(outDir)}`);
   console.log(`Confidence: ${m.workouts.filter((w) => w.confidence === 'high').length} high, ${m.workouts.filter((w) => w.confidence === 'medium').length} medium, ${m.workouts.filter((w) => w.confidence === 'low').length} low. Dropped ${m.review.dropped.length}.`);
+  console.log(`Muscle maps: ${m.review.muscleSets} distinct sets; ${m.review.pictured} workouts with pictures${imagesDir ? '' : ' (run visualize.ts, then compile again with --images)'}.`);
 }
 
 if (process.argv[1]?.endsWith('compile.ts')) {

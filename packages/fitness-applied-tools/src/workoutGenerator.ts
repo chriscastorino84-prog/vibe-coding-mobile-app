@@ -33,6 +33,25 @@ export type MasterExercise = {
   source: { name: string; recordId: string; revision: string; license: string; attribution: string };
 };
 
+/** Muscles in the catalog's vocabulary (free-exercise-db names: "quadriceps", "lower back", …). */
+export type MuscleSet = { target: string[]; secondary: string[] };
+
+/**
+ * The muscle map for a workout, ready for the Muscle Visualizer API
+ * (github.com/ExerciseDB/muscle-visualizer-api). `key` identifies the muscle
+ * set so workouts that work the same muscles share one image; `images` is
+ * filled in by scripts/wod-compiler/visualize.ts once the pictures exist.
+ */
+export type WorkoutVisual = {
+  provider: 'exercisedb-muscle-visualizer';
+  key: string;
+  target: string[];
+  secondary: string[];
+  images?: { male?: string; female?: string };
+  /** The colours baked into the pictures, for the legend next to them. */
+  colors?: { target: string; secondary: string };
+};
+
 export type MasterMovement = {
   id: string;
   name: string;
@@ -42,6 +61,7 @@ export type MasterMovement = {
   note: string;
   aliases: string[];
   exercise: MasterExercise | null;
+  muscles: MuscleSet;
 };
 
 export type MasterWorkout = {
@@ -64,6 +84,10 @@ export type MasterWorkout = {
   lines: WodLine[];
   equipment: string[];
   patterns: string[];
+  /** Semantic tags from the glossary: partner, ladder, rx, buy-in, cash-out. */
+  tags: string[];
+  muscles: MuscleSet;
+  visual?: WorkoutVisual;
   prescription: string;
   warnings: string[];
   confidence: 'high' | 'medium' | 'low';
@@ -82,6 +106,12 @@ export type MasterDataset = {
     untiedLoads: string[];
     duplicates: Array<{ kept: string; dropped: string[] }>;
     dropped: Array<{ row: number; text: string; reason: string }>;
+    /** Lexicon movements with no muscles yet (add them to muscles.json). */
+    noMuscles: string[];
+    /** Distinct muscle sets across the workouts: the number of pictures the visualizer needs. */
+    muscleSets: number;
+    /** Workouts whose visual already has pictures. */
+    pictured: number;
   };
 };
 
@@ -95,6 +125,7 @@ const FORMAT_LABEL: Record<WodFormat, string> = {
   for_time: 'For time',
   amrap: 'AMRAP',
   emom: 'EMOM',
+  death_by: 'Death by',
   tabata: 'Tabata',
   interval: 'Intervals',
   strength: 'Strength',
@@ -166,6 +197,8 @@ export function headline(w: MasterWorkout): string {
       return w.timeCapSeconds ? `AMRAP ${secondsText(w.timeCapSeconds)}` : 'AMRAP';
     case 'emom':
       return `EMOM${w.intervalCount ? ` ${w.intervalCount} ×` : ''} ${secondsText(w.intervalSeconds ?? 60)}`;
+    case 'death_by':
+      return `Death by · add a rep every ${secondsText(w.intervalSeconds ?? 60)}`;
     case 'max_load':
       return w.intervalSeconds ? `Every ${secondsText(w.intervalSeconds)}${w.intervalCount ? ` × ${w.intervalCount}` : ''}, for max load` : 'For max load';
     case 'tabata':
@@ -196,9 +229,11 @@ export type GeneratedExercise = {
   tracking: { inputs: WodTrackingInput[]; effort?: 'rpe' | 'rir'; measure: WodMeasure; score: WodScore };
   order: number;
   kind: 'movement' | 'rest' | 'note';
+  role?: string;
   movementId?: string;
   pattern?: string;
   equipment?: string[];
+  muscles?: MuscleSet;
   rounds?: number;
   sets?: number;
   repetitions?: number;
@@ -239,6 +274,9 @@ export type GeneratedProgram = {
   intervalSeconds?: number;
   intervalCount?: number;
   loads: WodLoad;
+  tags: string[];
+  muscles: MuscleSet;
+  visual?: WorkoutVisual;
   sections: Array<{ id: string; title: string; summary: string; rounds?: string; exercises: GeneratedExercise[] }>;
   marketplace: { status: 'published'; accessTier: 'free'; adPolicy: 'none' };
   source: { name: string; recordId: string; revision: string; attribution: string };
@@ -248,7 +286,7 @@ export type GeneratedProgram = {
 
 function legacyWorkoutType(format: WodFormat): GeneratedExercise['workoutType'] {
   if (format === 'amrap') return 'amrap';
-  if (format === 'emom' || format === 'tabata' || format === 'interval' || format === 'max_load') return 'timed_sets';
+  if (format === 'emom' || format === 'death_by' || format === 'tabata' || format === 'interval' || format === 'max_load') return 'timed_sets';
   return 'standard';
 }
 
@@ -274,7 +312,7 @@ export function generateProgram(w: MasterWorkout, master: MasterDataset, attribu
   // What the current app runtime reads to run its clock: AMRAP = one countdown, intervals = work/rest.
   const runtimeWork = w.format === 'amrap' || w.format === 'interval' || w.format === 'skill' ? w.timeCapSeconds
     : w.format === 'tabata' ? w.timer.workSeconds
-      : w.format === 'emom' || w.format === 'max_load' ? w.intervalSeconds
+      : w.format === 'emom' || w.format === 'death_by' || w.format === 'max_load' ? w.intervalSeconds
         : undefined;
   const exercises: GeneratedExercise[] = w.lines.map((line) => {
     const movement = line.movementId ? movements.get(line.movementId) : undefined;
@@ -295,8 +333,9 @@ export function generateProgram(w: MasterWorkout, master: MasterDataset, attribu
       tracking: { inputs: w.trackingInputs, effort: 'rpe', measure: line.quantity?.measure ?? movement?.measure ?? 'reps', score: w.score },
       order: line.order,
       kind: line.kind,
+      ...(line.role ? { role: line.role } : {}),
       ...(line.movementId ? { movementId: line.movementId } : {}),
-      ...(movement ? { pattern: movement.pattern, equipment: movement.equipment } : {}),
+      ...(movement ? { pattern: movement.pattern, equipment: movement.equipment, muscles: movement.muscles } : {}),
       ...(w.rounds ? { rounds: w.rounds } : {}),
       ...(line.repScheme ? { sets: line.repScheme.length, repScheme: line.repScheme } : w.format === 'strength' && w.sets ? { sets: w.sets } : {}),
       ...(reps !== undefined ? { repetitions: reps } : {}),
@@ -336,6 +375,9 @@ export function generateProgram(w: MasterWorkout, master: MasterDataset, attribu
     ...(w.intervalSeconds ? { intervalSeconds: w.intervalSeconds } : {}),
     ...(w.intervalCount ? { intervalCount: w.intervalCount } : {}),
     loads: w.loads,
+    tags: w.tags,
+    muscles: w.muscles,
+    ...(w.visual ? { visual: w.visual } : {}),
     sections: [{ id: `${w.id}-section-1`, title: headline(w), summary: settings, ...(w.rounds ? { rounds: String(w.rounds) } : {}), exercises }],
     marketplace: { status: 'published', accessTier: 'free', adPolicy: 'none' },
     source: { ...w.source, attribution },
@@ -358,8 +400,10 @@ export type PageLine = {
   load?: WodLoad;
   modifiers: string[];
   measure: WodMeasure;
+  role?: string;
   pattern?: string;
   equipment: string[];
+  muscles?: MuscleSet;
   cue?: string;
 };
 
@@ -386,6 +430,9 @@ export type WorkoutPage = {
   lines: PageLine[];
   equipment: string[];
   patterns: string[];
+  tags: string[];
+  muscles: MuscleSet;
+  visual?: WorkoutVisual;
   prescription: string;
   confidence: MasterWorkout['confidence'];
   warnings: string[];
@@ -407,7 +454,8 @@ export function generatePage(w: MasterWorkout, master: MasterDataset): WorkoutPa
       ...(line.load ? { load: line.load } : {}),
       modifiers: line.modifiers,
       measure: line.quantity?.measure ?? movement?.measure ?? 'reps',
-      ...(movement ? { pattern: movement.pattern } : {}),
+      ...(line.role ? { role: line.role } : {}),
+      ...(movement ? { pattern: movement.pattern, muscles: movement.muscles } : {}),
       equipment: movement?.equipment ?? [],
       ...(movement?.note ? { cue: movement.note } : {}),
     };
@@ -435,8 +483,46 @@ export function generatePage(w: MasterWorkout, master: MasterDataset): WorkoutPa
     lines,
     equipment: w.equipment,
     patterns: w.patterns,
+    tags: w.tags,
+    muscles: w.muscles,
+    ...(w.visual ? { visual: w.visual } : {}),
     prescription: w.prescription,
     confidence: w.confidence,
     warnings: w.warnings,
   };
+}
+
+/* ---------- muscles ---------- */
+
+/**
+ * The muscles a workout works, tallied over its movement lines: a muscle that
+ * is primary for any movement is a target (ranked by how often it appears),
+ * everything else that appears is secondary. Capped so the picture stays legible.
+ */
+export function workoutMuscles(lines: WodLine[], movements: Map<string, MasterMovement>, cap = 6): MuscleSet {
+  const primary = new Map<string, number>();
+  const secondary = new Map<string, number>();
+  for (const line of lines) {
+    if (line.kind !== 'movement' || !line.movementId) continue;
+    const m = movements.get(line.movementId);
+    if (!m) continue;
+    for (const x of m.muscles.target) primary.set(x, (primary.get(x) ?? 0) + 1);
+    for (const x of m.muscles.secondary) secondary.set(x, (secondary.get(x) ?? 0) + 1);
+  }
+  const rank = (map: Map<string, number>) => [...map.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).map(([k]) => k);
+  const target = rank(primary).slice(0, cap);
+  const rest = rank(secondary).filter((x) => !target.includes(x));
+  return { target, secondary: rest.slice(0, cap) };
+}
+
+/** A stable key for a muscle set, so workouts with the same muscles share one picture. */
+export function muscleKey(m: MuscleSet): string {
+  const text = `${[...m.target].sort().join(',')}|${[...m.secondary].sort().join(',')}`;
+  // FNV-1a, 32-bit, as 8 hex characters: short, deterministic, no dependency.
+  let h = 0x811c9dc5;
+  for (let i = 0; i < text.length; i += 1) {
+    h ^= text.charCodeAt(i);
+    h = Math.imul(h, 0x01000193) >>> 0;
+  }
+  return h.toString(16).padStart(8, '0');
 }
