@@ -1,15 +1,15 @@
 # WOD compile review
 
-Generated 2026-10-03T22:45:35.729Z.
+Generated 2026-10-03T23:12:55.432Z.
 
-- Workouts: 1239 (named: 166)
-- Dropped rows: 14; duplicate rows: 19
-- Formats: for_time: 742, amrap: 235, strength: 131, interval: 59, emom: 29, tabata: 16, skill: 13, unknown: 12, max_load: 2
-- Confidence: high: 1066, medium: 161, low: 12
-- Movement lines recognised: 3919 of 4018 (98%)
+- Workouts: 1238 (named: 165)
+- Dropped rows: 15; duplicate rows: 19
+- Formats: for_time: 741, amrap: 235, strength: 131, interval: 59, emom: 29, tabata: 16, skill: 13, unknown: 12, max_load: 2
+- Confidence: high: 1065, medium: 161, low: 12
+- Movement lines recognised: 3914 of 4013 (98%)
 - Lexicon movements: 180, mapped to a catalog exercise: 136
 - Tags: stations: 27, ladder: 16, partner: 10, rx: 2
-- Muscle maps: 601 distinct muscle sets over 1227 workouts; 0 workouts have pictures
+- Muscle maps: 600 distinct muscle sets over 1226 workouts; 0 workouts have pictures
 
 ## Unrecognised text (add to the lexicon, or leave as a note)
 
@@ -166,7 +166,7 @@ Generated 2026-10-03T22:45:35.729Z.
 - **wod-0877** · 155 lb. / 105 lb. · On a 15-minute clock, for max reps each round: From 0:00-3:00, run 400 meters then do pull-ups Rest 1 minute From 4:00-7
 - **wod-1011** · two 50-lb. DBs for C&J, one for pull-ups / two 35-lb. DBs for C&J, one for pull-ups · 5 rounds for time of: 400-m run 15 hang squat clean and jerks 9 weighted strict pull-ups
 
-## Dropped rows (14)
+## Dropped rows (15)
 
 - row 75: no movements found (not a workout?) · The Other Total
 - row 158: no movements found (not a workout?) · Featured Article: Developing CrossFit Coaches for Lifelong Career and Success
@@ -177,6 +177,7 @@ Generated 2026-10-03T22:45:35.729Z.
 - row 425: no movements found (not a workout?) · Hero workout of your choice. Review the list of heroes and honor one with an all-out effort.
 - row 448: no movements found (not a workout?) · Oly Total
 - row 456: no movements found (not a workout?) · 4 rounds of Tabata row, bike, ski erg, jump rope, or other monostructural exercise.
+- row 505: left out on purpose (exclusions.json): Chris: remove one of the two IGNITE workouts. This is the copy with the extra power clean and hang squat clean lines; the plain 21-15-9 copy (ignite-workout) stays. · IGNITE Workout With an 18-minute running clock, complete: 21-15-9 reps of: Thrusters Lateral burpees over the bar Sit-up
 - row 587: no movements found (not a workout?) · Tabata This!
 - row 845: no movements found (not a workout?) · Nasty Girls V2
 - row 913: no movements found (not a workout?) · Test 3

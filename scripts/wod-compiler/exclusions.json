@@ -1,0 +1,11 @@
+{
+  "name": "fitness-applied/wod-exclusions",
+  "note": "Workouts the compiler leaves out, by stable id (the id in wods-master.json, which comes from the cleaned prescription text, so it survives a recompile). Chris asked for these to go. Add an entry to remove another.",
+  "exclude": [
+    {
+      "id": "wod-eb218198",
+      "name": "IGNITE Workout (second copy)",
+      "reason": "Chris: remove one of the two IGNITE workouts. This is the copy with the extra power clean and hang squat clean lines; the plain 21-15-9 copy (ignite-workout) stays."
+    }
+  ]
+}

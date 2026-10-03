@@ -207,6 +207,8 @@ export type CompileOptions = {
   muscles?: MuscleTable;
   scaling?: ScalingTable;
   benchmarks?: BenchmarkTable;
+  /** Workouts to leave out, by stable id (exclusions.json). A recompile keeps them out. */
+  exclusions?: { id: string; name?: string; reason?: string }[];
   images?: ImageManifest;
   license: { approved: boolean; reviewer?: string; reviewedAt?: string };
   now?: string;
@@ -292,6 +294,11 @@ export function compile(options: CompileOptions): CompileResult {
       return;
     }
     const id = stableId('wod', `${WOD_SOURCE.name}:${WOD_SOURCE.revision}:${prescription}`);
+    const excluded = options.exclusions?.find((x) => x.id === id);
+    if (excluded) {
+      dropped.push({ row: rowNumber, text: prescription.slice(0, 120), reason: `left out on purpose (exclusions.json): ${excluded.reason ?? excluded.name ?? id}` });
+      return;
+    }
     seen.set(key, id);
     if (sameKey) seen.set(`same:${sameKey}`, id);
     const name = givenName || parsed.name || `WOD ${String(++unnamed).padStart(4, '0')}`;
@@ -465,6 +472,7 @@ async function main(): Promise<void> {
   const musclesPath = value('--muscles') ?? here('muscles.json');
   const scalingPath = value('--scaling') ?? here('scaling.json');
   const benchmarksPath = value('--benchmarks') ?? here('benchmarks.json');
+  const exclusionsPath = value('--exclusions') ?? here('exclusions.json');
   const imagesDir = value('--images');
   const outDir = value('--out') ?? 'out';
   if (!wodsPath || !exercisesPath) throw new Error('Usage: compile.ts --wods <wods.csv> --exercises <exercises.json> [--lexicon movements.json] [--glossary glossary.json] [--muscles muscles.json] [--images <dir>] --out <dir> --license-approved --reviewer <name> --reviewed-at <date>');
@@ -479,6 +487,7 @@ async function main(): Promise<void> {
     muscles: await readJson<MuscleTable>(musclesPath),
     scaling: await readJson<ScalingTable>(scalingPath),
     benchmarks: await readJson<BenchmarkTable>(benchmarksPath),
+    exclusions: (await readJson<{ exclude: NonNullable<CompileOptions['exclusions']> }>(exclusionsPath).catch(() => ({ exclude: [] }))).exclude,
     ...(manifest ? { images: manifest } : {}),
     license: { approved: args.includes('--license-approved'), reviewer: value('--reviewer'), reviewedAt: value('--reviewed-at') },
   });

@@ -32,8 +32,10 @@ npx tsx compile.ts \
   --license-approved --reviewer "Chris Castorino" --reviewed-at 2026-10-03
 ```
 
-`glossary.json`, `muscles.json` and `movements.json` next to the script are
-read by default (`--glossary`, `--muscles`, `--lexicon` override them).
+`glossary.json`, `muscles.json`, `movements.json` and `exclusions.json` next to the
+script are read by default (`--glossary`, `--muscles`, `--lexicon`, `--exclusions`
+override them). `exclusions.json` lists workouts to leave out by stable id, so a
+recompile keeps them out (today: the second IGNITE Workout).
 
 `--license-approved` is required: both sources need a redistribution review
 before anything is published (Kaggle: ODbL database, CrossFit.com content;
