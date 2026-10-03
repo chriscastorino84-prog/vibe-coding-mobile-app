@@ -1,0 +1,213 @@
+# WOD compile review
+
+Generated 2026-10-03T17:44:55.735Z.
+
+- Workouts: 1255 (named: 182)
+- Dropped rows: 14; duplicate rows: 3
+- Formats: for_time: 771, amrap: 239, strength: 117, interval: 46, emom: 29, max_load: 17, tabata: 16, unknown: 12, skill: 8
+- Confidence: high: 1065, medium: 178, low: 12
+- Movement lines recognised: 3955 of 4072 (97%)
+- Lexicon movements: 131, mapped to a catalog exercise: 101
+
+## Unrecognised text (add to the lexicon, or leave as a note)
+
+- 15 × "rounds of" (e.g. wod-0446, wod-0564, wod-0600)
+- 8 × "rope" (e.g. wod-0763, wod-0818, wod-0880)
+- 6 × "of" (e.g. wod-0244, wod-0411, wod-0423)
+- 6 × "five" (e.g. wod-0446, wod-0564, wod-0631)
+- 5 × "00" (e.g. wod-0176, wod-0877)
+- 5 × "pace for as long as possible" (e.g. wod-0617)
+- 5 × "box" (e.g. wod-0745, christine-e7745e, wod-0850)
+- 4 × "for reps" (e.g. wod-0076, wod-0269, wod-0277)
+- 4 × "rounds for time of" (e.g. wod-0180, operation-red-wings, wod-0470)
+- 4 × "5" (e.g. wod-0892, wod-0914, wod-0927)
+- 3 × "barbara" (e.g. wod-0108, wod-0708, wod-1013)
+- 3 × ", complete" (e.g. wod-0142, wod-0143, wod-0146)
+- 3 × "increase load each minute as you are able" (e.g. wod-0209)
+- 3 × "complete as much as possible in" (e.g. wod-0411, wod-0423, wod-0796)
+- 3 × "10" (e.g. wod-0412, wod-0485, wod-0901)
+- 3 × "three" (e.g. wod-0416, wod-0749, wod-0847)
+- 3 × "for as long as possible" (e.g. wod-0737)
+- 3 × "to the clock and proceed to" (e.g. wod-1065)
+- 2 × "then, complete as many reps as possible in" (e.g. wod-0001, wod-0741)
+- 2 × "if you've got a 14/20-lb vest or body armor, wear it" (e.g. murph, murph-9c4e1d)
+- 2 × "in as few pulls as possible" (e.g. wod-0070, wod-0857)
+- 2 × "accumulate" (e.g. wod-0090, wod-0402)
+- 2 × "every minute on the minute for" (e.g. wod-0209)
+- 2 × "minutes , use a light weight to complete" (e.g. wod-0227)
+- 2 × "at the start of each minute" (e.g. wod-0276, wod-0746)
+- 2 × "every minute for" (e.g. wod-0335, wod-0337)
+- 2 × "pulls on the rower" (e.g. wod-0411, wod-0791)
+- 2 × "hero workout of your choice" (e.g. wod-0415, wod-0803)
+- 2 × "review the list of" (e.g. wod-0415, wod-0803)
+- 2 × "heroes and honor one with an all-out effort" (e.g. wod-0415, wod-0803)
+- 2 × ", preferably on a trail" (e.g. wod-0456, wod-0883)
+- 2 × "to the time cap and complete" (e.g. wod-0466)
+- 2 × "xxx complete as much as possible in" (e.g. wod-0474, wod-0920)
+- 2 × "complete" (e.g. wod-0480, wod-0511)
+- 2 × "barbara ann" (e.g. wod-0606, wod-0865)
+- 2 × "make" (e.g. wod-0633, wod-0714)
+- 2 × "workout" (e.g. wod-0712, wod-0835)
+- 2 × "while performing rounds of" (e.g. wod-0723, wod-0794)
+- 2 × "each time you break, perform" (e.g. wod-0741)
+- 2 × "with a partner" (e.g. pairup-throwdown, martin)
+- 2 × "in as few sets as possible" (e.g. wod-0821, wod-0952)
+- 2 × "third minute, continuing as long as you are able" (e.g. wod-0844, wod-1021)
+- 2 × "on a" (e.g. wod-0924, wod-0944)
+- 1 × "every 90 seconds, including the start, perform" (e.g. wod-0003)
+- 1 × "chin-over-bar hold" (e.g. wod-0016)
+- 1 × "dumbbell front-rack carry" (e.g. wod-0027)
+- 1 × "then complete all" (e.g. wod-0037)
+- 1 × "sets: accumulate a" (e.g. wod-0049)
+- 1 × ") *after completing each round, add" (e.g. open-workout-25-1)
+- 1 × "for example, if it takes" (e.g. wod-0071)
+- 1 × "if you've got a weight vest or body armor, wear it" (e.g. riley)
+- 1 × "sets for load of" (e.g. wod-0075)
+- 1 × "the rings" (e.g. wod-0081)
+- 1 × "hands on the handle of each dumbbell" (e.g. wod-0086)
+- 1 × "go at the floor only" (e.g. wod-0087)
+- 1 × "even a re-grip off the floor is a foul" (e.g. wod-0087)
+- 1 × "no dumping" (e.g. wod-0087)
+- 1 × "use the same load for each set" (e.g. wod-0087)
+- 1 × "dead-hang hold each time you drop from the bar, complete" (e.g. wod-0090)
+- 1 × "to each exercise until time expires" (e.g. wod-0126)
+- 1 × "annie with a twist in" (e.g. wod-0140)
+- 1 × "pick up where you left off each round so the score is the total rounds and reps for all" (e.g. wod-0143)
+- 1 × "rounds on a" (e.g. wod-0169)
+- 1 × "half-marathon" (e.g. wod-0172)
+- 1 × "chipper" (e.g. wod-0173)
+- 1 × "after each 5-minute interval" (e.g. wod-0177)
+- 1 × "odd minutes" (e.g. wod-0179)
+- 1 × "back and should be unweighted" (e.g. wod-0179)
+- 1 × "after each set to be completed in" (e.g. wod-0186)
+- 1 × "jog start and finish with a" (e.g. wod-0192)
+- 1 × "rounds or stop if you complete" (e.g. wod-0193)
+- 1 × "rounds for total calories" (e.g. wod-0203)
+- 1 × ", starting from a seated position on the floor" (e.g. wod-0207)
+- 1 × "sets, each" (e.g. wod-0220)
+- 1 × "sets on a" (e.g. wod-0223)
+- 1 × ", increase the load if movement is sound and complete" (e.g. wod-0227)
+- 1 × "sandbag ground-to-shoulders" (e.g. wod-0228)
+- 1 × "inches above fingertips with arms extended overhead" (e.g. wod-0229)
+- 1 × "in time remaining, weight 4" (e.g. quarterfinals-workout-4)
+- 1 × "sets" (e.g. wod-0237)
+
+## Low confidence (12)
+
+- **wod-0360** · unknown · Swim for 25 minutes.
+- **wod-0523** · unknown · Run for 35 minutes
+- **wod-0568** · unknown · Chest-to-bar pull-up ladder Rest 5 minutes 1/2 bodyweight overhead squat ladder
+- **wod-0844** · unknown · With a continuously running clock, do one pull-up the first minute, two pull-ups the second minute, three pull-ups the third minute, continu…
+- **wod-0875** · unknown · Run for 35 minutes.
+- **wod-0881** · unknown · Handstand walk 100 yards
+- **wod-0884** · unknown · Snatch Speed Triple (similar)
+- **wod-0896** · unknown · Max freestanding handstand hold
+- **wod-0899** · unknown · Max reps shoulder press, 95/135 lb. Max reps L pull-up Max reps shoulder press, 75/115 lb. Max reps strict pull-up Max reps shoulder press, …
+- **wod-0932** · unknown · Thruster ladder Ring row ladder Push press ladder
+- **wod-0933** · unknown · Handstand push-up ladder Rest 3 minutes Dip ladder Rest 3 minutes Push-up ladder
+- **wod-0965** · unknown · 100 ft. of legless rope ascent in AFSAP L-sit for 2 minutes in AFSAP
+
+## Loads that could not be tied to a movement (52)
+
+- **wod-0039** · 70 lb / 53 lb · Every 5 minutes for 5 sets: 400-meter run 25 Russian kettlebell swings
+- **wod-0055** · 100 lb / 80 lb · 30-20-10 reps for time of: Calories on the Echo bike Perform a 100-meter front-of-body object carry after each set on th
+- **wod-0071** · 53 lb / 35 lb · Every 3 minutes until failure, complete 2 rounds of: 3 toes-to-bars 3 kettlebell swings 25-foot kettlebell walking lunge
+- **wod-0079** · 70 lb / 53 lb · For time: 150 kettlebell swings
+- **wod-0123** · 50 lb / 35 lb · 5 rounds for time of: 1 rope climb to 15 feet 10 toes-to-bars 1 rope climb to 15 feet 20 alternating dumbbell snatches
+- **task-priority-nate** · 70 lb / 53 lb · Task-Priority Nate 10 rounds for time of: 2 ring muscle-ups 4 handstand push-ups 8 kettlebell swings
+- **wod-0129** · 115 lb / 75 lb · 3 rounds for time of: 50 push-ups 50-meter front-rack walking lunge
+- **wod-0134** · Body weight / Body weight · Complete as many reps as possible in 10 minutes of: Squat snatch
+- **wod-0135** · 35 lb / 20 lb · For time: 800-meter run 25 kipping pull-ups 800-meter run 25 strict pull-ups 800-meter run 25 weighted pull-ups
+- **wod-0136** · 70 lb / 53 lb · 30-20-10 reps for time of: Single-arm Russian kettlebell swings, right arm Single-arm Russian kettlebell swings, left ar
+- **wod-0157** · 50 lb / 35 lb · 7 rounds for time of: 7 single-dumbbell devil's presses 100-meter single-dumbbell carry
+- **wod-0164** · 150 lb / 100 lb · 6 rounds for time of: 14/18-calorie row 30-foot sandbag carry
+- **wod-0182** · 53 lb / 35 lb · 50-40-30-20-10 reps for time of: Kettlebell swings *Run 400 meters after each set
+- **wod-0187** · 45 lb / 30 lb · For time: Ruck 5 miles or Run 6 miles
+- **wod-0202** · 20 lb / 14 lb · For time: 40-30-20-10 Medicine-ball cleans 120-90-60-30 Double-unders
+- **wod-0212** · 50 lb / 35 lb · For time: 42-30-18 Alternating dumbbell snatches Calorie row
+- **wod-0223** · 50 lb / 35 lb · 5 sets for max reps: On a 3-minute clock, complete: 400/500-meter row 8 burpees over rower In the remaining time, perfor
+- **wod-0226** · 70 lb / 53 lb · For time: 21-18-15-12-9-6-3 Kettlebell swings 3-6-9-12-15-18-21 Toes-to-bars
+- **wod-0228** · 21-15-9 calories, 150 lb / 18-12-7 calories, 100 lb · For time: Designated calories on the Echo bike (see below) 9-6-3 Sandbag ground-to-shoulders
+- **helen** · 53 lb / 35 lb · Helen 3 rounds for time of: Run 400 meters 21 kettlebell swings 12 pull-ups
+- **wod-0251** · 35 lb / 20 lb · 5 rounds for time: 12 knees-to-elbows 12 weighted alternating single-leg squats
+- **wod-0261** · 70 lb / 53 lb · Complete as many rounds and reps as possible in 8 minutes of: 25-foot handstand walk 10 kettlebell swings
+- **wod-0267** · 53 lb / 35 lb · For time: 40 kettlebell swings 40 knees-to-elbows 800-meter run 30 kettlebell swings 30 knees-to-elbows 800-meter run 20
+- **wod-0271** · 45 lb / 30 lb · For time: Ruck 3 miles or Run 4 miles
+- **wod-0273** · 185 lb / 125 lb · For time: 10-9-8-7-6-5-4-3-2-1 reps of: Alternating front-rack walking lunges 20-18-16-14-12-10-8-6-4-2 reps of: GHD sit
+- **wod-0282** · 53 lb / 35 lb · For time: 800-meter run 60 kettlebell swings 400-meter run 60 kettlebell walking lunges 800-meter run
+- **wod-0301** · 10-calorie bike / 8-calorie bike · For load: 3-3-3-3-3-3 Deadlift After each set complete: 5 broad jumps for max distance Echo-bike calories as fast as pos
+- **wod-0304** · 32 kg / 24 kg · Every 6 minutes for 3 sets complete: 21-15-9 reps Echo-bike calories Kettlebell goblet squats
+- **wod-0309** · 20 lb / 14 lb · Every 2 minutes for 10 rounds complete: 200/250-meter row 10 medicine-ball cleans
+- **wod-0329** · 50 lb / 35 lb · For reps: 1:00 rope climbs 1:00 dumbbell squat snatches, alternating 2:00 rope climbs 2:00 dumbbell squat snatches, alte
+- **wod-0332** · 135 lb / 90 lb · For time: 3 rounds of: 30-calorie row 30 push-ups Rest 3:00 3 rounds of: 30-calorie bike 20 toes-to-bars Rest 3:00 3 rou
+- **wod-0370** · 45 lb / 30 lb · Run 4 miles for time Or Ruck 3 miles for time with a pack
+- **wod-0372** · 50-lb DB / 35-lb DB · Complete as many rounds as possible in 20 minutes of: 5 push jerks, left arm 5 push jerks, right arm 10 push-ups 15-cal.
+- **wod-0377** · 25-lb DB / 15-lb DB · Complete as many rounds as possible in 12 minutes of: 20 GHD sit-ups 10 weighted pull-ups
+- **wod-0386** · 2-pood kettlebell / 1.5-pood kettlebell · For time: Run 800 meters Then, 5 rounds of: 2 strict ring muscle-ups 4 strict handstand push-ups 8 kettlebell swings The
+- **wod-0393** · 50-lb DB / 35-lb DB · Back squat 5-3-3-3-1-1-1-1-1 reps
+- **wod-0408** · 50-lb DB / 35-lb DB · Complete as many rounds as possible in 15 minutes of: 50 double-unders 25-ft overhead walking lunge, arm 1 25-ft overhea
+- **wod-0412** · 30 lb / 20 lb · 10 200-m sandbag runs
+- **wod-0455** · 2-pood KB / 1.5-pood KB · 5 rounds for time of: 25 kettlebell swings 25 GHD sit-ups 25 hip extensions 25 knees-to-elbows
+- **wod-0457** · 45 lb plate / 25 lb plate · 10 rounds for time of: 5 weighted push-ups 10 push-ups
+- **wod-0490** · 50-lb DB / 35-lb DB · 5 rounds for time of: 50 double-unders 50-ft single-arm overhead lunge
+- **wod-0534** · sub 0:45 / sub 0:52 · 5 rounds for time of: 250-m row, 50 double-unders, unbroken
+- **nate** · 2-pood kettlebell / 1.5-pood kettlebell · Nate Complete as many rounds as possible in 20 minutes of: 2 muscle-ups 4 handstand push-ups 8 kettlebell swings
+- **wod-0609** · 8-minute time cap / ♀ 9-minute time cap · For max distance: 2,000-m row Max-distance handstand walk in the time remaining
+- **wod-0644** · 50-lb TGU / 25-lb TGU · 5 rounds for time of: Max-calorie row in 60 seconds Turkish get-ups
+- **wod-0782** · 20-lb. ball to 10-ft. target / 14-lb. ball to 9-ft. target · For time: 100 hip-back extensions
+- **wod-0857** · 150 meters / 100 meters · 7 rounds for time of: Row in as few pulls as possible
+- **wod-0858** · 60-lb. dumbbell / 40-lb. dumbbell · Complete as many rounds as possible in 12 minutes of: 20 GHD sit-ups 10 left-arm overhead walking lunges 10 right-arm ov
+- **wod-0873** · 2-pood KB / 1.5-pood KB · 5 rounds for time of: 25 kettlebell swings 25 GHD sit-ups 25 back extensions 25 knees-to-elbows
+- **wod-0877** · 155 lb. / 105 lb. · On a 15-minute clock, for max reps each round: From 0:00-3:00, run 400 meters then do pull-ups Rest 1 minute From 4:00-7
+- **wod-1011** · two 50-lb. DBs for C&J, one for pull-ups / two 35-lb. DBs for C&J, one for pull-ups · 5 rounds for time of: 400-m run 15 hang squat clean and jerks 9 weighted strict pull-ups
+- **wod-1066** · 40-lb. dumbbell / 25-lb. dumbbell · 3 rounds for time of: 15 body-weight bench presses 20 single-arm rows, left arm 20 single-arm rows, right arm 1,000-mete
+
+## Dropped rows (14)
+
+- row 75: no movements found (not a workout?) · The Other Total
+- row 158: no movements found (not a workout?) · Featured Article: Developing CrossFit Coaches for Lifelong Career and Success
+- row 174: no movements found (not a workout?) · Hero workout of your choice.
+- row 184: no movements found (not a workout?) · Rest day
+- row 258: no movements found (not a workout?) · CrossFit Total
+- row 416: no movements found (not a workout?) · 10 rounds, each for time of: Hill sprint or stairs
+- row 425: no movements found (not a workout?) · Hero workout of your choice. Review the list of heroes and honor one with an all-out effort.
+- row 448: no movements found (not a workout?) · Oly Total
+- row 456: no movements found (not a workout?) · 4 rounds of Tabata row, bike, ski erg, jump rope, or other monostructural exercise.
+- row 587: no movements found (not a workout?) · Tabata This!
+- row 845: no movements found (not a workout?) · Nasty Girls V2
+- row 913: no movements found (not a workout?) · Test 3
+- row 1034: no movements found (not a workout?) · 10 rounds, each for time: 5-10-15-yard shuttle sprint
+- row 1106: no movements found (not a workout?) · Hero Workout of your choice.
+
+## Movements without a catalog exercise (30)
+
+- wall-ball: Squat with the ball at the chest, stand and throw it to the target. Catch and go again.
+- medicine-ball-clean: Ball from the floor to the shoulders, received in a squat.
+- handstand-walk: Walk on the hands for the distance.
+- handstand-hold: Hold a handstand for the time.
+- shoulder-tap: In a handstand, tap one shoulder with the opposite hand.
+- wall-walk: From a push-up position, walk the feet up the wall and the hands in, then back down.
+- toes-to-bar: Hanging from the bar, both feet touch the bar between the hands.
+- knees-to-elbows: Hanging from the bar, both knees touch the elbows.
+- ghd-sit-up: On the GHD, hands touch the floor behind, then sit up to touch the pad or the feet.
+- v-up: Lying flat, fold so the hands touch the feet above the hips.
+- l-sit: Supported on the hands, legs straight out in front, hold.
+- hollow-hold: On the back, low back pressed down, arms and legs off the floor. Hold or rock.
+- burpee: Chest to the floor, back up, jump and clap overhead.
+- bar-facing-burpee: Burpee facing the bar, then jump over it.
+- burpee-over-dumbbell: Burpee beside the dumbbell, then jump over it.
+- burpee-over-rower: Burpee beside the rower, then step or jump over it.
+- burpee-to-target: A burpee that ends with a jump to touch the target.
+- dumbbell-burpee-deadlift: A burpee with the hands on the dumbbells, then stand them up in a deadlift.
+- broad-jump: Two-foot jump forward for distance.
+- run: Run the distance. Out and back, or on a track.
+- ski: On the ski erg, for the calories or distance written.
+- swim: Swim the distance.
+- ruck: Walk or run the distance with the loaded pack.
+- bear-crawl: Crawl on hands and feet, knees off the floor.
+- pegboard: Climb the pegboard to the top.
+- devils-press: A burpee on the dumbbells straight into a double dumbbell snatch.
+- man-maker: Push-up on the dumbbells, row each arm, then a clean and press.
+- cindy-round: One round is 5 pull-ups, 10 push-ups and 15 squats. Strict Cindy uses strict pull-ups.
+- skills-practice: Work on the skill at an easy pace. Not for time.
+- rest: Rest the time written before the next part.
