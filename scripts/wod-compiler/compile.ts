@@ -41,7 +41,10 @@ import {
   generatePage,
   generateProgram,
   muscleKey,
+  workoutIntro,
   workoutMuscles,
+  type BenchmarkTable,
+  type ScalingTable,
   type MasterDataset,
   type MasterExercise,
   type MasterMovement,
@@ -202,6 +205,8 @@ export type CompileOptions = {
   lexicon: WodLexicon;
   glossary?: WodGlossary;
   muscles?: MuscleTable;
+  scaling?: ScalingTable;
+  benchmarks?: BenchmarkTable;
   images?: ImageManifest;
   license: { approved: boolean; reviewer?: string; reviewedAt?: string };
   now?: string;
@@ -277,10 +282,18 @@ export function compile(options: CompileOptions): CompileResult {
       dropped.push({ row: rowNumber, text: prescription.slice(0, 120), reason: 'no movements found (not a workout?)' });
       return;
     }
-    const id = stableId('wod', `${WOD_SOURCE.name}:${WOD_SOURCE.revision}:${prescription}`);
-    seen.set(key, id);
     const givenName = cleanProse(row.name ?? row.title ?? row.workout_name ?? '');
     const named = !!(givenName || parsed.name);
+    // The same named workout written twice ("Fight Gone Bad" / "Fight Gone Bad!", "rowing calories" / "rowing (calories)") is one workout.
+    const sameKey = named ? `${(givenName || parsed.name || '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim()}|${movementLines.map((l) => l.movementId ?? l.name.toLowerCase()).join(',')}|${parsed.format}` : null;
+    const sameAs = sameKey ? seen.get(`same:${sameKey}`) : undefined;
+    if (sameAs) {
+      duplicates.set(sameAs, [...(duplicates.get(sameAs) ?? []), `row ${rowNumber} (same workout, different wording)`]);
+      return;
+    }
+    const id = stableId('wod', `${WOD_SOURCE.name}:${WOD_SOURCE.revision}:${prescription}`);
+    seen.set(key, id);
+    if (sameKey) seen.set(`same:${sameKey}`, id);
     const name = givenName || parsed.name || `WOD ${String(++unnamed).padStart(4, '0')}`;
     let slug = slugify(name) || id;
     if (slugs.has(slug)) slug = `${slug}-${id.slice(-6)}`;
@@ -302,7 +315,7 @@ export function compile(options: CompileOptions): CompileResult {
         unrecognised.set(t, entry);
       }
     }
-    workouts.push({
+    const record: Omit<MasterWorkout, 'intro'> = {
       id,
       slug,
       name,
@@ -329,7 +342,8 @@ export function compile(options: CompileOptions): CompileResult {
       warnings: parsed.warnings,
       confidence: parsed.confidence,
       source: { name: WOD_SOURCE.name, recordId: String(rowNumber - 1), revision: WOD_SOURCE.revision },
-    });
+    };
+    workouts.push({ ...record, intro: workoutIntro(record, movementById, { scaling: options.scaling, benchmarks: options.benchmarks }) });
   });
 
   const master: MasterDataset = {
@@ -449,6 +463,8 @@ async function main(): Promise<void> {
   const lexiconPath = value('--lexicon') ?? here('movements.json');
   const glossaryPath = value('--glossary') ?? here('glossary.json');
   const musclesPath = value('--muscles') ?? here('muscles.json');
+  const scalingPath = value('--scaling') ?? here('scaling.json');
+  const benchmarksPath = value('--benchmarks') ?? here('benchmarks.json');
   const imagesDir = value('--images');
   const outDir = value('--out') ?? 'out';
   if (!wodsPath || !exercisesPath) throw new Error('Usage: compile.ts --wods <wods.csv> --exercises <exercises.json> [--lexicon movements.json] [--glossary glossary.json] [--muscles muscles.json] [--images <dir>] --out <dir> --license-approved --reviewer <name> --reviewed-at <date>');
@@ -461,6 +477,8 @@ async function main(): Promise<void> {
     lexicon: await readJson<WodLexicon>(lexiconPath),
     glossary: await readJson<WodGlossary>(glossaryPath),
     muscles: await readJson<MuscleTable>(musclesPath),
+    scaling: await readJson<ScalingTable>(scalingPath),
+    benchmarks: await readJson<BenchmarkTable>(benchmarksPath),
     ...(manifest ? { images: manifest } : {}),
     license: { approved: args.includes('--license-approved'), reviewer: value('--reviewer'), reviewedAt: value('--reviewed-at') },
   });

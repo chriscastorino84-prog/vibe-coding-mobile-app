@@ -52,6 +52,23 @@ export type WorkoutVisual = {
   colors?: { target: string; secondary: string };
 };
 
+/** The paragraphs under a workout's name, in Chris's voice. Built from the columns by workoutIntro(). */
+export type WorkoutIntro = {
+  /** What the workout is and how it is scored, in two or three short sentences. */
+  what: string;
+  /** How to pace it: the one thing per movement that keeps you moving. */
+  how: string;
+  /** How to make it yours: the step down for each movement, and the loads. */
+  scale: string;
+  /** The story behind a named workout (benchmarks.json), when there is one. */
+  background?: string;
+  /** girl | hero | benchmark, when known. */
+  kind?: string;
+};
+
+export type ScalingTable = { movements: Record<string, { scale: string; cue: string }> };
+export type BenchmarkTable = { workouts: Record<string, { kind: string; background: string }> };
+
 export type MasterMovement = {
   id: string;
   name: string;
@@ -84,10 +101,12 @@ export type MasterWorkout = {
   lines: WodLine[];
   equipment: string[];
   patterns: string[];
-  /** Semantic tags from the glossary: partner, ladder, rx, buy-in, cash-out. */
+  /** Semantic tags from the glossary: partner, ladder, rx, buy-in, cash-out, stations. */
   tags: string[];
   muscles: MuscleSet;
   visual?: WorkoutVisual;
+  /** The introduction under the name: what it is, how to run it, how to scale it, and the story behind a named one. */
+  intro: WorkoutIntro;
   prescription: string;
   warnings: string[];
   confidence: 'high' | 'medium' | 'low';
@@ -204,6 +223,7 @@ export function headline(w: MasterWorkout): string {
     case 'tabata':
       return 'Tabata · 8 × (20 sec on / 10 sec off)';
     case 'interval':
+      if (w.tags?.includes('stations')) return `${w.rounds ?? 1} round${(w.rounds ?? 1) === 1 ? '' : 's'} of timed stations`;
       return w.timeCapSeconds ? `${secondsText(w.timeCapSeconds)} clock${w.rounds ? ` × ${w.rounds} rounds` : ''}` : 'Intervals';
     case 'strength':
       return w.repScheme ? `${w.repScheme.join('-')} reps` : w.sets ? `${w.sets} sets` : 'Strength';
@@ -277,6 +297,7 @@ export type GeneratedProgram = {
   tags: string[];
   muscles: MuscleSet;
   visual?: WorkoutVisual;
+  intro: WorkoutIntro;
   sections: Array<{ id: string; title: string; summary: string; rounds?: string; exercises: GeneratedExercise[] }>;
   marketplace: { status: 'published'; accessTier: 'free'; adPolicy: 'none' };
   source: { name: string; recordId: string; revision: string; attribution: string };
@@ -378,6 +399,7 @@ export function generateProgram(w: MasterWorkout, master: MasterDataset, attribu
     tags: w.tags,
     muscles: w.muscles,
     ...(w.visual ? { visual: w.visual } : {}),
+    intro: w.intro,
     sections: [{ id: `${w.id}-section-1`, title: headline(w), summary: settings, ...(w.rounds ? { rounds: String(w.rounds) } : {}), exercises }],
     marketplace: { status: 'published', accessTier: 'free', adPolicy: 'none' },
     source: { ...w.source, attribution },
@@ -433,6 +455,7 @@ export type WorkoutPage = {
   tags: string[];
   muscles: MuscleSet;
   visual?: WorkoutVisual;
+  intro: WorkoutIntro;
   prescription: string;
   confidence: MasterWorkout['confidence'];
   warnings: string[];
@@ -486,6 +509,7 @@ export function generatePage(w: MasterWorkout, master: MasterDataset): WorkoutPa
     tags: w.tags,
     muscles: w.muscles,
     ...(w.visual ? { visual: w.visual } : {}),
+    intro: w.intro,
     prescription: w.prescription,
     confidence: w.confidence,
     warnings: w.warnings,
@@ -525,4 +549,108 @@ export function muscleKey(m: MuscleSet): string {
     h = Math.imul(h, 0x01000193) >>> 0;
   }
   return h.toString(16).padStart(8, '0');
+}
+
+/* ---------- the introduction ---------- */
+
+type IntroInput = Omit<MasterWorkout, 'intro'>;
+
+function minutesText(seconds: number): string {
+  const m = Math.round(seconds / 60);
+  return m === 1 ? 'one minute' : `${m} minutes`;
+}
+
+function listText(items: string[]): string {
+  const x = items.filter(Boolean);
+  if (x.length <= 1) return x[0] ?? '';
+  return `${x.slice(0, -1).join(', ')} and ${x[x.length - 1]}`;
+}
+
+/** "What it is": the format in plain words, with the score. Point first, short closer. */
+function whatText(w: IntroInput, work: WodLine[]): string {
+  const names = work.map((l) => l.name.toLowerCase());
+  const few = names.length <= 4 ? listText(names) : `${names.length} movements`;
+  const cap = w.timeCapSeconds ? minutesText(w.timeCapSeconds) : null;
+  switch (w.format) {
+    case 'for_time': {
+      if (w.repScheme) return `${w.repScheme.join('-')} reps of ${few}, as fast as you can with good form. The numbers drop every round. The standard doesn't. Your score is the clock${cap ? `, with a ${cap} cap` : ''}.`;
+      if (w.rounds && w.rounds > 1) return `${w.rounds} rounds of ${few}, as fast as you can with good form. Your score is the clock${cap ? `, with a ${cap} cap` : ''}.`;
+      return `${names.length > 1 ? 'Work through the list' : `Do the ${few}`} as fast as you can with good form. Your score is the clock${cap ? `, with a ${cap} cap` : ''}.`;
+    }
+    case 'amrap':
+      return `${cap ? `${cap[0].toUpperCase()}${cap.slice(1)} on the clock` : 'A set time on the clock'}. Get through the list as many times as you can. Your score is rounds, plus whatever reps you got into the last one.`;
+    case 'emom':
+      return `Every ${w.intervalSeconds && w.intervalSeconds !== 60 ? minutesText(w.intervalSeconds) : 'minute'} on the minute${w.intervalCount ? ` for ${w.intervalCount} rounds` : ''}: do the work, then rest whatever is left. Faster work buys more rest. Your score is total reps.`;
+    case 'death_by':
+      return `Minute one, one rep. Minute two, two reps. Keep adding one until you can't finish inside the minute. Your score is the last full minute, plus the reps you got in the one that beat you.`;
+    case 'tabata':
+      return `Tabata: eight rounds of 20 seconds on and 10 seconds off, per movement. Count the reps. Your score is the total.`;
+    case 'interval': {
+      if (w.tags.includes('stations')) {
+        const rest = w.lines.find((l) => l.kind === 'rest');
+        const each = work[0]?.quantity ? minutesText(work[0].quantity.value) : 'a set time';
+        return `${w.rounds ?? 1} round${(w.rounds ?? 1) === 1 ? '' : 's'}. ${names.length} stations, ${each} at each${rest?.quantity ? `, then ${minutesText(rest.quantity.value)} off` : ''}. Count every rep. The total is your score.`;
+      }
+      return `Work in intervals${cap ? ` on a ${cap} clock` : ''}. ${w.score === 'distance' ? 'Your score is total distance.' : 'Count the reps. The total is your score.'}`;
+    }
+    case 'strength':
+      return `${w.sets ? `${w.sets} sets` : 'Sets'}${w.repScheme ? ` of ${w.repScheme.join('-')} reps` : ''}. Build to a heavy set for today, not a lifetime best. Rest as long as you need between sets. Your score is the heaviest load you made.`;
+    case 'max_load':
+      return `Build to a heavy ${few}${w.intervalSeconds ? `, one attempt every ${minutesText(w.intervalSeconds)}` : ''}. Heavy means heavy for today. Your score is the top load.`;
+    case 'skill':
+      return `Not for time. Practice: ${few}. Move well, rest when the quality drops, and stop before you're sloppy.`;
+    default:
+      return `${few[0]?.toUpperCase() ?? ''}${few.slice(1)}. Read the lines below and run it at a pace you can hold.`;
+  }
+}
+
+/** "How to run it": the cues, one per movement, and a pacing rule for the format. */
+function howText(w: IntroInput, work: WodLine[], movements: Map<string, MasterMovement>, scaling?: ScalingTable): string {
+  const lead = w.format === 'amrap' || w.format === 'emom' ? 'Pick a pace you could hold for the whole clock, then hold it.'
+    : w.format === 'for_time' && (w.rounds ?? 1) >= 3 ? `Round one should feel too easy. That's the pace.`
+      : w.format === 'for_time' && w.repScheme ? 'Break the big sets before you have to, not after you fail.'
+        : w.format === 'strength' || w.format === 'max_load' ? 'Warm up with the bar, add weight in big jumps early and small ones late.'
+          : w.tags.includes('stations') ? 'Move the second the clock says go, and keep a number in your head at every station.'
+            : 'Steady beats fast. Keep moving.';
+  const seen = new Set<string>();
+  const cues: string[] = [];
+  for (const l of work) {
+    if (!l.movementId || seen.has(l.movementId)) continue;
+    seen.add(l.movementId);
+    const cue = scaling?.movements[l.movementId]?.cue;
+    const name = movements.get(l.movementId)?.name ?? l.name;
+    if (cue) cues.push(`${name}: ${cue[0].toLowerCase()}${cue.slice(1)}`);
+  }
+  return [lead, ...cues.slice(0, 5)].join(' ');
+}
+
+/** "Make it yours": the step down for each movement, then the loads. */
+function scaleText(w: IntroInput, work: WodLine[], movements: Map<string, MasterMovement>, scaling?: ScalingTable): string {
+  const seen = new Set<string>();
+  const steps: string[] = [];
+  for (const l of work) {
+    if (!l.movementId || seen.has(l.movementId)) continue;
+    seen.add(l.movementId);
+    const scale = scaling?.movements[l.movementId]?.scale;
+    const name = movements.get(l.movementId)?.name ?? l.name;
+    if (scale) steps.push(`${name}: ${scale[0].toLowerCase()}${scale.slice(1)}`);
+  }
+  const hasLoad = work.some((l) => l.load) || !!(w.loads.men || w.loads.women);
+  const loads = hasLoad ? 'The loads are the prescribed ones. Pick a weight you could do the first set unbroken when you are fresh, even if that is half of what is written.' : '';
+  const closer = w.format === 'strength' || w.format === 'max_load' ? 'A heavy single with a round back is not a lift. Stop a notch before form goes.' : 'Scaled and finished beats prescribed and quit.';
+  return [steps.length ? `${steps.slice(0, 6).join(' ')}` : '', loads, closer].filter(Boolean).join(' ');
+}
+
+const normaliseName = (name: string) => name.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+
+/** The introduction under a workout's name, built from its columns, the scaling table and the benchmark notes. */
+export function workoutIntro(w: IntroInput, movements: Map<string, MasterMovement>, tables: { scaling?: ScalingTable; benchmarks?: BenchmarkTable } = {}): WorkoutIntro {
+  const work = w.lines.filter((l) => l.kind === 'movement');
+  const bench = w.named && tables.benchmarks ? tables.benchmarks.workouts[normaliseName(w.name)] : undefined;
+  return {
+    what: whatText(w, work),
+    how: howText(w, work, movements, tables.scaling),
+    scale: scaleText(w, work, movements, tables.scaling),
+    ...(bench ? { background: bench.background, kind: bench.kind } : {}),
+  };
 }

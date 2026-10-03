@@ -1,15 +1,15 @@
 # WOD compile review
 
-Generated 2026-10-03T18:26:30.997Z.
+Generated 2026-10-03T22:45:35.729Z.
 
-- Workouts: 1255 (named: 182)
-- Dropped rows: 14; duplicate rows: 3
-- Formats: for_time: 761, amrap: 239, strength: 131, interval: 52, emom: 29, tabata: 16, skill: 13, unknown: 12, max_load: 2
-- Confidence: high: 1082, medium: 161, low: 12
-- Movement lines recognised: 3961 of 4060 (98%)
+- Workouts: 1239 (named: 166)
+- Dropped rows: 14; duplicate rows: 19
+- Formats: for_time: 742, amrap: 235, strength: 131, interval: 59, emom: 29, tabata: 16, skill: 13, unknown: 12, max_load: 2
+- Confidence: high: 1066, medium: 161, low: 12
+- Movement lines recognised: 3919 of 4018 (98%)
 - Lexicon movements: 180, mapped to a catalog exercise: 136
-- Tags: ladder: 16, partner: 10, rx: 2
-- Muscle maps: 594 distinct muscle sets over 1243 workouts; 0 workouts have pictures
+- Tags: stations: 27, ladder: 16, partner: 10, rx: 2
+- Muscle maps: 601 distinct muscle sets over 1227 workouts; 0 workouts have pictures
 
 ## Unrecognised text (add to the lexicon, or leave as a note)
 
@@ -19,9 +19,10 @@ Generated 2026-10-03T18:26:30.997Z.
 - 6 × "five" (e.g. wod-0446, wod-0564, wod-0631)
 - 5 × "00" (e.g. wod-0176, wod-0877)
 - 5 × "pace for as long as possible" (e.g. wod-0617)
-- 5 × "box" (e.g. wod-0745, christine-e7745e, wod-0850)
 - 4 × "for reps" (e.g. wod-0076, wod-0269, wod-0277)
 - 4 × "rounds for time of" (e.g. wod-0180, operation-red-wings, wod-0470)
+- 4 × "for as long as possible" (e.g. wod-0432, wod-0737)
+- 4 × "box" (e.g. wod-0745, wod-0850)
 - 4 × "5" (e.g. wod-0892, wod-0914, wod-0927)
 - 3 × "barbara" (e.g. wod-0108, wod-0708, wod-1013)
 - 3 × ", complete" (e.g. wod-0142, wod-0143, wod-0146)
@@ -29,7 +30,7 @@ Generated 2026-10-03T18:26:30.997Z.
 - 3 × "complete as much as possible in" (e.g. wod-0411, wod-0423, wod-0796)
 - 3 × "10" (e.g. wod-0412, wod-0485, wod-0901)
 - 3 × "three" (e.g. wod-0416, wod-0749, wod-0847)
-- 3 × "for as long as possible" (e.g. wod-0737)
+- 3 × "in as few sets as possible" (e.g. wod-0821, wod-0952, wod-1020)
 - 3 × ", add 4 minutes to the clock and proceed to" (e.g. wod-1065)
 - 2 × "then, complete as many reps as possible in" (e.g. wod-0001, wod-0741)
 - 2 × "in as few pulls as possible" (e.g. wod-0070, wod-0857)
@@ -46,6 +47,7 @@ Generated 2026-10-03T18:26:30.997Z.
 - 2 × "time cap, add 3 minutes to the time cap and complete" (e.g. wod-0466)
 - 2 × "xxx complete as much as possible in" (e.g. wod-0474, wod-0920)
 - 2 × "complete" (e.g. wod-0480, wod-0511)
+- 2 × "with feet on a box" (e.g. wod-0545, wod-0859)
 - 2 × "from 0:" (e.g. wod-0587, wod-0877)
 - 2 × "barbara ann" (e.g. wod-0606, wod-0865)
 - 2 × "make" (e.g. wod-0633, wod-0714)
@@ -53,8 +55,7 @@ Generated 2026-10-03T18:26:30.997Z.
 - 2 × "while performing rounds of" (e.g. wod-0723, wod-0794)
 - 2 × "each time you break, perform" (e.g. wod-0741)
 - 2 × "with a partner" (e.g. pairup-throwdown, martin)
-- 2 × "in as few sets as possible" (e.g. wod-0821, wod-0952)
-- 2 × "third minute, continuing as long as you are able" (e.g. wod-0844, wod-1021)
+- 2 × "the third minute, continuing as long as you are able" (e.g. wod-0844, wod-1021)
 - 2 × "on a" (e.g. wod-0924, wod-0944)
 - 1 × "every 90 seconds, including the start, perform" (e.g. wod-0003)
 - 1 × "if you've got a 14/20-lb vest or body armor, wear it" (e.g. murph)
@@ -63,16 +64,17 @@ Generated 2026-10-03T18:26:30.997Z.
 - 1 × "(25 feet out and 25 feet back)" (e.g. wod-0058)
 - 1 × "for load" (e.g. wod-0061)
 - 1 × "for example, if it takes" (e.g. wod-0071)
+- 1 × "before starting the next round" (e.g. wod-0071)
 - 1 × "if you've got a weight vest or body armor, wear it" (e.g. riley)
 - 1 × "sets for load of" (e.g. wod-0075)
-- 1 × "the rings" (e.g. wod-0081)
-- 1 × "hands on the handle of each dumbbell" (e.g. wod-0086)
-- 1 × "go at the floor only" (e.g. wod-0087)
+- 1 × "on the rings" (e.g. wod-0081)
+- 1 × "place hands on the handle of each dumbbell" (e.g. wod-0086)
+- 1 × "touch and go at the floor only" (e.g. wod-0087)
 - 1 × "even a re-grip off the floor is a foul" (e.g. wod-0087)
 - 1 × "no dumping" (e.g. wod-0087)
 - 1 × "use the same load for each set" (e.g. wod-0087)
 - 1 × "each time you drop from the bar, complete" (e.g. wod-0090)
-- 1 × "continue to add 3 reps to each exercise until time expires" (e.g. wod-0126)
+- 1 × "… continue to add 3 reps to each exercise until time expires" (e.g. wod-0126)
 - 1 × "annie with a twist in" (e.g. wod-0140)
 - 1 × "pick up where you left off each round so the score is the total rounds and reps for all" (e.g. wod-0143)
 - 1 × "rounds on a" (e.g. wod-0169)
@@ -86,13 +88,11 @@ Generated 2026-10-03T18:26:30.997Z.
 - 1 × "rounds for total calories" (e.g. wod-0203)
 - 1 × ", starting from a seated position on the floor" (e.g. wod-0207)
 - 1 × "sets on a" (e.g. wod-0223)
-- 1 × ", increase the load if movement is sound and complete" (e.g. wod-0227)
+- 1 × "minutes , increase the load if movement is sound and complete" (e.g. wod-0227)
 - 1 × "in time remaining, weight 4" (e.g. quarterfinals-workout-4)
+- 1 × "as possible in the remaining time" (e.g. wod-0237)
 - 1 × "(12 inches above your reach)" (e.g. wod-0242)
-- 1 × "and break the two exercises up into as many sets as needed to complete the workout as quickly as possible" (e.g. wod-0242)
-- 1 × "grace" (e.g. wod-0243)
-- 1 × "complete as many calories as possible in" (e.g. wod-0244)
-- 1 × "max calories on the rower" (e.g. wod-0244)
+- 1 × "alternate and break the two exercises up into as many sets as needed to complete the workout as quickly as possible" (e.g. wod-0242)
 
 ## Low confidence (12)
 
@@ -109,7 +109,7 @@ Generated 2026-10-03T18:26:30.997Z.
 - **wod-0933** · unknown · Handstand push-up ladder Rest 3 minutes Dip ladder Rest 3 minutes Push-up ladder
 - **wod-0965** · unknown · 100 ft. of legless rope ascent in AFSAP L-sit for 2 minutes in AFSAP
 
-## Loads that could not be tied to a movement (52)
+## Loads that could not be tied to a movement (54)
 
 - **wod-0039** · 70 lb / 53 lb · Every 5 minutes for 5 sets: 400-meter run 25 Russian kettlebell swings
 - **wod-0055** · 100 lb / 80 lb · 30-20-10 reps for time of: Calories on the Echo bike Perform a 100-meter front-of-body object carry after each set on th
@@ -151,8 +151,10 @@ Generated 2026-10-03T18:26:30.997Z.
 - **wod-0412** · 30 lb / 20 lb · 10 200-m sandbag runs
 - **wod-0455** · 2-pood KB / 1.5-pood KB · 5 rounds for time of: 25 kettlebell swings 25 GHD sit-ups 25 hip extensions 25 knees-to-elbows
 - **wod-0457** · 45 lb plate / 25 lb plate · 10 rounds for time of: 5 weighted push-ups 10 push-ups
+- **iqf-test-2** · 70 lb / 50 lb · IQF Test 2 12-minute AMRAP: 8 dumbbell snatches, arm 1 8 overhead walking-lunge steps, arm 1 8 dumbbell snatches, arm 2 
 - **wod-0534** · sub 0:45 / sub 0:52 · 5 rounds for time of: 250-m row, 50 double-unders, unbroken
 - **nate** · 2-pood kettlebell / 1.5-pood kettlebell · Nate Complete as many rounds as possible in 20 minutes of: 2 muscle-ups 4 handstand push-ups 8 kettlebell swings
+- **wod-0545** · 35-lb pull-up, 30-in box, 45-lb plate / 25-lb pull-up, 24-in box, 35-lb plate · Hard Cindy Complete as many rounds as possible in 20 minutes of: 5 weighted pull-ups 10 push-ups with feet on a box 15 s
 - **wod-0609** · 8-minute time cap / ♀ 9-minute time cap · For max distance: 2,000-m row Max-distance handstand walk in the time remaining
 - **wod-0615** · 45 lb 5 strict pull-ups 7 kipping pull-ups / 35 lb/ · Complete as many rounds as possible in 30 minutes of: 1,000-m bike 3 weighted pull-ups, ♀35 lb/♂45 lb 5 strict pull-ups 
 - **wod-0644** · 50-lb TGU / 25-lb TGU · 5 rounds for time of: Max-calorie row in 60 seconds Turkish get-ups

@@ -253,9 +253,11 @@ function recogniseMovement(text: string, lexicon?: WodLexicon): Hit | undefined 
   let best: Hit | undefined;
   for (const entry of matchers(lexicon)) {
     const m = normalised.match(entry.regex);
-    if (m && m.index !== undefined && (!best || m[0].length > best.length)) {
-      best = { movement: entry.movement, index: m.index, length: m[0].length };
-    }
+    if (!m || m.index === undefined) continue;
+    const hit = { movement: entry.movement, index: m.index, length: m[0].length };
+    // The longest alias names the movement, unless another alias reaches further along the line
+    // ("bodyweight squat cleans" is a clean with a load word in front, not an air squat).
+    if (!best || hit.index + hit.length > best.index + best.length || (hit.index + hit.length === best.index + best.length && hit.length > best.length)) best = hit;
   }
   return best;
 }
@@ -264,13 +266,18 @@ function recogniseMovement(text: string, lexicon?: WodLexicon): Hit | undefined 
 function earliestMovement(text: string, lexicon?: WodLexicon): Hit | undefined {
   if (!lexicon) return undefined;
   const normalised = normaliseText(text);
-  let best: Hit | undefined;
+  const hits: Hit[] = [];
   for (const entry of matchers(lexicon)) {
     const m = normalised.match(entry.regex);
-    if (!m || m.index === undefined) continue;
-    if (!best || m.index < best.index || (m.index === best.index && m[0].length > best.length)) {
-      best = { movement: entry.movement, index: m.index, length: m[0].length };
-    }
+    if (m && m.index !== undefined) hits.push({ movement: entry.movement, index: m.index, length: m[0].length });
+  }
+  if (!hits.length) return undefined;
+  // The earliest alias starts the line; but an alias that overlaps it and reaches further is the real movement
+  // ("bodyweight squat cleans": "squat clean" beats "bodyweight squat", a load word plus a shorter name).
+  let best = hits.reduce((a, b) => (b.index < a.index || (b.index === a.index && b.length > a.length) ? b : a));
+  for (const h of hits) {
+    const overlaps = h.index < best.index + best.length && h.index + h.length > best.index;
+    if (overlaps && (h.index + h.length > best.index + best.length || (h.index + h.length === best.index + best.length && h.length > best.length))) best = h;
   }
   return best;
 }
@@ -379,9 +386,13 @@ function splitByLexicon(text: string, lexicon?: WodLexicon): string[] {
     // Everything up to the end of this alias is one line (prefix words are modifiers of it).
     const normalised = normaliseText(rest);
     const end = hit.index + hit.length;
-    // Map the normalised end back onto the raw string by counting words.
-    const wordsBefore = normalised.slice(0, end).trim().split(' ').length;
+    // Map the normalised end back onto the raw string: a raw word like "1½-body-weight" is several normalised words, so count per raw word.
+    const normalisedBefore = normalised.slice(0, end).trim().split(' ').filter(Boolean).length;
     const rawWords = rest.trim().split(/\s+/);
+    let wordsBefore = 0;
+    for (let count = 0; wordsBefore < rawWords.length && count < normalisedBefore; wordsBefore += 1) {
+      count += normaliseText(rawWords[wordsBefore]).split(' ').filter(Boolean).length;
+    }
     let piece = rawWords.slice(0, wordsBefore).join(' ');
     let remainder = rawWords.slice(wordsBefore).join(' ');
     const scheme = remainder.match(/^\s*(\d+(?:-\d+)+\s*reps?\b)/i);
@@ -702,11 +713,13 @@ export function parseWodDetailed(prescription: string, options: ParseWodOptions 
       remainder = s.slice(clock[0].length);
     } else if (m) {
       const unit = unitOf(m[4]);
-      quantity = { value: num(m[2]), ...(m[3] ? { alt: num(m[3]) } : {}), measure: measureOf(unit, 'distance'), ...(unit ? { unit } : {}) };
+      const scale = unit === 'min' ? 60 : 1; // time is kept in seconds; the unit remembers how it was written
+      quantity = { value: num(m[2]) * scale, ...(m[3] ? { alt: num(m[3]) * scale } : {}), measure: measureOf(unit, 'distance'), ...(unit ? { unit } : {}) };
       remainder = `${m[1]} ${s.slice(m[0].length)}`.trim();
     } else if ((m = s.match(QTY_WITH_UNIT))) {
       const unit = unitOf(m[3]);
-      quantity = { value: num(m[1]), ...(m[2] ? { alt: num(m[2]) } : {}), measure: measureOf(unit, 'reps'), ...(unit ? { unit } : {}) };
+      const scale = unit === 'min' ? 60 : 1;
+      quantity = { value: num(m[1]) * scale, ...(m[2] ? { alt: num(m[2]) * scale } : {}), measure: measureOf(unit, 'reps'), ...(unit ? { unit } : {}) };
       remainder = s.slice(m[0].length);
     } else if ((m = s.match(QTY_PLAIN))) {
       quantity = { value: num(m[1]), ...(m[2] ? { alt: num(m[2]) } : {}), measure: 'reps' };
@@ -826,6 +839,16 @@ export function parseWodDetailed(prescription: string, options: ParseWodOptions 
     warnings.splice(warnings.indexOf('Format not recognised; the prescription is kept as written for review.'), 1);
     warnings.push(`No format phrase in the text; treated as ${format === 'strength' ? 'strength work' : 'for time'}.`);
   }
+  // Station workouts (Fight Gone Bad: a minute at each station, rest, repeat): the clock is an interval clock that follows the lines.
+  const stations = movementLines.length > 1 && movementLines.every((l) => l.quantity?.measure === 'seconds' && l.quantity.value > 0) && (format === 'interval' || format === 'for_time' || format === 'amrap' || format === 'unknown');
+  if (stations) {
+    const n = rounds ?? 1;
+    const seconds = new Set(movementLines.map((l) => l.quantity!.value));
+    timer = { mode: 'interval', rounds: n, ...(seconds.size === 1 ? { intervalSeconds: [...seconds][0] } : {}) };
+    if (format !== 'amrap') { format = 'interval'; score = 'reps'; }
+    tags.push('stations');
+  }
+
   const unrecognised = lines.filter((l) => !l.recognised && (l.kind === 'movement' || /^[a-z]/i.test(l.name) && l.name.split(' ').length <= 5));
   if (!movementLines.length) warnings.push('No movements found in the text.');
   if (unrecognised.length) warnings.push(`Unrecognised movement text: ${unrecognised.map((l) => `"${l.name}"`).join(', ')}.`);
@@ -865,8 +888,8 @@ export function parseWodDetailed(prescription: string, options: ParseWodOptions 
     ...(rounds !== undefined && format !== 'strength' ? { rounds } : format === 'skill' && roundsOfIntervals !== undefined && /\b\d+\s*sets?\s*of\b/i.test(lower) ? { rounds: roundsOfIntervals } : {}),
     ...(repScheme ? { repScheme } : {}),
     ...(sets !== undefined ? { sets } : {}),
-    ...(intervalSeconds !== undefined ? { intervalSeconds } : {}),
-    ...(intervalCount !== undefined && (format === 'emom' || format === 'max_load' || format === 'interval') ? { intervalCount } : {}),
+    ...(intervalSeconds !== undefined ? { intervalSeconds } : stations && timer.intervalSeconds ? { intervalSeconds: timer.intervalSeconds } : {}),
+    ...(intervalCount !== undefined && (format === 'emom' || format === 'max_load' || format === 'interval') ? { intervalCount } : stations ? { intervalCount: rounds ?? 1 } : {}),
     ...(tabata ? { workSeconds: 20, restSeconds: 10 } : {}),
     timer,
     trackingInputs,
